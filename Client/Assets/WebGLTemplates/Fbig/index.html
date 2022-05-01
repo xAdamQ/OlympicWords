@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport"
+    content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+
+  <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
+</head>
+
+<body style="margin: 0px; text-align: center">
+
+  <canvas id="unity-canvas"
+    style="background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
+
+  <script src="Build/{{{ LOADER_FILENAME }}}"></script>
+
+  <script>
+
+      var backendAddress = "http://basraas.azurewebsites.net";
+
+;    var canvas = document.querySelector("#unity-canvas");
+
+    canvas.style.height = window.innerHeight + 'px';
+    canvas.style.width = ((window.innerWidth / window.innerHeight) <= .5625 ?
+      window.innerWidth : (window.innerHeight * .5625)) + 'px';
+
+    function logPlayerData() {
+
+      console.log(FBInstant.player.getName());
+      console.log(FBInstant.player.getID());
+      console.log(FBInstant.player.getPhoto());
+
+    }
+
+    let friends;
+
+    function loadFriends() {
+      FBInstant.player.getConnectedPlayersAsync().then
+        (
+          friendsData =>
+            friends = friendsData.map
+              (
+                player =>
+                (
+                  {
+                    Id: player.getID(),
+                    Name: player.getName(),
+                    PictureUrl: player.getPhoto(),
+                  }
+                )
+              )
+        )
+    }
+
+    let enteredBefore = 0;
+
+    //this is called after the client is fully loaded
+    function onGameStart() {
+
+
+      FBInstant.player.setDataAsync({ enteredBefore: 1 });
+
+      console.log("all good");
+
+    }
+
+    let token;
+    let fbigSdkInitialized = 0;
+    function onFbigSdkInitialized() {
+
+      console.log("onFbigSdkInitialzed");
+      fbigSdkInitialized = 1;
+
+      //2343 enable this
+      // FBInstant.player
+      //   .getDataAsync(['enteredBefore'])
+      //   .then(data => enteredBefore = data['enteredBefore']);
+
+
+
+      loadFriends();
+
+      FBInstant.player.getSignedPlayerInfoAsync('metadata lniked to the user to make sure he sent it').then(result => token = result.getSignature())
+
+      logPlayerData();
+    }
+
+    function onFbigSdkLoaded() {
+
+      console.log("onFbigSdkLoaded");
+
+      FBInstant.initializeAsync().then(onFbigSdkInitialized);
+    }
+
+  </script>
+
+  <script onload="onFbigSdkLoaded();" src="https://connect.facebook.net/en_US/fbinstant.6.3.js"></script>
+
+  <script>
+
+    createUnityInstance(
+      document.querySelector("#unity-canvas"),
+      {
+        dataUrl: "Build/{{{ DATA_FILENAME }}}",
+        frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
+        codeUrl: "Build/{{{ CODE_FILENAME }}}",
+        #if MEMORY_FILENAME
+        memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+        #endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+        #endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "{{{ COMPANY_NAME }}}",
+        productName: "{{{ PRODUCT_NAME }}}",
+        productVersion: "{{{ PRODUCT_VERSION }}}",
+        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      },
+      (progress) => {
+        if (fbigSdkInitialized)
+          FBInstant.setLoadingProgress(progress * 100);
+      }
+    );
+
+  </script>
+
+
+</body>
+
+</html>

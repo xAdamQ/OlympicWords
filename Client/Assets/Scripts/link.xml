@@ -1,0 +1,7 @@
+﻿<linker>
+    <assembly fullname="BestHTTP">
+        <namespace fullname="BestHTTP.SignalRCore.Messages" preserve="all"/>
+    </assembly>
+
+    <assembly fullname="MyScripts" preserve="all"/>
+</linker>
