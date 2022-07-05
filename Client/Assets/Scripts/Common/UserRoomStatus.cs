@@ -6,11 +6,13 @@ namespace Basra.Common
     public class UserRoomStatus
     {
         [Preserve]
-        public UserRoomStatus() { }
+        public UserRoomStatus()
+        {
+        }
 
-        public int EatenCards { get; set; }
-        public int Basras { get; set; }
-        public int BigBasras { get; set; }
-        public int WinMoney { get; set; }
+        public float Wpm { get; set; }
+        public int Score { get; set; }
+        public int EarnedMoney { get; set; }
+        public int FinalPosition { get; set; }
     }
 }

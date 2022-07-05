@@ -12,15 +12,10 @@ public class FullUserInfo : MinUserInfo
 
     public int PlayedRoomsCount { get; set; }
     public int WonRoomsCount { get; set; }
-    public int DrawRoomsCount { get; set; }
-    public int EatenCardsCount { get; set; }
     public int TotalEarnedMoney { get; set; }
 
     public int WinStreak { get; set; }
     public int MaxWinStreak { get; set; }
-
-    public int BasraCount { get; set; }
-    public int BigBasraCount { get; set; }
 
 
     //client helpers only?

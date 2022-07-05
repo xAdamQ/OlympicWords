@@ -28,18 +28,18 @@ namespace OlympicWords.Services
         public const string ProviderName = "Master";
 
         private readonly SecurityManager securityManager;
-        private readonly IOnlineRepo onlineRepo;
+        private readonly IScopeRepo scopeRepo;
         private ILogger<MasterAuthenticationHandler> logger;
 
         public MasterAuthenticationHandler(
             IOptionsMonitor<MasterAuthenticationSchemeOptions> options,
             ILoggerFactory loggerFac,
             UrlEncoder encoder, ISystemClock clock, ILogger<MasterAuthenticationHandler> logger,
-            SecurityManager securityManager, IOnlineRepo onlineRepo)
+            SecurityManager securityManager, IScopeRepo scopeRepo)
             : base(options, loggerFac, encoder, clock)
         {
             this.securityManager = securityManager;
-            this.onlineRepo = onlineRepo;
+            this.scopeRepo = scopeRepo;
             this.logger = logger;
         }
 
@@ -164,8 +164,8 @@ namespace OlympicWords.Services
                         (int) ExternalIdType.Demo, name, pictureUrl);
                 }
 
-                if (onlineRepo.IsUserActive(user.Id) &&
-                    onlineRepo.GetActiveUser(user.Id).IsDisconnected == false)
+                if (scopeRepo.IsUserActive(user.Id) &&
+                    scopeRepo.GetActiveUser(user.Id).IsDisconnected == false)
                     return AuthenticateResult.Fail(
                         "the user is connected and trying to connect again");
 

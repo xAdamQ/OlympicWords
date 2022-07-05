@@ -7,11 +7,6 @@ using UnityEngine.AddressableAssets;
 
 public class RoomRequester : MonoBehaviour
 {
-    public static async UniTask Create()
-    {
-        await Addressables.InstantiateAsync("roomRequester", LobbyController.I.Canvas);
-    }
-
     [SerializeField] private ChoiceButton capacityChoiceButton;
     [SerializeField] private TMP_Text betText, ticketText;
 
@@ -31,11 +26,15 @@ public class RoomRequester : MonoBehaviour
             return;
         }
 
-        await BlockingOperationManager.I.Start(
-            Controller.I.RequestRandomRoom(betChoice, capacityChoiceButton.CurrentChoice));
+        var operation = NetManager.I.SendAsync("RequestRandomRoom", betChoice, capacityChoiceButton.CurrentChoice);
+        await BlockingOperationManager.I.Start(operation);
+
+        LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
 
         BlockingPanel.Show("finding players")
             .Forget(e => throw e);
         //this is shown even if the room is started, it's removed before game start directly
     }
+
+    public static (int capacityChoice, int betChoice) LastRequest;
 }

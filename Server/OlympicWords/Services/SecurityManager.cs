@@ -102,9 +102,12 @@ namespace OlympicWords.Services
         public async Task<User> SignInAsync(string eId, int eIdType, string name, string
             pictureUrl)
         {
+            if (eId == null)
+                throw new BadUserInputException();
+
             var user = await offlineRepo.GetUserByEIdAsync(eId, eIdType);
 
-            logger.LogInformation($"{eId} -- {name} -- {user == null}");
+            logger.LogInformation($"sign in attempt of {eId} -- named: {name} -- isNull? {user == null}");
 
             if (user == null)
                 return await SignUpAsync(eId, eIdType, name, pictureUrl);
@@ -119,11 +122,11 @@ namespace OlympicWords.Services
             {
                 Name = name,
                 PictureUrl = pictureUrl,
-                Money = 200,
+                Money = 100000,
                 EnableOpenMatches = true,
-                OwnedBackgroundIds = new List<int> {0},
-                OwnedTitleIds = new List<int> {0},
-                OwnedCardBackIds = new List<int> {0},
+                OwnedBackgroundIds = new List<int> { 0 },
+                OwnedTitleIds = new List<int> { 0 },
+                OwnedCardBackIds = new List<int> { 0 },
             });
 
             offlineRepo.ToggleFollow(user.Id, "999");
@@ -152,7 +155,7 @@ namespace OlympicWords.Services
 
             var address = FbBaseAddress + "debug_token";
 
-            var uri = new UriBuilder(address) {Query = queryParams.ToString()!}.ToString();
+            var uri = new UriBuilder(address) { Query = queryParams.ToString()! }.ToString();
 
             using var client = new HttpClient();
 
@@ -188,7 +191,7 @@ namespace OlympicWords.Services
 
             var address = FbBaseAddress + "me";
 
-            var uri = new UriBuilder(address) {Query = queryParams.ToString()!}.ToString();
+            var uri = new UriBuilder(address) { Query = queryParams.ToString()! }.ToString();
 
             using var client = new HttpClient();
 

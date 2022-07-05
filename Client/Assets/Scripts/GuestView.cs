@@ -1,20 +1,15 @@
+using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
+using Random = UnityEngine.Random;
 
 public class GuestView : MonoBehaviour
 {
     [SerializeField] TMP_Text idInput;
 
-    public static void Create()
+    public void StartWithId()
     {
-        Addressables.InstantiateAsync("guestView", Controller.I.canvas);
-    }
-
-    public void StartClient()
-    {
-        Controller.I.TstStartClient(idInput.text);
-        // Destroy(gameObject);
+        NetManager.I.ConnectToServer(fbigToken: idInput.text, name: "guest", demo: true);
     }
 
     public void addChar(string chr)
@@ -27,5 +22,10 @@ public class GuestView : MonoBehaviour
     public void clearInput()
     {
         idInput.text = "";
+    }
+
+    public void StartWithRandomId()
+    {
+        NetManager.I.ConnectToServer(fbigToken: Random.Range(0, int.MaxValue).ToString(), name: "guest", demo: true);
     }
 }

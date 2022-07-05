@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Reflection;
 using OlympicWords.Services.Exceptions;
-using Basra.Common;
+using OlympicWords.Common;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using OlympicWords.Services.Helpers;
 using OlympicWords.Services;
+using static System.Threading.Tasks.Task;
 
 namespace OlympicWords.Services
 {
@@ -19,25 +20,27 @@ namespace OlympicWords.Services
         #region services
 
         private readonly IOfflineRepo offlineRepo;
-        private readonly IOnlineRepo onlineRepo;
-        private readonly IRoomManager roomManager;
+        private readonly IScopeRepo scopeRepo;
+        private readonly IGameplay gameplay;
         private readonly IMatchMaker matchMaker;
         private readonly ILogger<MasterHub> logger;
-        private readonly IScopeInfo scopeInfo;
+        private readonly IChatManager chatManager;
+        private readonly PersistantData persistantData;
         private readonly ILobbyManager lobbyManager;
 
 
-        public MasterHub(IOfflineRepo offlineRepo, ILobbyManager lobbyManager,
-            IOnlineRepo onlineRepo, IRoomManager roomManager, IMatchMaker matchMaker,
-            ILogger<MasterHub> logger, IScopeInfo scopeInfo)
+        public MasterHub(IOfflineRepo offlineRepo, ILobbyManager lobbyManager, IScopeRepo scopeRepo,
+            IGameplay gameplay, IMatchMaker matchMaker, ILogger<MasterHub> logger, IChatManager chatManager,
+            PersistantData persistantData)
         {
             this.offlineRepo = offlineRepo;
             this.lobbyManager = lobbyManager;
-            this.onlineRepo = onlineRepo;
-            this.roomManager = roomManager;
+            this.scopeRepo = scopeRepo;
+            this.gameplay = gameplay;
             this.matchMaker = matchMaker;
             this.logger = logger;
-            this.scopeInfo = scopeInfo;
+            this.chatManager = chatManager;
+            this.persistantData = persistantData;
         }
 
         #endregion
@@ -48,9 +51,12 @@ namespace OlympicWords.Services
         {
             logger.LogInformation($"connection established: {Context.UserIdentifier}");
 
+            persistantData.FeedScope(scopeRepo);
+            scopeRepo.SetOwner(userId: Context.UserIdentifier);
+
             //this feature was related to the active user functionality, you may restructure things because
             //no disconnected user which is active in a room, I can fill his place with a bot but this is unfair, unlike basra
-            if (onlineRepo.IsUserActive(Context.UserIdentifier))
+            if (scopeRepo.IsUserActive(Context.UserIdentifier))
                 ActiveUser.IsDisconnected = false;
             else
                 CreateActiveUser();
@@ -62,7 +68,7 @@ namespace OlympicWords.Services
 
         private void CreateActiveUser()
         {
-            onlineRepo.AddActiveUser(new ActiveUser(Context.UserIdentifier, Context.ConnectionId,
+            scopeRepo.AddActiveUser(new ActiveUser(Context.UserIdentifier, Context.ConnectionId,
                 typeof(UserDomain.App.Lobby.Idle)));
         }
 
@@ -70,49 +76,49 @@ namespace OlympicWords.Services
         {
             var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier);
             var clientPersonalInfo = Mapper.ConvertUserDataToClient(user);
-            //you travel to db 2 more times
-            clientPersonalInfo.Followers =
-                await offlineRepo.GetFollowersAsync(Context.UserIdentifier);
-            clientPersonalInfo.Followings =
-                await offlineRepo.GetFollowingsAsync(Context.UserIdentifier);
 
-            await Clients.Caller.SendAsync("InitGame", ++ActiveUser.MessageIndex, clientPersonalInfo,
-                ActiveUser.MessageIndex);
+            //todo followers code
+            // //you travel to db 2 more times
+            // clientPersonalInfo.Followers =
+            //     await offlineRepo.GetFollowersAsync(Context.UserIdentifier);
+            // clientPersonalInfo.Followings =
+            //     await offlineRepo.GetFollowingsAsync(Context.UserIdentifier);
+
+            await Clients.Caller.SendAsync("InitGame", ActiveUser.MessageIndex++, clientPersonalInfo);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             logger.LogInformation($"{Context.UserIdentifier} Disconnected");
 
+            persistantData.FeedScope(scopeRepo);
+            scopeRepo.SetOwner(userId: Context.UserIdentifier);
+
             ActiveUser.Disconnect();
+            scopeRepo.RemoveActiveUser(Context.UserIdentifier);
 
-            //remove pending room user
-            if (RoomUser != null && !RoomUser.Room.IsFull)
-                matchMaker.RemovePendingDisconnectedUser(RoomUser);
+            var roomUser = scopeRepo.RoomUser;
+            if (roomUser != null)
+            {
+                gameplay.Surrender();
+                //doesn't matter if you disconnected or got out by net issue
 
-            //RoomUser.Room is null when he was the last player in pending room and disconnected
-
-            //mark user in room as disconnected
-            if (RoomUser is {Room: { }}) //todo test get non existing user
-                //this means the room user is not null it's room is not also
-                ActiveUser.IsDisconnected = true;
-            else
-                onlineRepo.RemoveActiveUser(Context.UserIdentifier);
+                //remove pending room user
+                if (!roomUser.Room.IsFull)
+                    matchMaker.RemovePendingDisconnectedUser(roomUser);
+                //RoomUser.Room is null when he was the last player in pending room and disconnected
+            }
 
             await base.OnDisconnectedAsync(exception);
         }
 
         #endregion
 
-        private RoomUser roomUser;
-
-        private RoomUser RoomUser =>
-            roomUser ??= onlineRepo.GetRoomUserWithId(Context.UserIdentifier);
 
         private ActiveUser activeUser;
 
         private ActiveUser ActiveUser =>
-            activeUser ??= onlineRepo.GetActiveUser(Context.UserIdentifier);
+            activeUser ??= scopeRepo.GetActiveUser(Context.UserIdentifier);
 
         #region general
 
@@ -130,7 +136,7 @@ namespace OlympicWords.Services
         public async Task<FullUserInfo> GetUserData(string id)
         {
             var data = await offlineRepo.GetFullUserInfoAsync(id);
-            data.Friendship = (int) offlineRepo.GetFriendship(Context.UserIdentifier, id);
+            data.Friendship = (int)offlineRepo.GetFriendship(Context.UserIdentifier, id);
             return data;
         }
 
@@ -187,7 +193,7 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App.Lobby.GettingReady))]
         public async Task Ready()
         {
-            await matchMaker.MakeRoomUserReadyRpc(ActiveUser, RoomUser);
+            await matchMaker.MakeRoomUserReadyRpc();
         }
 
         [RpcDomain(typeof(UserDomain.App.Lobby.Idle))]
@@ -235,68 +241,58 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
         public async Task ShowMessage(string msgId)
         {
-            await roomManager.ShowMessage(RoomUser, msgId);
+            await chatManager.ShowMessage(msgId);
         }
 
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
         public async Task UpStreamChar(IAsyncEnumerable<char> stream)
         {
-            await roomManager.UpStreamChar(stream);
+            await gameplay.UpStreamChar(stream);
         }
 
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
         public async IAsyncEnumerable<List<char>[]> DownStreamCharBuffer(
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            //other cool thing could be sending the current char index for each, why? because this is stateless
-            //putting anti-cheating in mind: if the client know his chars, he can send them all at once
-            //a better option would be: not sending all: like? send one get one(word)
-            //get five by five? client buffer! but the problem with it is?
-            //overall is it even possible to get around this? I don't think so because it is easy to 
-            //know the current letter buffer and send, the only blocking thing would the network
-            //however sending the no letter is a little dumb, because it won't make me able to make statistics 
-            //and easier to cheat the system
-            //the anti-cheat will work on the whole paragraph because of the network delay make shoot many chars at once
-            //so the only thing I can make about the hacking is limit wpm to 250 or 300
-
-            //A. each player send a number represent how many char are moved forward in a fixed update
-            //B. in an inner loop check if any player is moved forward
-            //-- I think a fixed update is always there even if we ignored it because it is very fast
-
-            while (true) //send as long as the channel is opened
+            var asyncCoroutine = gameplay.DownStreamCharBuffer(cancellationToken);
+            await foreach (var item in asyncCoroutine.WithCancellation(cancellationToken))
             {
-                var player = scopeInfo.RoomUser;
-                var room = player.Room;
-
-                // Check the cancellation token regularly so that the server will stop
-                // producing items if the client disconnects.
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var subBuffer = new List<char>[room.Capacity];
-
-                for (var i = 0; i < subBuffer.Length; i++)
-                {
-                    var pointer = player.StreamPointer[i];
-                    var currentBuffer = room.CharBuffer[i];
-                    subBuffer[i] = currentBuffer.GetRange(pointer, currentBuffer.Count - pointer);
-                    //can return empty list
-
-                    player.StreamPointer[i] = currentBuffer.Count;
-                }
-
-                yield return subBuffer;
-
-                //foreach (var list in charBuffer) list.Clear();
-
-                // Use the cancellationToken in other APIs that accept cancellation
-                // tokens so the cancellation can flow down to them.
-                await Task.Delay(10, cancellationToken);
+                yield return item;
             }
-            // ReSharper disable once IteratorNeverReturns
+        }
+
+        [RpcDomain(typeof(UserDomain.App.Room.Active))]
+        public async IAsyncEnumerable<int> DownStreamTest(
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                if (cancellationToken.IsCancellationRequested) yield break;
+
+                yield return i;
+
+                await Delay(8000000);
+            }
+        }
+
+        [RpcDomain(typeof(UserDomain.App.Room.Active))]
+        public async Task Surrender()
+        {
+            await gameplay.Surrender();
         }
 
         #endregion
 
+        #region finished room
+
+        [RpcDomain(typeof(UserDomain.App.Room.Finished))]
+        public void LeaveFinishedRoom()
+        {
+            scopeRepo.RemoveRoomUser();
+            scopeRepo.ActiveUser.Domain = typeof(UserDomain.App.Lobby.Idle);
+        }
+
+        #endregion
 
         [RpcDomain(typeof(UserDomain.App))]
         public void BuieTest()
@@ -313,14 +309,14 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App))]
         public async Task<MinUserInfo> TestReturnObject()
         {
-            await Task.Delay(5000);
-            return new MinUserInfo {Name = "some data to test"};
+            await Delay(5000);
+            return new MinUserInfo { Name = "some data to test" };
         }
 
         [RpcDomain(typeof(UserDomain.App))]
         public async Task TestWaitAlot()
         {
-            await Task.Delay(5000);
+            await Delay(5000);
         }
 
         public class MethodDomains

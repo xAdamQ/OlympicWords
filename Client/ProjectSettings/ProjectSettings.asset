@@ -3,7 +3,7 @@
 --- !u!129 &1
 PlayerSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 24
+  serializedVersion: 23
   productGUID: afa63f27d0922e5118b7be0734540c43
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: tuxul
-  productName: Basra
+  productName: OlympicWords
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -47,8 +47,7 @@ PlayerSettings:
   defaultScreenWidthWeb: 540
   defaultScreenHeightWeb: 960
   m_StereoRenderingPath: 0
-  m_ActiveColorSpace: 0
-  m_SpriteBatchVertexThreshold: 300
+  m_ActiveColorSpace: 1
   m_MTRendering: 1
   mipStripping: 0
   numberOfMipsStripped: 0
@@ -56,6 +55,7 @@ PlayerSettings:
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
   iosUseCustomAppBackgroundBehavior: 0
+  iosAllowHTTPDownload: 1
   allowedAutorotateToPortrait: 1
   allowedAutorotateToPortraitUpsideDown: 1
   allowedAutorotateToLandscapeRight: 1
@@ -119,11 +119,8 @@ PlayerSettings:
   switchNVNShaderPoolsGranularity: 33554432
   switchNVNDefaultPoolsGranularity: 16777216
   switchNVNOtherPoolsGranularity: 16777216
-  switchGpuScratchPoolGranularity: 2097152
-  switchAllowGpuScratchShrinking: 0
   switchNVNMaxPublicTextureIDCount: 0
   switchNVNMaxPublicSamplerIDCount: 0
-  switchNVNGraphicsFirmwareMemory: 32
   stadiaPresentMode: 0
   stadiaTargetFramerate: 0
   vulkanNumSwapchainBuffers: 3
@@ -148,21 +145,23 @@ PlayerSettings:
     enable360StereoCapture: 0
   isWsaHolographicRemotingEnabled: 0
   enableFrameTimingStats: 0
+  enableOpenGLProfilerGPURecorders: 1
   useHDRDisplay: 0
   D3DHDRBitDepth: 0
   m_ColorGamuts: 00000000
   targetPixelDensity: 30
   resolutionScalingMode: 0
+  resetResolutionOnWindowResize: 0
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.tuxul.basra
-    Standalone: Basra.Tuxul.HUAWEI
+    Standalone: com.tuxul.OlympicWords
   buildNumber:
     Standalone: 0
     iPhone: 0
     tvOS: 0
-  overrideDefaultApplicationIdentifier: 1
+  overrideDefaultApplicationIdentifier: 0
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 22
   AndroidTargetSdkVersion: 0
@@ -177,7 +176,6 @@ PlayerSettings:
   APKExpansionFiles: 0
   keepLoadedShadersAlive: 0
   StripUnusedMeshComponents: 0
-  strictShaderVariantMatching: 0
   VertexChannelCompressionMask: 4054
   iPhoneSdkVersion: 988
   iOSTargetOSVersionString: 12.0
@@ -276,7 +274,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 3b0bc61a46f53a226b7bf6a9046ce3f7, type: 3}
+      m_Icon: {fileID: 2800000, guid: 9e7ef258bcdd4a61ab34e8cec01def64, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -413,6 +411,9 @@ PlayerSettings:
   - m_BuildTarget: iOSSupport
     m_APIs: 10000000
     m_Automatic: 1
+  - m_BuildTarget: WebGLSupport
+    m_APIs: 0b000000
+    m_Automatic: 0
   m_BuildTargetVRSettings: []
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
@@ -423,9 +424,6 @@ PlayerSettings:
     iPhone: 1
     tvOS: 1
   m_BuildTargetGroupLightmapEncodingQuality:
-  - m_BuildTarget: WebGL
-    m_EncodingQuality: 1
-  m_BuildTargetGroupHDRCubemapEncodingQuality:
   - m_BuildTarget: WebGL
     m_EncodingQuality: 1
   m_BuildTargetGroupLightmapSettings: []
@@ -441,7 +439,6 @@ PlayerSettings:
   locationUsageDescription: 
   microphoneUsageDescription: 
   bluetoothUsageDescription: 
-  macOSTargetOSVersion: 10.13.0
   switchNMETAOverride: 
   switchNetLibKey: 
   switchSocketMemoryPoolSize: 6144
@@ -453,7 +450,6 @@ PlayerSettings:
   switchLTOSetting: 0
   switchApplicationID: 0x01004b9000490000
   switchNSODependencies: 
-  switchCompilerFlags: 
   switchTitleNames_0: 
   switchTitleNames_1: 
   switchTitleNames_2: 
@@ -655,7 +651,6 @@ PlayerSettings:
   ps4videoRecordingFeaturesUsed: 0
   ps4contentSearchFeaturesUsed: 0
   ps4CompatibilityPS5: 0
-  ps4AllowPS5Detection: 0
   ps4GPU800MHz: 1
   ps4attribEyeToEyeDistanceSettingVR: 0
   ps4IncludedModules: []
@@ -680,12 +675,6 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
-  webGLInitialMemorySize: 32
-  webGLMaximumMemorySize: 2048
-  webGLMemoryGrowthMode: 2
-  webGLMemoryLinearGrowthStep: 16
-  webGLMemoryGeometricGrowthStep: 0.2
-  webGLMemoryGeometricGrowthCap: 96
   scriptingDefineSymbols:
     Android: GMS
     Standalone: 
@@ -695,7 +684,6 @@ PlayerSettings:
   scriptingBackend:
     Android: 0
   il2cppCompilerConfiguration: {}
-  il2cppCodeGeneration: {}
   managedStrippingLevel:
     Android: 3
     WebGL: 3
@@ -788,7 +776,7 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 0
+  activeInputHandler: 2
   cloudProjectId: adb75c0c-9c4e-4ceb-ab93-8f005376fcf4
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
@@ -799,4 +787,3 @@ PlayerSettings:
   playerDataPath: 
   forceSRGBBlit: 1
   virtualTexturingSupportEnabled: 0
-  insecureHttpOption: 0

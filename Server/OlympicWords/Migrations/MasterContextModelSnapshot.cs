@@ -17,7 +17,7 @@ namespace OlymbicWords.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -47,21 +47,8 @@ namespace OlymbicWords.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.Property<int>("BasraCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BigBasraCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Draws")
-                        .HasColumnType("int");
-
                     b.Property<int>("EatenCardsCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
 
                     b.Property<bool>("EnableOpenMatches")
                         .HasColumnType("bit");
@@ -130,9 +117,6 @@ namespace OlymbicWords.Migrations
                         new
                         {
                             Id = "0",
-                            BasraCount = 0,
-                            BigBasraCount = 0,
-                            Draws = 3,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             Level = 13,
@@ -156,9 +140,6 @@ namespace OlymbicWords.Migrations
                         new
                         {
                             Id = "999",
-                            BasraCount = 0,
-                            BigBasraCount = 0,
-                            Draws = 2,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             Level = 7,
@@ -182,9 +163,6 @@ namespace OlymbicWords.Migrations
                         new
                         {
                             Id = "9999",
-                            BasraCount = 0,
-                            BigBasraCount = 0,
-                            Draws = 2,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             Level = 8,
@@ -208,9 +186,6 @@ namespace OlymbicWords.Migrations
                         new
                         {
                             Id = "99999",
-                            BasraCount = 0,
-                            BigBasraCount = 0,
-                            Draws = 2,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             Level = 8,
@@ -234,9 +209,6 @@ namespace OlymbicWords.Migrations
                         new
                         {
                             Id = "1",
-                            BasraCount = 0,
-                            BigBasraCount = 0,
-                            Draws = 1,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             Level = 43,
@@ -260,9 +232,6 @@ namespace OlymbicWords.Migrations
                         new
                         {
                             Id = "2",
-                            BasraCount = 0,
-                            BigBasraCount = 0,
-                            Draws = 37,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             Level = 139,
@@ -286,9 +255,6 @@ namespace OlymbicWords.Migrations
                         new
                         {
                             Id = "3",
-                            BasraCount = 0,
-                            BigBasraCount = 0,
-                            Draws = 1,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             Level = 4,

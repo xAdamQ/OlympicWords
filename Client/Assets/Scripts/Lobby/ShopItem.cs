@@ -9,6 +9,7 @@ public class ShopItem : MonoBehaviour
     /// identifier for the item
     /// </summary>
     private int id;
+
     public ShopItemState State;
     private int price;
 
@@ -74,13 +75,15 @@ public class ShopItem : MonoBehaviour
                 $"cardback with index {id} is already unlocked or set, what the fuck you're doing");
             return;
         }
+
         if (Repository.I.PersonalFullInfo.Money < price)
         {
             Toast.I.Show(Translatable.GetText("no_money"), 2);
             return;
         }
 
-        await Controller.I.BuyItem(Shop.Active.ItemType, id);
+        var rpcName = Shop.Active.ItemType == ItemType.Cardback ? "BuyCardback" : "BuyBackground";
+        await NetManager.I.SendAsync(rpcName, id);
         //stop interaction? it depends on whether interacting will create issues or not.
         //and usually it will
         //await feedback
@@ -116,7 +119,8 @@ public class ShopItem : MonoBehaviour
                 return;
         }
 
-        await Controller.I.SelectItem(Shop.Active.ItemType, id);
+        var rpcName = Shop.Active.ItemType == ItemType.Cardback ? "SelectCardback" : "SelectBackground";
+        await NetManager.I.SendAsync(rpcName, id);
 
         if (Shop.Active.ItemType == ItemType.Cardback)
             Repository.I.PersonalFullInfo.SelectedCardback = id;

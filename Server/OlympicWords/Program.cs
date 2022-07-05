@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OlympicWords;
 using OlympicWords.Services;
@@ -20,28 +21,28 @@ var services = builder.Services;
 
 services.AddSignalR(options =>
 {
+    options.AddFilter<BadUserInputFilter>();
     options.ClientTimeoutInterval = TimeSpan.FromHours(1); //2343
 });
 services.AddHttpContextAccessor();
 
 services.AddControllers();
 
-services.AddDbContext<MasterContext>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("Main")));
+services.AddDbContext<MasterContext>(options => { options.UseSqlServer(configuration.GetConnectionString("Main")); });
 
-services.AddScoped<IRoomManager, RoomManager>();
-services.AddScoped<IScopeInfo, ScopeInfo>();
+services.AddScoped<IGameplay, Gameplay>();
 services.AddScoped<IOfflineRepo, OfflineRepo>();
-services.AddScoped<IFinalizeManager, FinalizeManager>();
+services.AddScoped<IFinalizer, Finalizer>();
 services.AddScoped<ILobbyManager, LobbyManager>();
-services.AddScoped<IRequestCache, RequestCache>();
+services.AddScoped<IChatManager, ChatManager>();
 services.AddScoped<IMatchMaker, MatchMaker>();
-
-services.AddSingleton<IOnlineRepo, OnlineRepo>();
-services.AddSingleton<IServerLoop, ServerLoop>();
-services.AddSingleton(new MasterHub.MethodDomains());
-
+services.AddScoped<IScopeRepo, ScopeRepo>();
 services.AddScoped<SecurityManager>();
+
+services.AddSingleton(new PersistantData());
+services.AddSingleton(new MasterHub.MethodDomains());
+services.AddSingleton<IServerLoop, ServerLoop>();
+
 
 services.AddAuthentication(MasterAuthenticationHandler.ProviderName)
     .AddScheme<MasterAuthenticationSchemeOptions, MasterAuthenticationHandler>(

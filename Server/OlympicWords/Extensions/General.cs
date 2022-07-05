@@ -105,34 +105,46 @@ namespace OlympicWords.Services.Extensions
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
+            ActiveUser activeUser, string method) where T : Hub
+        {
+            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
+                new[] { (object)activeUser.MessageIndex++ });
+        }
+
+        public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
             ActiveUser activeUser, string method, object arg1) where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { ++activeUser.MessageIndex, arg1 });
+                new[] { activeUser.MessageIndex++, arg1 });
         }
+
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
             ActiveUser activeUser, string method, object arg1, object arg2) where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { ++activeUser.MessageIndex, arg1, arg2 });
+                new[] { activeUser.MessageIndex++, arg1, arg2 });
         }
+
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
             ActiveUser activeUser, string method, object arg1, object arg2, object arg3) where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { ++activeUser.MessageIndex, arg1, arg2, arg3 });
+                new[] { activeUser.MessageIndex++, arg1, arg2, arg3 });
         }
+
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
             ActiveUser activeUser, string method, object arg1, object arg2, object arg3, object arg4) where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { ++activeUser.MessageIndex, arg1, arg2, arg3, arg4 });
+                new[] { activeUser.MessageIndex++, arg1, arg2, arg3, arg4 });
         }
+
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3, object arg4, object arg5) where T : Hub
+            ActiveUser activeUser, string method, object arg1, object arg2, object arg3, object arg4, object arg5)
+            where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { ++activeUser.MessageIndex, arg1, arg2, arg3, arg4, arg5 });
+                new[] { activeUser.MessageIndex++, arg1, arg2, arg3, arg4, arg5 });
         }
     }
 }

@@ -52,7 +52,7 @@ public class MoneyAidButton : MonoBehaviour
 
         if (info.MoneyAimTimePassed >= ConstData.MoneyAimTime)
         {
-            Controller.I.SendAsync("ClaimMoneyAid");
+            NetManager.I.SendAsync("ClaimMoneyAid");
 
             info.MoneyAimTimePassed = null;
             info.Money += RoomController.MinBet;
@@ -73,7 +73,7 @@ public class MoneyAidButton : MonoBehaviour
         } //can't ask, a lot of money
         else
         {
-            Controller.I.SendAsync("AskForMoneyAid");
+            NetManager.I.SendAsync("AskForMoneyAid");
 
             info.MoneyAimTimePassed = 0;
             info.DecreaseMoneyAimTimeLeft().Forget();

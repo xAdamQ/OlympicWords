@@ -3,36 +3,17 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-
-public interface ILobbyController
-{
-    void PrepareRequestedRoomRpc(int betChoice, int capacityChoice, List<FullUserInfo> userInfos,
-        int myTurn);
-
-    event Action Destroyed;
-}
+using UnityEngine.SceneManagement;
 
 [Rpc]
 public class LobbyController : MonoModule<LobbyController>
 {
-    public GameObject roomControllerPrefab;
     public Transform Canvas;
 
-    private async UniTaskVoid Initialize()
+    protected override void Awake()
     {
-        Controller.I.AddRpcContainer(this);
-
-        await UniTask.DelayFrame(1);
-
-        //await FriendsView.Create();
-
-        //SoundButton.Create();
-
-        //await PersonalActiveUserView.Create();
-
-        //await RoomRequester.Create();
-
-        Background.I.SetForLobby();
+        base.Awake();
+        NetManager.I.AddRpcContainer(this);
     }
 
     [Rpc]
@@ -43,13 +24,17 @@ public class LobbyController : MonoModule<LobbyController>
     }
 
     [Rpc]
-    public void PrepareRequestedRoomRpc(int betChoice, int capacityChoice,
-        List<FullUserInfo> userInfos, int myTurn)
+    public void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text)
     {
         DestroyLobby();
 
-        Instantiate(roomControllerPrefab).GetComponent<RoomController>()
-            .Init(betChoice, capacityChoice, userInfos, myTurn);
+        var roomArgs = (RoomRequester.LastRequest.betChoice, RoomRequester.LastRequest.capacityChoice, userInfos,
+            myTurn, text);
+
+        Controller.I.AddTransitionData(nameof(roomArgs), roomArgs);
+
+        SceneManager.LoadScene("Room");
+        SceneManager.LoadScene("Demo 1", LoadSceneMode.Additive);
     }
 
     [Rpc]

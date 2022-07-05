@@ -62,7 +62,6 @@ public class PersonalFullUserInfo : FullUserInfo, INotifyPropertyChanged
     }
     private int xp;
 
-    public int FlipWinCount { get; set; }
 
     public List<int> Titles { get; set; }
 

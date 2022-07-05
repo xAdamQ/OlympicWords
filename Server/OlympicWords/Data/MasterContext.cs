@@ -58,7 +58,7 @@ namespace OlympicWords.Services
             SetMaxLength(modelBuilder);
 
             modelBuilder.Entity<UserRelation>()
-                .HasKey(r => new {r.FollowerId, r.FollowingId});
+                .HasKey(r => new { r.FollowerId, r.FollowingId });
 
             #region pathetic tries
 
@@ -165,9 +165,9 @@ namespace OlympicWords.Services
             );
 
             Expression<Func<List<int>, string>> serializeIntListExpression =
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions) null);
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null);
             Expression<Func<string, List<int>>> deserializeIntListExpression =
-                v => JsonSerializer.Deserialize<List<int>>(v, (JsonSerializerOptions) null);
+                v => JsonSerializer.Deserialize<List<int>>(v, (JsonSerializerOptions)null);
 
             var intListConverter = new ValueConverter<List<int>, string>(serializeIntListExpression,
                 deserializeIntListExpression);
@@ -190,14 +190,13 @@ namespace OlympicWords.Services
                 PlayedRoomsCount = 3,
                 WonRoomsCount = 4,
                 Name = "hany",
-                OwnedBackgroundIds = new List<int> {1, 3},
-                OwnedTitleIds = new List<int> {2, 4},
+                OwnedBackgroundIds = new List<int> { 1, 3 },
+                OwnedTitleIds = new List<int> { 2, 4 },
                 PictureUrl = "https://pbs.twimg.com/profile_images/592734306725933057/s4-h_LQC.jpg",
-                Draws = 3,
                 Level = 13,
                 Money = 22250,
                 Xp = 806,
-                OwnedCardBackIds = new List<int>() {0, 2},
+                OwnedCardBackIds = new List<int>() { 0, 2 },
                 RequestedMoneyAidToday = 2,
                 LastMoneyAimRequestTime = null,
                 SelectedCardback = 2,
@@ -211,10 +210,9 @@ namespace OlympicWords.Services
                 Name = "botA",
                 PictureUrl =
                     "https://pbs.twimg.com/profile_images/723902674970750978/p8JWhWxP_400x400.jpg",
-                OwnedBackgroundIds = new List<int> {0, 3},
-                OwnedTitleIds = new List<int> {1},
-                OwnedCardBackIds = new List<int> {8},
-                Draws = 2,
+                OwnedBackgroundIds = new List<int> { 0, 3 },
+                OwnedTitleIds = new List<int> { 1 },
+                OwnedCardBackIds = new List<int> { 8 },
                 Level = 7,
                 Money = 1000,
                 Xp = 34,
@@ -229,10 +227,9 @@ namespace OlympicWords.Services
                 WonRoomsCount = 3,
                 Name = "botB",
                 PictureUrl = "https://pbs.twimg.com/profile_images/592734306725933057/s4-h_LQC.jpg",
-                OwnedBackgroundIds = new List<int> {3},
-                OwnedTitleIds = new List<int> {0, 1},
-                OwnedCardBackIds = new List<int> {0, 8},
-                Draws = 2,
+                OwnedBackgroundIds = new List<int> { 3 },
+                OwnedTitleIds = new List<int> { 0, 1 },
+                OwnedCardBackIds = new List<int> { 0, 8 },
                 Level = 8,
                 Money = 1100,
                 Xp = 44,
@@ -248,10 +245,9 @@ namespace OlympicWords.Services
                 Name = "botC",
                 PictureUrl =
                     "https://d3g9pb5nvr3u7.cloudfront.net/authors/57ea8955d8de1e1602f67ca0/1902081322/256.jpg",
-                OwnedBackgroundIds = new List<int> {3},
-                OwnedTitleIds = new List<int> {0, 1},
-                OwnedCardBackIds = new List<int> {0, 8},
-                Draws = 2,
+                OwnedBackgroundIds = new List<int> { 3 },
+                OwnedTitleIds = new List<int> { 0, 1 },
+                OwnedCardBackIds = new List<int> { 0, 8 },
                 Level = 8,
                 Xp = 44,
                 RequestedMoneyAidToday = 0,
@@ -272,15 +268,14 @@ namespace OlympicWords.Services
                         PlayedRoomsCount = 7,
                         WonRoomsCount = 11,
                         Name = "samy",
-                        OwnedBackgroundIds = new List<int> {0, 9},
-                        OwnedTitleIds = new List<int> {11, 6},
+                        OwnedBackgroundIds = new List<int> { 0, 9 },
+                        OwnedTitleIds = new List<int> { 11, 6 },
                         PictureUrl =
                             "https://d3g9pb5nvr3u7.cloudfront.net/authors/57ea8955d8de1e1602f67ca0/1902081322/256.jpg",
-                        Draws = 1,
                         Level = 43,
                         Money = 89000,
                         Xp = 1983,
-                        OwnedCardBackIds = new List<int>() {0, 1, 2},
+                        OwnedCardBackIds = new List<int>() { 0, 1, 2 },
                         RequestedMoneyAidToday = 0,
                         LastMoneyAimRequestTime = null,
                         SelectedCardback = 1,
@@ -291,12 +286,11 @@ namespace OlympicWords.Services
                         PlayedRoomsCount = 973,
                         WonRoomsCount = 192,
                         Name = "anni",
-                        OwnedBackgroundIds = new List<int> {10, 8},
-                        OwnedTitleIds = new List<int> {1, 3},
-                        OwnedCardBackIds = new List<int> {4, 9},
+                        OwnedBackgroundIds = new List<int> { 10, 8 },
+                        OwnedTitleIds = new List<int> { 1, 3 },
+                        OwnedCardBackIds = new List<int> { 4, 9 },
                         PictureUrl =
                             "https://pbs.twimg.com/profile_images/633661532350623745/8U1sJUc8_400x400.png",
-                        Draws = 37,
                         Level = 139,
                         Money = 8500,
                         Xp = 8062,
@@ -312,10 +306,9 @@ namespace OlympicWords.Services
                         Name = "ali",
                         PictureUrl =
                             "https://pbs.twimg.com/profile_images/723902674970750978/p8JWhWxP_400x400.jpg",
-                        OwnedBackgroundIds = new List<int> {10, 8},
-                        OwnedTitleIds = new List<int> {1, 3},
-                        OwnedCardBackIds = new List<int> {2, 4, 8},
-                        Draws = 1,
+                        OwnedBackgroundIds = new List<int> { 10, 8 },
+                        OwnedTitleIds = new List<int> { 1, 3 },
+                        OwnedCardBackIds = new List<int> { 2, 4, 8 },
                         Level = 4,
                         Money = 3,
                         Xp = 12,

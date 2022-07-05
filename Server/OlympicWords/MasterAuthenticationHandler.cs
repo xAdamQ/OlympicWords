@@ -17,6 +17,7 @@ namespace OlympicWords
 {
     public class MasterAuthenticationSchemeOptions : AuthenticationSchemeOptions
     {
+        
     }
 
     public class

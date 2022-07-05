@@ -11,6 +11,8 @@ public class AudioManager : MonoModule<AudioManager>
     {
         base.Awake();
 
+        DontDestroyOnLoad(this);
+        
         audioSource = GetComponent<AudioSource>();
     }
 

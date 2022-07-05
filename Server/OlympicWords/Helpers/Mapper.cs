@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using Basra.Common;
+using OlympicWords.Common;
 
 namespace OlympicWords.Services.Helpers
 {
@@ -24,11 +24,8 @@ namespace OlympicWords.Services.Helpers
                 OwnedCardBackIds = u.OwnedCardBackIds,
                 SelectedCardback = u.SelectedCardback,
                 SelectedBackground = u.SelectedBackground,
-                DrawRoomsCount = u.Draws,
                 Titles = u.OwnedTitleIds,
-                BasraCount = u.BasraCount,
                 WinStreak = u.WinStreak,
-                BigBasraCount = u.BigBasraCount,
                 EatenCardsCount = u.EatenCardsCount,
                 OwnedBackgroundsIds = u.OwnedBackgroundIds,
                 SelectedTitleId = u.SelectedTitleId,
@@ -49,8 +46,6 @@ namespace OlympicWords.Services.Helpers
                 WonRoomsCount = u.WonRoomsCount,
                 EatenCardsCount = u.EatenCardsCount,
                 WinStreak = u.WinStreak,
-                BasraCount = u.BasraCount,
-                BigBasraCount = u.BigBasraCount,
                 OwnedBackgroundsIds = u.OwnedBackgroundIds,
                 OwnedCardBackIds = u.OwnedCardBackIds,
                 TotalEarnedMoney = u.TotalEarnedMoney,
@@ -59,7 +54,6 @@ namespace OlympicWords.Services.Helpers
                 SelectedBackground = u.SelectedBackground,
                 Money = u.Money,
                 SelectedCardback = u.SelectedCardback,
-                DrawRoomsCount = u.Draws,
                 MaxWinStreak = u.MaxWinStreak,
                 Xp = u.Xp,
                 EnableOpenMatches = u.EnableOpenMatches,
@@ -77,6 +71,7 @@ namespace OlympicWords.Services.Helpers
 
         public static Func<User, FullUserInfo> UserToFullUserInfoFunc =
             UserToFullUserInfoProjection.Compile();
+
         public static Func<User, MinUserInfo> UserToMinUserInfoFunc =
             UserToMinUserInfoProjection.Compile();
     }

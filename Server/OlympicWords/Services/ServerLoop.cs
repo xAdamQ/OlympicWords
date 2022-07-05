@@ -10,64 +10,29 @@ namespace OlympicWords.Services
 {
     public interface IServerLoop
     {
-        void SetupTurnTimeout(RoomUser roomUser);
-        void CancelTurnTimeout(RoomUser roomUser);
         /// <summary>
         /// when players a late for ready
         /// </summary>
         void SetForceStartRoomTimeout(Room room);
+
         void CancelForceStart(Room room);
         void SetupPendingRoomTimeoutIfNotExist(Room room);
         void CancelPendingRoomTimeout(Room room);
-        void BotPlay(RoomBot roomBot);
-        // void CancelTurnTimeoutIfExist(RoomUser roomUser);
-
-        // void SetFriendlyRequestTimeout(string sender);
-        // void CancelFriendlyRequestTimeout((string, string) senderTarget);
+        void BotLoop(RoomBot roomBot, CancellationToken cancellationToken);
     }
 
     public class ServerLoop : IServerLoop
     {
         private readonly IServiceScopeFactory serviceScopeFactory;
-        private readonly IOnlineRepo onlineRepo;
 
-        public ServerLoop(IServiceScopeFactory serviceScopeFactory, IOnlineRepo onlineRepo)
+        public ServerLoop(IServiceScopeFactory serviceScopeFactory)
         {
             this.serviceScopeFactory = serviceScopeFactory;
-            this.onlineRepo = onlineRepo;
-        }
-
-        //for users who miss turn
-        private Dictionary<RoomUser, CancellationTokenSource> TurnCancellations { get; } = new();
-        private const int TurnTime = 10 * 1000; //todo take config from dev and prod json
-        public void SetupTurnTimeout(RoomUser roomUser)
-        {
-            var cSource = new CancellationTokenSource();
-            TurnCancellations.Add(roomUser, cSource);
-
-            Task.Delay(TurnTime, cSource.Token).ContinueWith(task =>
-            {
-                if (!task.IsCanceled) Task.Run(() => OnTurnTimeout(roomUser));
-            });
-        }
-        private async Task OnTurnTimeout(RoomUser roomUser)
-        {
-            TurnCancellations.Remove(roomUser);
-
-            using (var scope = serviceScopeFactory.CreateScope())
-            {
-                var roomUserManager = scope.ServiceProvider.GetService<IRoomManager>();
-                await roomUserManager!.ForceUserPlay(roomUser);
-            }
-        }
-        public void CancelTurnTimeout(RoomUser roomUser)
-        {
-            TurnCancellations[roomUser].Cancel();
-            TurnCancellations.Remove(roomUser);
         }
 
         private Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
-        private const int PendingRoomTimeout = 8 * 1000;
+        private const int PendingRoomTimeout = 1 * 1000;
+
         public void SetupPendingRoomTimeoutIfNotExist(Room room)
         {
             if (PendingRoomCancellations.ContainsKey(room)) return;
@@ -80,6 +45,7 @@ namespace OlympicWords.Services
                 if (!task.IsCanceled) Task.Run(() => OnPendingRoomTimeout(room));
             });
         }
+
         private async Task OnPendingRoomTimeout(Room room)
         {
             PendingRoomCancellations.Remove(room);
@@ -90,6 +56,7 @@ namespace OlympicWords.Services
                 await roomRequester!.FillPendingRoomWithBots(room);
             }
         }
+
         public void CancelPendingRoomTimeout(Room room)
         {
             PendingRoomCancellations[room].Cancel();
@@ -98,6 +65,7 @@ namespace OlympicWords.Services
 
         private Dictionary<Room, CancellationTokenSource> ForceStartCancellations { get; } = new();
         private const int ReadyTimeout = 8 * 1000;
+
         public void SetForceStartRoomTimeout(Room room)
         {
             var cSource = new CancellationTokenSource();
@@ -109,6 +77,7 @@ namespace OlympicWords.Services
                     if (!task.IsCanceled) Task.Run(() => OnForceStartTimeout(room));
                 });
         }
+
         private async Task OnForceStartTimeout(Room room)
         {
             ForceStartCancellations.Remove(room);
@@ -116,14 +85,45 @@ namespace OlympicWords.Services
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 //this will fail because you don't have scope
-                var roomManager = scope.ServiceProvider.GetService<IRoomManager>();
-                await roomManager!.StartRoom(room);
+                var roomManager = scope.ServiceProvider.GetService<IGameplay>();
+                await roomManager!.StartRoom();
             }
         }
+
         public void CancelForceStart(Room room)
         {
             ForceStartCancellations[room].Cancel();
             ForceStartCancellations.Remove(room);
+        }
+
+
+        const string ALL_CHARS = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
+
+        //single loop for all bots to advance randomly on fixed update
+        public void BotLoop(RoomBot roomBot, CancellationToken cancellationToken)
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                var room = roomBot.Room;
+
+                using var scope = serviceScopeFactory.CreateScope();
+                scope.ServiceProvider.GetService<IScopeRepo>()!.SetOwner(roomBot: roomBot);
+                var gameplay = scope.ServiceProvider.GetService<IGameplay>()!;
+
+                while (roomBot.StreamPointer < room.Text.Length)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
+
+                    var chr = StaticRandom.GetRandom(100) > room.wrongDigitProb
+                        ? room.Text[roomBot.StreamPointer]
+                        : ALL_CHARS[StaticRandom.GetRandom(ALL_CHARS.Length)];
+
+                    await gameplay.ProcessDigit(chr, roomBot);
+
+                    await Task.Delay(StaticRandom.GetRandom(room.botTimeMin, room.botTimeMax), cancellationToken);
+                }
+            });
         }
 
         #region friendly req
@@ -177,72 +177,5 @@ namespace OlympicWords.Services
         // }
 
         #endregion
-
-        private const int BotPlayMin = 500, BotPlayMax = 4000;
-
-        public void BotPlay(RoomBot roomBot)
-        {
-            Task.Run(async () =>
-            {
-                await Task.Delay(StaticRandom.GetRandom(BotPlayMin, BotPlayMax));
-
-                using var scope = serviceScopeFactory.CreateScope();
-                var roomManager = scope.ServiceProvider.GetService<IRoomManager>();
-                await roomManager!.BotPlay(roomBot);
-            }).ContinueWith(t =>
-            {
-                if (t.Exception != null) throw t.Exception;
-            });
-        }
-
-
-        // private Dictionary<Action, CancellationTokenSource> DelayCancellations { get; } = new();
-        // public void Delay(int delay, Action onComplete, Object key)
-        // {
-        //     var cSource = new CancellationTokenSource();
-        //     DelayCancellations.Add(onComplete, cSource);
-        //
-        //     Task.Delay(ReadyTimeout, cSource.Token).ContinueWith(_ => onComplete, cSource.Token);
-        //     DelayCancellations.Remove(onComplete);
-        // }
-        // public void CancelDelay(Room room)
-        // {
-        //     ForceStartCancellations[room].Cancel();
-        // }
-
-
-        // public void StartTurn(string userId)
-        // {
-        //     var turnTime = 10000;
-        //     var cSource = new CancellationTokenSource();
-        //     TurnCancellations.Add(userId, cSource);
-        //
-        //     Task.Delay(turnTime).ContinueWith(t => OnTurnTimout(userId), cSource.Token);
-        // }
-        //
-        // private async Task OnTurnTimout(string userId)
-        // {
-        //     // await RandomPlay(userId);
-        // }
-
-        // private async Task RandomPlay(string userId)
-        // {
-        //     //pick user
-        //     //
-        //
-        //     var randomCardIndex = StaticRandom.GetRandom(Cards.Count);
-        //
-        //     await Task.WhenAll
-        //     (
-        //         Play(randomCardIndex),
-        //         Program.HubContext.Clients.Client(ConnectionId).SendAsync("OverrideMyLastThrow", randomCardIndex)
-        //         // Structure.SendAsync("OverrideThrow", card)
-        //     );
-        // }
-
-        // protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        // {
-        //     Console.WriteLine("excute,,,,,,");
-        // }
     }
 }

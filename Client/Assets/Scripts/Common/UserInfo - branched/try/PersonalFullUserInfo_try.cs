@@ -20,7 +20,7 @@
 //                 DecreaseMoneyAimTimeLeft().Forget();
 //         });
 //     }
-//
+//  
 //     public event PropertyChangedEventHandler PropertyChanged;
 //     [NotifyPropertyChangedInvocator]
 //     protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = null)

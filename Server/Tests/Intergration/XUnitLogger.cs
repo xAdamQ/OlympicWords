@@ -13,6 +13,7 @@ namespace Tests
 
         public static ILogger CreateLogger(ITestOutputHelper testOutputHelper) =>
             new XUnitLogger(testOutputHelper, new LoggerExternalScopeProvider(), "");
+
         public static ILogger<T> CreateLogger<T>(ITestOutputHelper testOutputHelper) =>
             new XUnitLogger<T>(testOutputHelper, new LoggerExternalScopeProvider());
 
@@ -33,7 +34,7 @@ namespace Tests
         {
             var sb = new StringBuilder();
 
-            sb.Append("\n----------------------------\n");
+            sb.Append("\n----------------------------");
 
             sb.Append(GetLogLevelString(logLevel))
                 .Append(" [").Append(_categoryName).Append("] ")
@@ -51,9 +52,14 @@ namespace Tests
             //     state.Append(scope);
             // }, sb);
 
-            sb.Append("\n------------------------\n");
+            sb.Append("------------------------");
 
-            _testOutputHelper.WriteLine(sb.ToString());
+            var msg = sb.ToString();
+
+            if (msg.Contains("Disconnected"))
+                return;
+
+            _testOutputHelper.WriteLine(msg);
         }
 
         private static string GetLogLevelString(LogLevel logLevel)

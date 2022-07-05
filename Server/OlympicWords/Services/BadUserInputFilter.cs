@@ -9,16 +9,17 @@ namespace OlympicWords.Services
     public class BadUserInputFilter : IHubFilter
     {
         private readonly MasterHub.MethodDomains methodDomains;
-        private readonly IOnlineRepo onlineRepo;
+        private readonly IScopeRepo scopeRepo;
         private readonly ILogger<BadUserInputFilter> logger;
-        private readonly IRequestCache requestCache;
-        public BadUserInputFilter(MasterHub.MethodDomains methodDomains, IOnlineRepo onlineRepo,
-            ILogger<BadUserInputFilter> logger, IRequestCache requestCache)
+        private readonly PersistantData persistantData;
+
+        public BadUserInputFilter(MasterHub.MethodDomains methodDomains, IScopeRepo scopeRepo,
+            ILogger<BadUserInputFilter> logger, PersistantData persistantData)
         {
             this.methodDomains = methodDomains;
-            this.onlineRepo = onlineRepo;
+            this.scopeRepo = scopeRepo;
             this.logger = logger;
-            this.requestCache = requestCache;
+            this.persistantData = persistantData;
         }
 
         public async ValueTask<object> InvokeMethodAsync(HubInvocationContext invocationContext,
@@ -38,26 +39,24 @@ namespace OlympicWords.Services
                 $"Calling hub method '{invocationContext.HubMethodName}'" +
                 $" with args {string.Join(", ", invocationContext.HubMethodArguments)}");
 
-            var activeUser = onlineRepo.GetActiveUser(invocationContext.Context.UserIdentifier);
-            var domain = methodDomains.GetDomain(invocationContext.HubMethodName);
+            persistantData.FeedScope(scopeRepo);
+            scopeRepo.SetOwner(userId: invocationContext.Context.UserIdentifier);
 
-            if (activeUser.IsDisconnected)
-                throw new Exception(
-                    "there's something wrong with ur sys, a user is disconnected and calling!");
+            var activeUser = scopeRepo.ActiveUser;
+            var domain = methodDomains.GetDomain(invocationContext.HubMethodName);
 
             if (domain == null)
             {
                 throw new Exceptions.BadUserInputException(
                     "the user is invoking a function that doesn't exist or it's not an rpc");
             }
+
             if (!activeUser.Domain.IsSubclassOf(domain) &&
                 !activeUser.Domain.IsEquivalentTo(domain))
             {
                 throw new Exceptions.BadUserInputException(
                     $"the called function with domain {domain} is not valid in the current user domain {activeUser.Domain}");
             }
-
-            requestCache.Init(invocationContext.Context.UserIdentifier);
 
             try
             {

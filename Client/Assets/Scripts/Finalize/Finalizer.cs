@@ -1,25 +1,79 @@
-﻿using Basra.Common;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Basra.Common;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
 
-
+[Rpc]
 public class Finalizer : MonoModule<Finalizer>
 {
-    public void Init(FinalizeResult finalizeResult)
+    private FinalMuv[] FinalMuvs;
+    private List<(int index, UserRoomStatus status)> FinishedUsersStatus = new();
+
+    private bool finalized;
+
+    [SerializeField] private GameObject view;
+
+    protected override void Awake()
     {
-        //todo smash this and room result panel together
-        // var finalMuvParent = (await Addressables.InstantiateAsync("finalMuvParent", RoomController.I.Canvas)).transform;
-        //
-        // for (int i = 0; i < RoomController.I.UserInfos.Count; i++)
-        // {
-        //     if (i == RoomController.I.MyTurn) continue;
-        //
-        //     FinalMuv.Create(RoomController.I.UserInfos[i], finalizeResult.UserRoomStatus[i], finalMuvParent).Forget();
-        // }
-        //
-        // RoomResultPanel.Instantiate(RoomController.I.Canvas, finalizeResult.RoomXpReport,
-        //     finalizeResult.PersonalFullUserInfo,
-        //     finalizeResult.UserRoomStatus[RoomController.I.MyTurn]).Forget();
+        base.Awake();
+        NetManager.I.AddRpcContainer(this);
+    }
+
+    [Rpc]
+    public void FinalizeRoom(UserRoomStatus myUserRoomStatus)
+    {
+        finalized = true;
+
+        // RoomUserView.Manager.I.RoomUserViews.ForEach(ruv => Destroy(ruv.gameObject));
+        //todo destroy additional UI
+
+        var info = Repository.I.PersonalFullInfo;
+        info.Money += myUserRoomStatus.EarnedMoney;
+        info.TotalEarnedMoney += myUserRoomStatus.EarnedMoney;
+        info.Xp += myUserRoomStatus.Score;
+        info.PlayedRoomsCount++;
+
+        Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
+
+        FinalMuvs = new FinalMuv[RoomController.I.Capacity];
+
+        UniTask.Create(async () =>
+        {
+            for (var i = 0; i < RoomController.I.UserInfos.Count; i++)
+                FinalMuvs[i] = await FinalMuv.Create(RoomController.I.UserInfos[i], Gameplay.I.Players[i], transform);
+
+            FinalMuvs[RoomController.I.MyTurn].SetFinal(myUserRoomStatus);
+            FinishedUsersStatus.ForEach(rs => FinalMuvs[rs.index].SetFinal(rs.status));
+
+            foreach (var finalMuv in FinalMuvs.Where(fm => !fm.Finished))
+                finalMuv.SetTemporalStatus();
+
+            view.SetActive(true);
+        });
+    }
+
+    [Rpc]
+    public void TakeOppoUserRoomStatus(int userIndex, UserRoomStatus userRoomStatus)
+    {
+        if (finalized)
+            FinalMuvs[userIndex].SetFinal(userRoomStatus);
+        else
+            FinishedUsersStatus.Add((userIndex, userRoomStatus));
+    }
+
+
+    /// <summary>
+    /// uses roomController, lobbyFac
+    /// </summary>
+    public void ToLobby()
+    {
+        UniTask.Create(async () =>
+        {
+            await NetManager.I.SendAsync("LeaveFinishedRoom");
+            SceneManager.LoadScene("Lobby");
+        }).Forget(e => throw e);
     }
 }

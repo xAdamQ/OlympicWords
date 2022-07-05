@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Basra.Common
+namespace OlympicWords.Common
 {
     public class FullUserInfo : MinUserInfo
     {

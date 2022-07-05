@@ -29,7 +29,7 @@ public class ChallengeResponsePanel : MonoBehaviour
     {
         UniTask.Create(async () =>
         {
-            var res = await Controller.I.InvokeAsync<ChallengeResponseResult>(
+            var res = await NetManager.I.InvokeAsync<ChallengeResponseResult>(
                 "RespondChallengeRequest", minUserView.MinUserInfo.Id, response == 0);
 
             Toast.I.Show(res.ToString());

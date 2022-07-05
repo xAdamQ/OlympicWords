@@ -1,4 +1,4 @@
-namespace Basra.Common
+namespace OlympicWords.Common
 {
     public class MinUserInfo
     {

@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,34 +6,68 @@ using Basra.Common;
 using BestHTTP.SignalRCore;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
 
 public class Gameplay : MonoModule<Gameplay>
 {
-    [SerializeField] private GameObject myPlayerPrefab, oppoPlayerPrefab;
+    [SerializeField] private GameObject
+        myPlayerPrefab,
+        oppoPlayerPrefab,
+        endPlanPrefab,
+        stairPrefab,
+        digitPrefab,
+        stepPrefab;
+
+    [SerializeField] private int myStepsLayer = 6;
+    public Vector3 spacing;
     public bool moveSteps;
     public float fadeStepValue, fadeStepTime;
 
-    public List<string> tstWords;
+    /////////////// SERIALIZED FIELDS
 
-    public int PlayerCount = 10;
 
-    [SerializeField] private int stepsLayer = 6;
+    [HideInInspector] public List<string> words;
+    private int capacity;
+    public List<List<Stair>> stairs = new();
+    private List<Stair> myStairs => stairs[0];
+    public bool useConnected, circular, useRepetition;
 
-    private HubConnection hubConnection;
+    private void Start()
+    {
+        if (TestController.I.UseTest)
+        {
+            spacing = TestController.I.spacing;
+            moveSteps = TestController.I.moveSteps;
+            fadeStepValue = TestController.I.fadeStepValue;
+            fadeStepTime = TestController.I.fadeStepTime;
+            useConnected = TestController.I.useConnected;
+            circular = TestController.I.circular;
+            useRepetition = TestController.I.useRepetition;
+        }
 
-    [SerializeField] private GameObject endPlanPrefab, stairPrefab, digitPrefab, stepPrefab;
+        capacity = RoomController.I.Capacity;
+        words = RoomController.I.Words.ToList();
+        for (var i = 0; i < capacity; i++)
+            stairs.Add(new List<Stair>());
+        // stairs = new List<List<Stair>>(Enumerable.Repeat(new List<Stair>(), capacity));
 
-    [SerializeField] public Vector3 spacing;
+        MakePlayersColorPalette();
 
-    public List<List<Stair>> Stairs = new();
-    public List<Stair> MyStairs => Stairs.First();
+        GenerateStairs(words);
 
-    public bool useConnected;
-    public bool circular;
-    public bool useRepetition;
+        // myStairs.ForEach(s =>
+        // {
+        //     s.gameObject.layer = myStepsLayer;
+        //     foreach (Transform digit in s.transform)
+        //         digit.gameObject.layer = myStepsLayer;
+        // });
 
-    public void GenerateStairs(List<string> words)
+        CreatePlayers();
+    }
+
+
+    private void GenerateStairs(List<string> words)
     {
         if (circular)
         {
@@ -61,18 +96,18 @@ public class Gameplay : MonoModule<Gameplay>
             GenerateStairsLevel(d0, i, words[i]);
         } //generate each circular level
 
-        foreach (var playerStairs in Stairs)
+        foreach (var playerStairs in stairs)
             playerStairs.Reverse();
         //reverse each player stairs list because we reversed at the start
     }
 
     private void GenerateLinearStairs(List<string> words)
     {
-        var pozPointer = Vector3.zero;
+        var pozPointer = Vector3.up * 10;
         for (var i = 0; i < words.Count; i++)
         {
             //pozPointer.x += words[i].Length / 2f + spacing.x / 2f;
-            for (var j = 0; j < Gameplay.I.PlayerCount; j++)
+            for (var j = 0; j < capacity; j++)
             {
                 var stair = Instantiate(stairPrefab).GetComponent<Stair>();
 
@@ -102,7 +137,7 @@ public class Gameplay : MonoModule<Gameplay>
 
                 GenerateDigits(words[i], stair);
 
-                Stairs[j].Add(stair);
+                stairs[j].Add(stair);
             }
 
             pozPointer.x += words[i].Length / 1f + spacing.x / 1f; //stair.GetComponent<Renderer>().bounds.max.x;
@@ -117,10 +152,10 @@ public class Gameplay : MonoModule<Gameplay>
     private void GenerateStairsLevel(float baseDiameter, int degree, string word)
     {
         var stairSize = word.Length;
-        var portionAngle = 2 * Mathf.PI / Gameplay.I.PlayerCount; //we divide 360 degree over players count
+        var portionAngle = 2 * Mathf.PI / capacity; //we divide 360 degree over players count
         var absoluteAngle = prevDegreeEndAngle;
         var fullStairSize = stairSize + spacing.z;
-        for (var i = 0; i < Gameplay.I.PlayerCount; i++)
+        for (var i = 0; i < capacity; i++)
         {
             var stair = Instantiate(stairPrefab).GetComponent<Stair>();
 
@@ -154,7 +189,7 @@ public class Gameplay : MonoModule<Gameplay>
 
             GenerateDigits(word, stair);
 
-            Stairs[i].Add(stair);
+            stairs[i].Add(stair);
         }
     }
 
@@ -165,7 +200,29 @@ public class Gameplay : MonoModule<Gameplay>
         {
             var digitPoz = useRepetition
                 ? Vector3.right * d + Vector3.up * .1f
-                : Vector3.right * (-.5f + (d + .5f) / word.Length) + Vector3.up * .1f;
+                : Vector3.right * (-.5f + (d + .5f) / word.Length) + Vector3.up * 6f;
+
+            var digit = Instantiate(digitPrefab, stair.transform);
+            //the y scale of the stair is not related to digit y because digit is rotated
+            digit.transform.localScale =
+                new Vector3(1 / stair.transform.localScale.x, 1 / stair.transform.localScale.z, 1);
+            digit.transform.localPosition = digitPoz;
+            digit.GetComponent<TextMesh>().text = word[d].ToString();
+        }
+
+        stair.Word = word;
+    }
+
+    [SerializeField] private Mesh[] DigitModels;
+
+    private void GenerateDigitsModels(string word, Stair stair)
+    {
+        //digits
+        for (var d = 0; d < word.Length; d++)
+        {
+            var digitPoz = useRepetition
+                ? Vector3.right * d + Vector3.up * .1f
+                : Vector3.right * (-.5f + (d + .5f) / word.Length) + Vector3.up * 6f;
 
             var digit = Instantiate(digitPrefab, stair.transform);
             //the y scale of the stair is not related to digit y because digit is rotated
@@ -180,7 +237,7 @@ public class Gameplay : MonoModule<Gameplay>
 
     private float CalcDiameter(int stairSize)
     {
-        var angle = 2 * Mathf.PI / Gameplay.I.PlayerCount; //we divide 360 degree over players count
+        var angle = 2 * Mathf.PI / capacity; //we divide 360 degree over players count
         var totalStairSize = stairSize + spacing.z;
 
         return totalStairSize * .5f / Mathf.Tan(angle * .5f);
@@ -193,17 +250,19 @@ public class Gameplay : MonoModule<Gameplay>
     {
         var baseMat = new Material(stairPrefab.GetComponent<Renderer>().sharedMaterial);
 
-        PlayerMats = new Material[Gameplay.I.PlayerCount];
-        for (var i = 0; i < Gameplay.I.PlayerCount; i++)
+        PlayerMats = new Material[capacity];
+        for (var i = 0; i < capacity; i++)
         {
+            distinctColors[i].a = .5f;
+
             PlayerMats[i] = new Material(baseMat)
             {
-                color = distinctColors[i] //new Color(Random.Range(0f,1f),Random.Range(0f,1f), Random.Range(0f,1f))
+                color = distinctColors[i]
             };
         }
     }
 
-    private Color[] distinctColors = new Color[]
+    private Color[] distinctColors =
     {
         Color.red,
         Color.blue,
@@ -218,27 +277,11 @@ public class Gameplay : MonoModule<Gameplay>
     };
 
 
-    private void Start()
-    {
-        GenerateStairs(tstWords);
-
-        Stairs[0].ForEach(s =>
-        {
-            s.gameObject.layer = stepsLayer;
-            foreach (Transform digit in s.transform)
-                digit.gameObject.layer = stepsLayer;
-        });
-
-        for (var i = 0; i < PlayerCount; i++)
-            Stairs.Add(new List<Stair>());
-        MakePlayersColorPalette();
-    }
-
     public Gameplay()
     {
         I = this;
 
-        Controller.I.AddRpcContainer(this);
+        NetManager.I.AddRpcContainer(this);
     }
 
     public void CreatePlayers()
@@ -246,11 +289,11 @@ public class Gameplay : MonoModule<Gameplay>
         var oppoPlaceCounter = 1;
         //oppo place starts at 1 to 3
 
-        for (int i = 0; i < RoomController.I.Capacity; i++)
+        for (var i = 0; i < RoomController.I.Capacity; i++)
         {
             if (RoomController.I.MyTurn == i)
             {
-                MyPlayer = Object.Instantiate(myPlayerPrefab).GetComponent<Player>();
+                MyPlayer = Instantiate(myPlayerPrefab).GetComponent<MyPlayer>();
                 MyPlayer.Init(RoomController.I.MyTurn);
 
                 Players.Add(MyPlayer);
@@ -261,7 +304,7 @@ public class Gameplay : MonoModule<Gameplay>
             }
             else
             {
-                var oppo = Object.Instantiate(oppoPlayerPrefab).GetComponent<Oppo>();
+                var oppo = Instantiate(oppoPlayerPrefab).GetComponent<Oppo>();
                 oppo.Init(oppoPlaceCounter++);
 
                 Players.Add(oppo);
@@ -270,9 +313,9 @@ public class Gameplay : MonoModule<Gameplay>
         }
     }
 
-    private List<PlayerBase> Players { get; } = new();
-    private List<Oppo> Oppos { get; } = new();
-    private Player MyPlayer { get; set; }
+    public List<PlayerBase> Players { get; } = new();
+    public List<Oppo> Oppos { get; } = new();
+    public MyPlayer MyPlayer { get; set; }
 
     public void ResumeGame()
     {
@@ -280,5 +323,13 @@ public class Gameplay : MonoModule<Gameplay>
 
     public void BeginGame()
     {
+    }
+
+    public event Action OnGameFinished;
+
+    public void FinishGame()
+    {
+        OnGameFinished?.Invoke();
+        Debug.Log("show finish particles here");
     }
 }

@@ -21,8 +21,6 @@ namespace Tests
 
         private async Task<Client> MakeClient()
         {
-            var c = new Client(Clients.Count, webApplicationFactory.Logger);
-
             var hubConnection = new HubConnectionBuilder()
                 .WithUrl($"http://localhost:5112/connect?access_token={Guid.NewGuid()}",
                     httpConnectionOptions => httpConnectionOptions.HttpMessageHandlerFactory =
@@ -30,6 +28,10 @@ namespace Tests
                 //I think this creates a fake http message handler in the client, instead of the default real one
                 //which is responsible for the http request stuff as content, header, method, etc...
                 .Build();
+
+            await Task.Delay(1000);
+
+            var c = new Client(Clients.Count, webApplicationFactory.Logger);
 
             Clients.Add(c);
 
@@ -40,15 +42,42 @@ namespace Tests
             return c;
         }
 
+
         [Fact]
-        public async Task Test1()
+        public async Task InitGame()
         {
             var c = await MakeClient();
 
-            await c.UpStream();
+            await Task.Delay(1000);
+        }
+
+        [Fact(Timeout = 99999999)]
+        public async Task SuccessfulRoom()
+        {
+            var c = await MakeClient();
+            var c2 = await MakeClient();
+
+            await Task.Delay(100);
+
+            await c.HubConnection.InvokeAsync("RequestRandomRoom", 0, 0);
+            await c2.HubConnection.InvokeAsync("RequestRandomRoom", 0, 0);
+
+            await c.HubConnection.InvokeAsync("Ready");
+            await c2.HubConnection.InvokeAsync("Ready");
 
             await Task.Delay(1000);
         }
+
+        [Fact]
+        public async Task UpStreamRandomDigits()
+        {
+            var c = await MakeClient();
+
+            await c.UpStreamRandomDigits();
+
+            await Task.Delay(1000);
+        }
+
 
         // [Fact]
         // public async Task TestFirstDistribute()

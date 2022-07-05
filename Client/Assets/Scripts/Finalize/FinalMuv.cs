@@ -9,29 +9,36 @@ public class FinalMuv : MonoBehaviour
 {
     private string Id;
 
+    private PlayerBase player;
+
     [SerializeField] private Image picture;
+
     [SerializeField] private TMP_Text
-        eatenCardsText,
-        basrasText,
-        bigBasrasText,
-        winMoneyText;
+        earnedMoneyText,
+        WpmText,
+        scoreText,
+        finalPositionText;
 
     [SerializeField] private Button followButton;
 
     private FullUserInfo fullUserInfo;
 
-    public void Init(FullUserInfo fullUserInfo, UserRoomStatus oppoRoomResult)
+    public static async UniTask<FinalMuv> Create(FullUserInfo fullUserInfo, PlayerBase player, Transform parent)
+    {
+        var asset = await Addressables.InstantiateAsync("finalMuv", parent);
+        var finalMuv = asset.GetComponent<FinalMuv>();
+        finalMuv.player = player;
+        finalMuv.Init(fullUserInfo);
+        return finalMuv;
+    }
+
+    private void Init(FullUserInfo fullUserInfo)
     {
         this.fullUserInfo = fullUserInfo;
 
         Id = fullUserInfo.Id;
 
-        eatenCardsText.text = oppoRoomResult.EatenCards.ToString();
-        basrasText.text = oppoRoomResult.Basras.ToString();
-        bigBasrasText.text = oppoRoomResult.BigBasras.ToString();
-        winMoneyText.text = oppoRoomResult.WinMoney.ToString();
-
-        UpdateFriendShipView();
+        UpdateFriendshipView();
 
         if (fullUserInfo.IsPictureLoaded)
             SetPicture(fullUserInfo.Picture);
@@ -39,11 +46,30 @@ public class FinalMuv : MonoBehaviour
             fullUserInfo.PictureLoaded += pic => SetPicture(pic);
     }
 
-    public static async UniTaskVoid Create(FullUserInfo fullUserInfo, UserRoomStatus oppoRoomResult,
-        Transform parent)
+    public bool Finished;
+
+    public void SetFinal(UserRoomStatus userRoomStatus)
     {
-        var asset = await Addressables.InstantiateAsync("finalMuv", parent);
-        asset.GetComponent<FinalMuv>().Init(fullUserInfo, oppoRoomResult);
+        Finished = true;
+
+        earnedMoneyText.text = userRoomStatus.EarnedMoney.ToString();
+        WpmText.text = userRoomStatus.Wpm.ToString();
+        scoreText.text = userRoomStatus.Score.ToString();
+        finalPositionText.text = userRoomStatus.FinalPosition.ToString();
+    }
+
+    public void SetTemporalStatus()
+    {
+        Debug.Log("set temp");
+
+        player.OnMovingDigit += UpdateWpm;
+    }
+
+    private void UpdateWpm()
+    {
+        var timeInterval = (Time.time - player.StartTime) / 60f;
+        WpmText.text = (player.CurrentWordIndex / timeInterval).ToString("f2");
+        Debug.Log("updating wpm");
     }
 
     private void SetPicture(Texture2D texture2D)
@@ -70,7 +96,7 @@ public class FinalMuv : MonoBehaviour
     {
         UniTask.Create(async () =>
         {
-            await Controller.I.SendAsync("ToggleFollow", Id);
+            await NetManager.I.SendAsync("ToggleFollow", Id);
 
             switch (fullUserInfo.Friendship)
             {
@@ -94,10 +120,21 @@ public class FinalMuv : MonoBehaviour
                     break;
             }
 
-            UpdateFriendShipView();
+            UpdateFriendshipView();
         });
     }
-    private void UpdateFriendShipView()
+
+    public void SetWpm(float wpm)
+    {
+        WpmText.text = wpm.ToString("F1");
+    }
+
+    public void SetFinished(int position)
+    {
+        transform.parent.SetSiblingIndex(position);
+    }
+
+    private void UpdateFriendshipView()
     {
         //follower and not friend means you're not following back
         followButton.interactable = fullUserInfo.Friendship == (int)FriendShip.Following ||

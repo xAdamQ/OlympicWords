@@ -53,8 +53,8 @@ public class MinUserView : MonoBehaviour
     /// </summary>
     public virtual void ShowFullInfo()
     {
-        BlockingOperationManager.I.Forget(Controller.I.GetPublicFullUserInfo(Id),
-            FullUserView.Show);
+        var operation = NetManager.I.InvokeAsync<FullUserInfo>("GetUserData", Id);
+        BlockingOperationManager.I.Forget(operation, FullUserView.Show);
     }
 
     protected string Id;
@@ -67,6 +67,7 @@ public class MinUserView : MonoBehaviour
                 level.text = value.ToString();
         }
     }
+
     public string DisplayName
     {
         set
@@ -75,6 +76,7 @@ public class MinUserView : MonoBehaviour
                 displayName.text = value;
         }
     }
+
     public string Title
     {
         set

@@ -63,7 +63,7 @@ namespace OlympicWords.Services
                 // public class FinalizingRoom : Room
                 // {
                 // }
-                public class FinishedRoom : Room
+                public class Finished : Room
                 {
                 }
 

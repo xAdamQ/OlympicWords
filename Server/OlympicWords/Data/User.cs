@@ -12,7 +12,6 @@ namespace OlympicWords.Services
 
         public int PlayedRoomsCount { get; set; }
         public int WonRoomsCount { get; set; }
-        public int Draws { get; set; }
 
         public int Money { get; set; }
 
@@ -20,14 +19,10 @@ namespace OlympicWords.Services
 
         public string PictureUrl { get; set; }
 
-        public string Email { get; set; }
-
         //states
         public int EatenCardsCount { get; set; }
         public int WinStreak { get; set; }
         public int MaxWinStreak { get; set; }
-        public int BasraCount { get; set; }
-        public int BigBasraCount { get; set; }
         public int TotalEarnedMoney { get; set; }
 
         public int Level { get; set; }

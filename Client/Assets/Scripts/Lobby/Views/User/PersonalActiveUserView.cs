@@ -87,7 +87,7 @@ public class PersonalActiveUserView : MinUserView
 
     public void testwaitalot()
     {
-        BlockingOperationManager.I.Forget(Controller.I.SendAsync("TestWaitAlot"));
+        BlockingOperationManager.I.Forget(NetManager.I.SendAsync("TestWaitAlot"));
         // _blockingOperationManager.Forget<MinUserInfo>(_controller.TestWaitWithReturn(), info => Debug.Log("info is" + info.Name));
     }
 }

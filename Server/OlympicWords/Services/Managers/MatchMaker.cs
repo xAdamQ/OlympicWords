@@ -1,4 +1,4 @@
-using Basra.Common;
+using OlympicWords.Common;
 using OlympicWords.Services.Exceptions;
 using OlympicWords.Services.Extensions;
 using Microsoft.AspNetCore.SignalR;
@@ -19,7 +19,7 @@ namespace OlympicWords.Services
         /// </summary>
         Task FillPendingRoomWithBots(Room room);
 
-        Task MakeRoomUserReadyRpc(ActiveUser activeUser, RoomUser roomUser);
+        Task MakeRoomUserReadyRpc();
         void RemovePendingDisconnectedUser(RoomUser roomUser);
         Task<MatchMaker.MatchRequestResult> RequestMatch(ActiveUser activeUser, string oppoId);
         void CancelChallengeRequest(ActiveUser activeUser);
@@ -31,20 +31,19 @@ namespace OlympicWords.Services
     public class MatchMaker : IMatchMaker
     {
         private readonly IHubContext<MasterHub> masterHub;
-        private readonly IRoomManager roomManager;
+        private readonly IGameplay gameplay;
         private readonly IServerLoop serverLoop;
         private readonly ILogger<MatchMaker> logger;
         private readonly IOfflineRepo offlineRepo;
-        private readonly IOnlineRepo onlineRepo;
+        private readonly IScopeRepo scopeRepo;
 
-        public MatchMaker(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo,
-            IOnlineRepo onlineRepo,
-            IRoomManager roomManager, IServerLoop serverLoop, ILogger<MatchMaker> logger)
+        public MatchMaker(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo, IScopeRepo scopeRepo,
+            IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger)
         {
             this.masterHub = masterHub;
             this.offlineRepo = offlineRepo;
-            this.onlineRepo = onlineRepo;
-            this.roomManager = roomManager;
+            this.scopeRepo = scopeRepo;
+            this.gameplay = gameplay;
             this.serverLoop = serverLoop;
             this.logger = logger;
         }
@@ -66,7 +65,9 @@ namespace OlympicWords.Services
             room.RoomUsers.Add(roomUser);
             room.RoomActors.Add(roomUser);
 
-            RemoveDisconnectedUsers(room);
+            var disconnectedUsers =
+                room.RoomUsers.Where(ru => ru.ActiveUser.IsDisconnected).ToList();
+            disconnectedUsers.ForEach(RemovePendingDisconnectedUser);
 
             if (room.IsFull)
             {
@@ -77,16 +78,8 @@ namespace OlympicWords.Services
             {
                 activeUser.Domain = typeof(UserDomain.App.Lobby.Pending);
                 serverLoop.SetupPendingRoomTimeoutIfNotExist(room);
-                onlineRepo.KeepPendingRoom(room);
+                scopeRepo.KeepPendingRoom(room);
             }
-        }
-
-        private void RemoveDisconnectedUsers(Room room)
-        {
-            var disconnectedUsers =
-                room.RoomUsers.Where(ru => ru.ActiveUser.IsDisconnected).ToList();
-
-            disconnectedUsers.ForEach(_ => RemovePendingDisconnectedUser(_));
         }
 
         /// <summary>
@@ -94,18 +87,18 @@ namespace OlympicWords.Services
         /// </summary>
         public async Task FillPendingRoomWithBots(Room room)
         {
-            room.RoomBots = new();
+            room.Bots = new();
             var botsCount = room.Capacity - room.RoomUsers.Count;
 
-            var botIds = new List<string> {"999", "9999", "99999"};
+            var botIds = new List<string> { "999", "9999", "99999" };
             for (var i = 0; i < botsCount; i++)
             {
                 var botId = botIds.Cut(StaticRandom.GetRandom(botIds.Count));
                 var botIndex = room.Capacity - i - 1; //todo I think I change this later
-                room.RoomBots.Add(new RoomBot(botId, room, botIndex));
+                room.Bots.Add(new RoomBot(botId, room, botIndex));
             }
 
-            room.RoomActors.AddRange(room.RoomBots);
+            room.RoomActors.AddRange(room.Bots);
 
             await PrepareRoom(room);
         }
@@ -135,10 +128,10 @@ namespace OlympicWords.Services
             if (friendship is FriendShip.None or FriendShip.Follower && !oppoUser.EnableOpenMatches)
                 throw new Exceptions.BadUserInputException();
 
-            if (!onlineRepo.IsUserActive(oppoId))
+            if (!scopeRepo.IsUserActive(oppoId))
                 return MatchRequestResult.Offline;
 
-            if (onlineRepo.DoesRoomUserExist(oppoId))
+            if (scopeRepo.DoesRoomUserExist(oppoId))
                 return MatchRequestResult.Playing;
 
             if (oppoUser.Money < Room.MinBet)
@@ -149,7 +142,7 @@ namespace OlympicWords.Services
 
             activeUser.ChallengeRequestTarget = oppoId;
 
-            var oppoAu = onlineRepo.GetActiveUser(oppoId);
+            var oppoAu = scopeRepo.GetActiveUser(oppoId);
             //oppo is 100% active at this satage
 
             await masterHub.SendOrderedAsync(oppoAu, "ChallengeRequest",
@@ -174,10 +167,10 @@ namespace OlympicWords.Services
         public async Task<ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
             bool response, string sender)
         {
-            if (!onlineRepo.IsUserActive(sender))
+            if (!scopeRepo.IsUserActive(sender))
                 return ChallengeResponseResult.Offline;
 
-            var senderActiveUser = onlineRepo.GetActiveUser(sender);
+            var senderActiveUser = scopeRepo.GetActiveUser(sender);
 
             if (senderActiveUser.ChallengeRequestTarget != activeUser.Id)
                 //can be null or he sent to another user after
@@ -185,7 +178,7 @@ namespace OlympicWords.Services
 
             if (!response)
             {
-                await masterHub.SendOrderedAsync(onlineRepo.GetActiveUser(sender),
+                await masterHub.SendOrderedAsync(scopeRepo.GetActiveUser(sender),
                     "RespondChallenge", false);
                 //otherwise start the room
 
@@ -214,15 +207,15 @@ namespace OlympicWords.Services
 
         private Room MakeRoom(int capacityChoice, int category)
         {
-            return onlineRepo.AddRoom(new Room(0, 0, offlineRepo.GetRandomRoomWords(category)));
+            return scopeRepo.AddRoom(new Room(capacityChoice, category, offlineRepo.GetRandomRoomWords(category)));
         }
 
-        public async Task MakeRoomUserReadyRpc(ActiveUser activeUser, RoomUser roomUser)
+        public async Task MakeRoomUserReadyRpc()
         {
-            activeUser.Domain = typeof(UserDomain.App.Lobby.WaitingForOthers);
-            roomUser.IsReady = true;
+            scopeRepo.ActiveUser.Domain = typeof(UserDomain.App.Lobby.WaitingForOthers);
+            scopeRepo.RoomUser.IsReady = true;
 
-            await StartRoomIfAllReady(roomUser.Room);
+            await StartRoomIfAllReady(scopeRepo.Room);
         } //doesn't fit into unit testing
 
         private async Task PrepareRoom(Room room)
@@ -256,17 +249,15 @@ namespace OlympicWords.Services
                 var userInfo = turnSortedUsersInfo[i];
                 foreach (var otherUser in turnSortedUsersInfo.Where(u => u != userInfo))
                     otherUser.Friendship =
-                        (int) offlineRepo.GetFriendship(userInfo.Id, otherUser.Id);
+                        (int)offlineRepo.GetFriendship(userInfo.Id, otherUser.Id);
 
+                if (room.RoomActors[i] is not RoomUser ru) continue;
 
-                if (room.RoomActors[i] is RoomUser ru)
-                {
-                    var task = masterHub.SendOrderedAsync(ru.ActiveUser, "PrepareRequestedRoomRpc",
-                        room.Category, room.CapacityChoice, turnSortedUsersInfo, i);
-                    //changes in the same room when he disconnect
+                var task = masterHub.SendOrderedAsync(ru.ActiveUser,
+                    "PrepareRequestedRoomRpc", turnSortedUsersInfo, i, room.Text);
+                //changes in the same room when he disconnect
 
-                    tasks.Add(task);
-                }
+                tasks.Add(task);
             }
 
             await Task.WhenAll(tasks);
@@ -274,24 +265,24 @@ namespace OlympicWords.Services
 
         private Room TakeOrCreateAppropriateRoom(int category, int capacityChoice)
         {
-            return onlineRepo.TakePendingRoom(category, capacityChoice) ??
-                   onlineRepo.AddRoom(MakeRoom(category, capacityChoice));
+            return scopeRepo.TakePendingRoom(category, capacityChoice) ??
+                   MakeRoom(category, capacityChoice);
         }
 
         private RoomUser CreateRoomUser(ActiveUser activeUser, Room room)
         {
-            var roomUser = new RoomUser(activeUser.Id, room, -1, activeUser.ConnectionId);
-            onlineRepo.AddRoomUser(roomUser);
+            var roomUser = new RoomUser(activeUser.Id, room, -1, activeUser);
+            scopeRepo.AddRoomUser(roomUser);
             return roomUser;
         }
 
         private async Task StartRoomIfAllReady(Room room)
         {
             var readyUsersCount = room.RoomUsers.Count(u => u.IsReady);
-            if (readyUsersCount == room.RoomUsers.Count) //bots doesn't have ready prop
+            if (readyUsersCount == room.RoomUsers.Count) //bots don't ready
             {
                 serverLoop.CancelForceStart(room);
-                await roomManager.StartRoom(room);
+                await gameplay.StartRoom();
             }
         }
 
@@ -305,10 +296,10 @@ namespace OlympicWords.Services
             if (roomUser.Room.RoomUsers.Count == 0) //maybe the remaining are bots, or non
             {
                 serverLoop.CancelPendingRoomTimeout(roomUser.Room);
-                onlineRepo.DeleteRoom(roomUser.Room);
+                scopeRepo.DeleteRoom();
             }
 
-            onlineRepo.DeleteRoomUser(roomUser);
+            scopeRepo.RemoveRoomUser();
 
             roomUser.InRoom = false;
         }

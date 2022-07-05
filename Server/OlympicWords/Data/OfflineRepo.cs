@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Basra.Common;
+using OlympicWords.Common;
 using Microsoft.EntityFrameworkCore;
 using OlympicWords.Services.Helpers;
 
@@ -19,6 +19,7 @@ namespace OlympicWords.Services
         Task<User> GetUserByEIdAsync(string eId, int eIdType);
 
         Task<User> GetUserByIdAsyc(string id);
+        Task<User> GetCurrentUser();
 
         // void MarkAllUsersNotActive();
         Task<bool> SaveChangesAsync();
@@ -47,7 +48,7 @@ namespace OlympicWords.Services
         FriendShip GetFriendship(string userId, string targetId);
         Task CreateExternalId(ExternalId externalId);
 
-        string[] GetRandomRoomWords(int category);
+        string GetRandomRoomWords(int category);
     }
 
     /// <summary>
@@ -57,20 +58,48 @@ namespace OlympicWords.Services
     public partial class OfflineRepo : IOfflineRepo
     {
         private readonly MasterContext context;
+        private readonly IScopeRepo scopeRepo;
 
-        public OfflineRepo(MasterContext context)
+        public async Task<User> GetCurrentUser()
         {
-            this.context = context;
+            if (user != null)
+                return user;
+
+            user = await GetUserByIdAsyc(scopeRepo.ActiveUser.Id);
+
+            return user;
         }
 
-        public string[] GetRandomRoomWords(int category)
+        private User user;
+
+        public OfflineRepo(MasterContext context, IScopeRepo scopeRepo)
         {
-            return new string[]
-            {
-                "this is a first room category possible words",
-                "this is a second room category possible words",
-                "this is a third room category possible words",
-            }[category].Split();
+            this.context = context;
+            this.scopeRepo = scopeRepo;
+        }
+
+        // private string[] testSentences =
+        // {
+        //     "He swung back the fishing pole and cast the line which ell 25 feet away into the river. The lure landed in the perfect spot and he was sure he would soon get a bite. He never expected that the bite would come from behind in the form of a bear.",
+        //     "There was nothing to indicate Nancy was going to change the world. She looked like an average girl going to an average high school. It was the fact that everything about her seemed average that would end up becoming her superpower.",
+        //     "Twenty-five stars were neatly placed on the piece of paper. There was room for five more stars but they would be difficult ones to earn. It had taken years to earn the first twenty-five, and they were considered the easy ones.",
+        //     "The lone lamp post of the one-street town flickered, not quite dead but definitely on its way out. Suitcase by her side, she paid no heed to the light, the street or the town. A car was coming down the street and with her arm outstretched and thumb in the air, she had a plan.",
+        //     "Bryan h ad made peace with himself and felt comfortable with the choices he made. This had made all the difference in the world. Being alone no longer bothered him and this was essential since there was a good chance he might spend the rest of his life alone in a cell.",
+        // };
+        //
+        private string[] testSentences =
+        {
+            "He swung back the fishing pole and cast the line which ell 25 feet away into the river.",
+            "There was nothing to indicate Nancy was going to change the world.",
+            "Twenty-five stars were neatly placed on the piece of paper.",
+            "The lone lamp post of the one-street town flickered.",
+            "Bryan had made peace with himself and felt comfortable with the choices he made.",
+        };
+
+
+        public string GetRandomRoomWords(int category)
+        {
+            return testSentences[StaticRandom.GetRandom(testSentences.Length)];
         }
 
         public async Task<bool> SaveChangesAsync()
@@ -138,9 +167,9 @@ namespace OlympicWords.Services
         public void ToggleFollow(string userId, string targetId)
         {
             if (IsFollower(userId, targetId)) //unfollow
-                context.Remove(new UserRelation {FollowerId = userId, FollowingId = targetId});
+                context.Remove(new UserRelation { FollowerId = userId, FollowingId = targetId });
             else //follow
-                context.Add(new UserRelation {FollowerId = userId, FollowingId = targetId});
+                context.Add(new UserRelation { FollowerId = userId, FollowingId = targetId });
         }
 
         /// <summary>

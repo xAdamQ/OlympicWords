@@ -17,13 +17,13 @@ namespace Tests
         public CustomWebApplicationFactory(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
+
+            xUnitLoggerProvider = new XUnitLoggerProvider(_testOutputHelper);
+            Logger = xUnitLoggerProvider.CreateLogger("server log");
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            xUnitLoggerProvider = new XUnitLoggerProvider(_testOutputHelper);
-            Logger = xUnitLoggerProvider.CreateLogger("server log");
-
             // Register the xUnit logger
             builder.ConfigureLogging(loggingBuilder =>
             {

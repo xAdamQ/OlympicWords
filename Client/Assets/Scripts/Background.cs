@@ -5,21 +5,8 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
-public class Background : MonoBehaviour
+public class Background : MonoModule<Background>
 {
-    public static Background I;
-
-    /// <summary>
-    /// because of the parent, it's destroyed with module group
-    /// </summary>
-    public static async UniTask Create()
-    {
-        I = (await Addressables.InstantiateAsync("background")).GetComponent<Background>();
-
-        I.GetComponent<Canvas>().worldCamera = Camera.main;
-        I.transform.SetSiblingIndex(0);
-    }
-
     /// <summary>
     /// uses RoomController
     /// </summary>

@@ -99,11 +99,8 @@ public class FullUserView : MinUserView
         moneyText.text = fullUserInfo.Money.ToString();
         playedRoomsText.text = fullUserInfo.PlayedRoomsCount.ToString();
         wonRoomsText.text = fullUserInfo.WonRoomsCount.ToString();
-        eatenCardsText.text = fullUserInfo.EatenCardsCount.ToString();
         winStreakText.text = fullUserInfo.WinStreak.ToString();
         maxWinStreakText.text = fullUserInfo.MaxWinStreak.ToString();
-        basrasText.text = fullUserInfo.BasraCount.ToString();
-        bigBasrasText.text = fullUserInfo.BigBasraCount.ToString();
         winRatioText.text = fullUserInfo.WinRatio.ToString("p2");
         totalEarnedMoney.text = fullUserInfo.TotalEarnedMoney.ToString();
 
@@ -117,11 +114,11 @@ public class FullUserView : MinUserView
 
         UniTask.Create(async () =>
         {
-            var res = await Controller.I.InvokeAsync<MatchRequestResult>("RequestMatch", Id);
+            var res = await NetManager.I.InvokeAsync<MatchRequestResult>("RequestMatch", Id);
 
             if (res == MatchRequestResult.Available)
                 BlockingPanel.Show("a challenge request is sent to the player",
-                        () => Controller.I.Send("CancelChallengeRequest"))
+                        () => NetManager.I.Send("CancelChallengeRequest"))
                     .Forget(e => throw e);
             else
                 Toast.I.Show(res.ToString());
@@ -132,7 +129,7 @@ public class FullUserView : MinUserView
     {
         UniTask.Create(async () =>
         {
-            await Controller.I.SendAsync("ToggleFollow", Id);
+            await NetManager.I.SendAsync("ToggleFollow", Id);
 
             switch (FullUserInfo.Friendship)
             {
@@ -179,7 +176,7 @@ public class FullUserView : MinUserView
     {
         UniTask.Create(async () =>
         {
-            await Controller.I.SendAsync("ToggleOpenMatches");
+            await NetManager.I.SendAsync("ToggleOpenMatches");
             FullUserInfo.EnableOpenMatches = !FullUserInfo.EnableOpenMatches;
             UpdateOpenMatchesView();
         });
