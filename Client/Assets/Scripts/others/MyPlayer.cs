@@ -3,26 +3,21 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MyPlayer : PlayerBase
+public abstract class MyPlayerBase : PlayerBase
 {
-    void Update()
-    {
-        // animator.SetTrigger("jump");
-    }
-
     private void Start()
     {
-        Gameplay.I.OnGameFinished += onGameFinished;
+        EnvBase.I.OnGameFinished += onGameFinished;
         Keyboard.current.onTextInput += onTextInput;
     }
 
     private void onTextInput(char c)
     {
         NetManager.I.StreamChar(c);
-        TakeDigit(c);
+        TakeInput(c);
 
         if (IsLastDigit())
-            Gameplay.I.FinishGame();
+            EnvBase.I.FinishGame();
 
         Debug.Log($"{WordDigitIndex}");
     }
@@ -38,19 +33,19 @@ public class MyPlayer : PlayerBase
         Keyboard.current.onTextInput -= onTextInput;
     }
 
-    protected override void JumpStair()
+    protected override void JumpWord()
     {
-        base.JumpStair();
+        base.JumpWord();
 
         var camera = Camera.main;
 
-        if (Gameplay.I.useConnected)
+        if (StairEnv.I.useConnected)
             lastMoveTween.OnUpdate(() => camera!.transform.LookAt(transform));
 
         lastMoveTween.OnComplete(() =>
         {
             camera!.GetComponent<CameraFollow>().Follow();
-            if (Gameplay.I.useConnected)
+            if (StairEnv.I.useConnected)
                 camera!.transform.LookAt(transform);
         });
     }

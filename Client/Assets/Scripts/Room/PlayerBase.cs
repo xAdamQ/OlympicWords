@@ -7,6 +7,9 @@ using UnityEngine;
 public abstract class PlayerBase : MonoBehaviour
 {
     public float StartTime;
+    public int totalDigitsCount = 1;
+
+    protected EnvBase Env;
 
     public void Init(int index)
     {
@@ -15,50 +18,33 @@ public abstract class PlayerBase : MonoBehaviour
         // sprite => BackSprite = sprite);
 
         Index = index;
-        transform.position = GetRelativeStairPoz(CurrentStair.transform);
-        transform.eulerAngles = GetRelativeStairAngle(CurrentStair.transform);
 
         //todo if you changed the start to 3 2 1 go, then don't call this here
         StartTime = Time.time;
     }
 
-    private Vector3 GetRelativeStairPoz(Transform stairTransform)
-    {
-        return stairTransform.position + Vector3.up * .1f
-               - stairTransform.right * stairTransform.localScale.x * .5f
-               + stairTransform.forward * stairTransform.localScale.z * .25f;
-    }
 
-    private Vector3 GetRelativeStairAngle(Transform stairTransform)
-    {
-        return new Vector3(0, stairTransform.transform.eulerAngles.y + 90, 0);
-    }
-
-
-    private int Index;
+    protected int Index;
     public int CurrentWordIndex;
-    private Stair CurrentStair => Gameplay.I.stairs[Index][CurrentWordIndex];
 
     [SerializeField] protected Animator animator;
     private static readonly int Jump = Animator.StringToHash("jump");
 
     protected int WordDigitIndex;
-    public int DoneDigitsCount = 1;
 
     protected bool IsLastDigit()
     {
-        return CurrentWordIndex == RoomController.I.Words.Length - 1 &&
-               WordDigitIndex == CurrentStair.Word.Length;
+        return CurrentWordIndex == RoomController.I.Words.Length - 1 && CurrentDigit == ' ';
     }
 
-    private char CurrentDigit => WordDigitIndex < CurrentStair.Word.Length
-        ? CurrentStair.Word[WordDigitIndex]
-        : ' ';
+    private char CurrentDigit => Env.GetDigitAt(CurrentWordIndex, WordDigitIndex);
+    private Vector3 CurrentDigitPosition => Env.GetDigitPozAt(CurrentWordIndex, WordDigitIndex);
+    private Vector3 CurrentDigitRotation => Env.GetDigitRotAt(CurrentWordIndex, WordDigitIndex);
 
     public event System.Action OnMovingDigit;
     //current digit index, total digits count    
 
-    protected void TakeDigit(char digit)
+    public virtual void TakeInput(char digit)
     {
         if (digit != CurrentDigit) return;
 
@@ -70,49 +56,46 @@ public abstract class PlayerBase : MonoBehaviour
 
         if (CurrentDigit == ' ')
         {
-            JumpStair();
+            JumpWord();
             return;
         }
 
         OnMovingDigit?.Invoke();
 
-        var targetPoz = transform.position + transform.forward;
+        MoveADigit();
+
+        WordDigitIndex++;
+        totalDigitsCount++;
+    }
+
+    //target pos is always known in the env
+    //you need to pass a function to resolve the next pos
+    //you just need digit positions
+    protected virtual void MoveADigit()
+    {
+        // var targetPoz = transform.position + transform.forward;
+        var targetPoz = Env.GetDigitPozAt(CurrentWordIndex, WordDigitIndex);
         var middlePoz = Vector3.Lerp(transform.position, targetPoz, .5f) + Vector3.up * 1f;
         var path = new[] { transform.position, middlePoz, targetPoz };
 
         lastMoveTween = transform.DOPath(path, .2F, PathType.CatmullRom);
-
-        var lowStep = Gameplay.I.spacing.y / CurrentStair.Word.Length;
-
-        if (Gameplay.I.moveSteps)
-            stepMoveTween = CurrentStair.transform.DOBlendableMoveBy(Vector3.down * lowStep, .2f)
-                .OnUpdate(() => transform.position = new Vector3(transform.position.x,
-                    CurrentStair.transform.position.y,
-                    transform.position.z));
-
-        WordDigitIndex++;
-        DoneDigitsCount++;
     }
 
+
     protected TweenerCore<Vector3, Path, PathOptions> lastMoveTween;
-    private TweenerCore<Quaternion, Vector3, QuaternionOptions> lastRotateTween;
-    private Tweener stepMoveTween;
+    protected TweenerCore<Quaternion, Vector3, QuaternionOptions> lastRotateTween;
+    protected Tweener stepMoveTween;
 
-    protected virtual void JumpStair()
+    protected virtual void JumpWord()
     {
-        CurrentStair.GetComponent<Renderer>().material
-            .DOFade(Gameplay.I.fadeStepValue, Gameplay.I.fadeStepTime);
-        foreach (Transform digit in CurrentStair.transform)
-            digit.GetComponent<Renderer>().material.DOFade(Gameplay.I.fadeStepValue, Gameplay.I.fadeStepTime);
-
         CurrentWordIndex++;
         WordDigitIndex = 0;
 
-        var targetPoz = GetRelativeStairPoz(CurrentStair.transform);
+        var targetPoz = CurrentDigitPosition;
         var middlePoz = Vector3.Lerp(transform.position, targetPoz, .5f) + Vector3.up * 1f;
         var path = new[] { transform.position, middlePoz, targetPoz };
 
-        lastRotateTween = transform.DORotate(GetRelativeStairAngle(CurrentStair.transform), .2f);
+        lastRotateTween = transform.DORotate(CurrentDigitRotation, .2f);
         lastMoveTween = transform.DOPath(path, .2F, PathType.CatmullRom);
     }
 
@@ -130,6 +113,4 @@ public abstract class PlayerBase : MonoBehaviour
         "top eater",
         "top eater",
     };
-
-    public abstract void TakeInput(char chr);
 }

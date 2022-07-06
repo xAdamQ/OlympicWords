@@ -54,18 +54,11 @@ public class NetManager : MonoModule<NetManager>
         Debug.Log(i);
     }
 
-    private void DigitsReceived(List<char>[] value)
+    private void DigitsReceived(List<char>[] playerBuffers)
     {
-        // Debug.Log(
-        // $"received digits {JsonConvert.SerializeObject(value, Formatting.None)}");
-
-        for (var p = 0; p < value.Length; p++)
-        {
-            foreach (var digit in value[p])
-            {
-                Gameplay.I.Players[p].TakeInput(digit);
-            }
-        }
+        for (var p = 0; p < playerBuffers.Length; p++)
+            foreach (var digit in playerBuffers[p])
+                EnvBase.I.Players[p].TakeInput(digit);
     }
 
     private void UpStream()
@@ -154,7 +147,7 @@ public class NetManager : MonoModule<NetManager>
             ReconnectPolicy = myReconnectPolicy,
         };
 
-        
+
         // AssignGeneralRpcs();
 
         //I don't have this term "authentication" despite I make token authentication

@@ -47,7 +47,7 @@ public class CameraFollow : MonoBehaviour
 
         transform.DOMove(finalPosition, animTime).OnUpdate(() =>
         {
-            if (Gameplay.I.useConnected) transform.LookAt(target);
+            if (StairEnv.I.useConnected) transform.LookAt(target);
         });
 
         yield return new WaitForSeconds(animTime);

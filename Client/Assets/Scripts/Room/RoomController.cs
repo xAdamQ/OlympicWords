@@ -89,7 +89,7 @@ public class RoomController : MonoModule<RoomController>
     {
         Debug.Log("room should start");
 
-        Gameplay.I.BeginGame();
+        EnvBase.I.BeginGame();
 
         NetManager.I.StartStreaming();
 

@@ -43,7 +43,7 @@ public class Finalizer : MonoModule<Finalizer>
         UniTask.Create(async () =>
         {
             for (var i = 0; i < RoomController.I.UserInfos.Count; i++)
-                FinalMuvs[i] = await FinalMuv.Create(RoomController.I.UserInfos[i], Gameplay.I.Players[i], transform);
+                FinalMuvs[i] = await FinalMuv.Create(RoomController.I.UserInfos[i], EnvBase.I.Players[i], transform);
 
             FinalMuvs[RoomController.I.MyTurn].SetFinal(myUserRoomStatus);
             FinishedUsersStatus.ForEach(rs => FinalMuvs[rs.index].SetFinal(rs.status));
