@@ -35,12 +35,12 @@ public static partial class Extensions
         list.AddRange(args);
     }
 
-    public static void ForEach<T>(this T[] array, System.Action<T> action)
+    public static void ForEach<T>(this IEnumerable<T> array, Action<T> action)
     {
         foreach (var item in array) action(item);
     }
 
-    public static async UniTask LoadAndReleaseAsset<T>(string key, System.Action<T> onComplete)
+    public static async UniTask LoadAndReleaseAsset<T>(string key, Action<T> onComplete)
     {
         var handle = Addressables.LoadAssetAsync<T>(key);
 
@@ -168,5 +168,15 @@ public static partial class Extensions
     public static Vector2 TakeXZ(this Vector3 vector3)
     {
         return new Vector2(vector3.x, vector3.z);
+    }
+    
+    public static Vector3 XYInXZ(this Vector2 vector)
+    {
+        return new Vector3(vector.x, 0, vector.y);
+    }
+
+    public static int Sign(this float number)
+    {
+        return number >= 0 ? 1 : -1;
     }
 }

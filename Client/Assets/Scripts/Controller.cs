@@ -18,13 +18,6 @@ using Object = UnityEngine.Object;
 using Newtonsoft.Json;
 #endif
 
-public interface IController : IGameObject
-{
-    Transform canvas { get; set; }
-    void TstStartClient(string id);
-    UniTask<FullUserInfo> GetPublicFullUserInfo(string userId);
-    UniTask RequestRandomRoom(int betChoice, int capacityChoice);
-}
 
 [Rpc]
 public class Controller : MonoModule<Controller>
@@ -36,12 +29,14 @@ public class Controller : MonoModule<Controller>
 
     public Transform canvas { get; set; }
 
+    [SerializeField] private int targetFps;
+    
     protected override void Awake()
     {
         base.Awake();
 
 #if UNITY_EDITOR
-        Application.targetFrameRate = 165;
+        Application.targetFrameRate = targetFps;
 #endif
 
         DontDestroyOnLoad(this);

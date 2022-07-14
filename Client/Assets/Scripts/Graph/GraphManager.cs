@@ -1,30 +1,34 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.EditorCoroutines.Editor;
 using UnityEngine;
 using Wintellect.PowerCollections;
+using Random = UnityEngine.Random;
 
 public class GraphManager
 {
-    public static List<int> GetRandomPath(GraphData graphData)
+    public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData)
     {
         var nodesEdges = GetNodeEdges(graphData);
         var remainingEdges = graphData.Edges.ToList();
-        var path = new List<int>();
+        var path = new List<(int, bool)>();
 
         var startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom();
         var finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
 
-        //removing start edge will disjoint the graph, and prevent removing the finish branch
-        removeEdge(startEdge);
-
         var startNode = startEdge.Start == finishNode ? startEdge.End : startEdge.Start;
 
-        path.Add(startNode);
-        path.Add(finishNode);
+        path.Add((startNode, startEdge.Type == 0));
+        path.Add((finishNode, startEdge.Type == 0));
 
-        getBranches(startNode).ForEach(b => b.edges.ForEach(removeEdge));
+        //removing start edge will disjoint the graph, and prevent removing the finish branch
+        if (getBranches(finishNode).Count == 2)
+            removeEdge(startEdge);
+
         //remove all branches from start node
+        getBranches(startNode).ForEach(b => b.edges.ForEach(removeEdge));
+
         while (true)
         {
             if (remainingEdges.Count == 0)
@@ -45,32 +49,14 @@ public class GraphManager
             //delete all branches
             branches.ForEach(b => b.edges.ForEach(removeEdge));
 
-            // var lastEdgeIndex = chosenBranch.edges.Count - 1;
-            // if (chosenBranch.looping) lastEdgeIndex--; //skip last edge if looping
-            // var lastEdge = chosenBranch.edges[lastEdgeIndex];
-            //
-            // int lastEdgeStartNode;
-            // if (chosenBranch.edges.Count == 1)
-            // {
-            //     lastEdgeStartNode = finishNode;
-            // }
-            // else
-            // {
-            //     //don't worry about loops, they has at least 3 edges
-            //
-            //     var prevEdge = chosenBranch.edges[lastEdgeIndex - 1];
-            //     lastEdgeStartNode = new Set<int> { prevEdge.Start, prevEdge.End }.Intersection(new Set<int> { lastEdge.Start, lastEdge.End }).First();
-            // }
-
-            // finishNode = GetOtherEnd(lastEdge, lastEdgeStartNode);
-            // for (var i = 0; i <= lastEdgeIndex; i++) path.Add(chosenBranch.sequence[i]);
-            path.AddRange(chosenBranch.sequence);
-
+            path.AddRange(chosenBranch.sequence.Select((n, i) => (n, chosenBranch.edges[i].Type == 0)));
+            
+            
             if (chosenBranch.looping)
             {
-                Debug.Log("ended with loop");
+                // Debug.Log("ended with loop");
                 path.RemoveAt(path.Count - 1);
-                break;
+                // break;
             }
 
             finishNode = chosenBranch.sequence.Last();
@@ -121,18 +107,11 @@ public class GraphManager
         }
     }
 
-    public static void StandardizePath(List<Edge> edges)
-    {
-        for (var i = 0; i < edges.Count; i++)
-        {
-        }
-    }
-
     private static int GetOtherEnd(Edge edge, int otherEnd) => edge.Start == otherEnd ? edge.End : edge.Start;
 
     private static Dictionary<int, List<Edge>> GetNodeEdges(GraphData graphData)
     {
-        var nodeEdges = Enumerable.Range(0, graphData.Nodes.Count).ToDictionary(i => i, _ => new List<Edge>());
+          var  nodeEdges = Enumerable.Range(0, graphData.Nodes.Count).ToDictionary(i => i, _ => new List<Edge>());
 
         foreach (var edge in graphData.Edges)
         {

@@ -10,15 +10,18 @@ public abstract class EnvBase : MonoBehaviour
     [SerializeField] protected GameObject
         myPlayerPrefab,
         oppoPlayerPrefab,
-        endPlanPrefab,
         digitPrefab;
 
+    public Material wordHighlightMat, digitHighlightMat;
+    
     /////////////// SERIALIZED FIELDS
-    [HideInInspector] public List<string> words;
+    protected List<string> words;
     protected int capacity;
-    [SerializeField] private Material BaseMaterial;
+    public Material BaseMaterial;
 
     [SerializeField] private Mesh[] DigitModels;
+
+    protected Mesh GetDigitMesh(char digit) => DigitModels[digit - 'a'];
 
     public char GetDigitAt(int wordIndex, int digitIndex)
     {
@@ -28,7 +31,9 @@ public abstract class EnvBase : MonoBehaviour
 
     public abstract Vector3 GetDigitPozAt(int wordIndex, int digitIndex);
     public abstract Vector3 GetDigitRotAt(int wordIndex, int digitIndex);
-
+    public abstract GameObject[] GetWordObjects(int wordIndex);
+    // public abstract void MyPlayerMoveADigit(int wordIndex, int digitIndex);
+    
     protected virtual void Awake()
     {
         I = this;
@@ -39,14 +44,32 @@ public abstract class EnvBase : MonoBehaviour
         NetManager.I.AddRpcContainer(this);
 
         capacity = RoomController.I.Capacity;
-        words = RoomController.I.Words.ToList();
+        words = RoomController.I.Words.Select(w=>w.ToLower()).ToList();
 
         MakePlayersColorPalette();
 
         CreatePlayers();
+        
+        GenerateDigits();
+        
+        SetPlayersStartPoz();
+        
+        SetCameraFollow();
     }
 
-    protected abstract void GenerateDigitsModels(string word, Stair stair);
+    private void SetCameraFollow()
+    {
+        MyPlayer.InstantCameraFollow();
+        MyPlayer.CameraFollow();
+    }
+
+    private void SetPlayersStartPoz()
+    {
+        Players.ForEach(p=>p.transform.position = GetDigitPozAt(0, 0));
+        Players.ForEach(p=>p.transform.eulerAngles = GetDigitRotAt(0, 0));
+    }
+    
+    protected abstract void GenerateDigits();
 
     public Material[] PlayerMats;
 
@@ -92,9 +115,7 @@ public abstract class EnvBase : MonoBehaviour
 
                 Players.Add(MyPlayer);
 
-                var cameraFollow = Camera.main!.GetComponent<CameraFollow>();
-                cameraFollow.target = MyPlayer.transform;
-                cameraFollow.InstantFollow();
+
             }
             else
             {

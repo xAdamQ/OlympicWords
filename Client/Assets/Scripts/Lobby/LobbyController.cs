@@ -33,8 +33,8 @@ public class LobbyController : MonoModule<LobbyController>
 
         Controller.I.AddTransitionData(nameof(roomArgs), roomArgs);
 
-        SceneManager.LoadScene("Room");
-        SceneManager.LoadScene("Demo 1", LoadSceneMode.Additive);
+        SceneManager.LoadScene("RoomBase");
+        SceneManager.LoadScene("Env" + RoomRequester.LastRequest.betChoice, LoadSceneMode.Additive);
     }
 
     [Rpc]

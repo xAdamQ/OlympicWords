@@ -1,15 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Core.PathCore;
 using DG.Tweening.Plugins.Options;
+using TMPro;
 using UnityEngine;
 
 public abstract class PlayerBase : MonoBehaviour
 {
-    public float StartTime;
-    public int totalDigitsCount = 1;
-
-    protected EnvBase Env;
+    public float startTime;
 
     public void Init(int index)
     {
@@ -19,38 +19,40 @@ public abstract class PlayerBase : MonoBehaviour
 
         Index = index;
 
+        nameText.text = "player " + index;
+
         //todo if you changed the start to 3 2 1 go, then don't call this here
-        StartTime = Time.time;
+        startTime = Time.time;
     }
 
 
     protected int Index;
-    public int CurrentWordIndex;
+    public int wordIndex;
+
+    [SerializeField] private TMP_Text nameText;
 
     [SerializeField] protected Animator animator;
     private static readonly int Jump = Animator.StringToHash("jump");
 
-    protected int WordDigitIndex;
+    protected int DigitIndex;
 
     protected bool IsLastDigit()
     {
-        return CurrentWordIndex == RoomController.I.Words.Length - 1 && CurrentDigit == ' ';
+        return wordIndex == RoomController.I.Words.Length - 1 && CurrentDigit == ' ';
     }
 
-    private char CurrentDigit => Env.GetDigitAt(CurrentWordIndex, WordDigitIndex);
-    private Vector3 CurrentDigitPosition => Env.GetDigitPozAt(CurrentWordIndex, WordDigitIndex);
-    private Vector3 CurrentDigitRotation => Env.GetDigitRotAt(CurrentWordIndex, WordDigitIndex);
+    protected char CurrentDigit => EnvBase.I.GetDigitAt(wordIndex, DigitIndex);
 
-    public event System.Action OnMovingDigit;
-    //current digit index, total digits count    
+    public event System.Action<int, int> MovedADigit;
+    public event System.Action<int> MovedAWord;
 
-    public virtual void TakeInput(char digit)
+    public void TakeInput(char digit)
     {
-        if (digit != CurrentDigit) return;
+        if (char.ToLower(digit) != CurrentDigit) return;
 
-        lastMoveTween.SkipTween();
-        lastRotateTween.SkipTween();
-        stepMoveTween.SkipTween();
+        LastMoveTween.SkipTween();
+        LastRotateTween.SkipTween();
+        StepMoveTween.SkipTween();
 
         animator.SetTrigger(Jump);
 
@@ -59,51 +61,75 @@ public abstract class PlayerBase : MonoBehaviour
             JumpWord();
             return;
         }
-
-        OnMovingDigit?.Invoke();
-
+        
         MoveADigit();
 
-        WordDigitIndex++;
-        totalDigitsCount++;
+        MovedADigit?.Invoke(wordIndex, DigitIndex);
     }
 
+    protected Vector3 MovePozWithLinearY;
+    private Vector3[] currentPath;
+
+    private const float MOVE_TIME = .2f;
+
+    private void JumpToTarget()
+    {
+        var targetPoz = EnvBase.I.GetDigitPozAt(wordIndex, DigitIndex);
+        
+        var upVector = Vector3.up * Vector3.Distance(transform.position, targetPoz) * .5f;
+        var middlePoint = Vector3.Lerp(transform.position, targetPoz, .5f);
+        
+        var middlePoz = middlePoint + upVector;
+                        
+        currentPath = new[] { transform.position, middlePoz, targetPoz };
+        
+        LastMoveTween = transform.DOPath(currentPath, .2F, PathType.CatmullRom)
+            .OnUpdate(()=>StartCoroutine(SetLinearY()));
+        LastRotateTween = transform.DORotate(EnvBase.I.GetDigitRotAt(wordIndex, DigitIndex), .2f);
+    }
+    
     //target pos is always known in the env
     //you need to pass a function to resolve the next pos
     //you just need digit positions
-    protected virtual void MoveADigit()
+    private void MoveADigit()
     {
-        // var targetPoz = transform.position + transform.forward;
-        var targetPoz = Env.GetDigitPozAt(CurrentWordIndex, WordDigitIndex);
-        var middlePoz = Vector3.Lerp(transform.position, targetPoz, .5f) + Vector3.up * 1f;
-        var path = new[] { transform.position, middlePoz, targetPoz };
+        JumpToTarget();
+        DigitIndex++;
+    }
 
-        lastMoveTween = transform.DOPath(path, .2F, PathType.CatmullRom);
+    private IEnumerator SetLinearY()
+    {
+        var framesCount = MOVE_TIME / Time.fixedDeltaTime;
+        var part = 1 / framesCount;
+        var startPoint = currentPath[0];
+        var endPoint = currentPath[^1];
+        for (var i = 0; i < framesCount; i++)
+        {
+            MovePozWithLinearY = Vector3.Lerp(startPoint, endPoint, i * part);
+            yield return new WaitForFixedUpdate();
+        }
     }
 
 
-    protected TweenerCore<Vector3, Path, PathOptions> lastMoveTween;
-    protected TweenerCore<Quaternion, Vector3, QuaternionOptions> lastRotateTween;
-    protected Tweener stepMoveTween;
+    protected TweenerCore<Vector3, Path, PathOptions> LastMoveTween;
+    protected TweenerCore<Quaternion, Vector3, QuaternionOptions> LastRotateTween;
+    protected Tweener StepMoveTween;
 
     protected virtual void JumpWord()
     {
-        CurrentWordIndex++;
-        WordDigitIndex = 0;
-
-        var targetPoz = CurrentDigitPosition;
-        var middlePoz = Vector3.Lerp(transform.position, targetPoz, .5f) + Vector3.up * 1f;
-        var path = new[] { transform.position, middlePoz, targetPoz };
-
-        lastRotateTween = transform.DORotate(CurrentDigitRotation, .2f);
-        lastMoveTween = transform.DOPath(path, .2F, PathType.CatmullRom);
+        wordIndex++;
+        DigitIndex = 0;
+        
+        JumpToTarget();
+        
+        MovedAWord?.Invoke(wordIndex);
     }
 
     public static string[] Titles =
     {
         "Basra Player", //all take this because the feature is not implemented yet
         "piece of skill",
-        "holy hanaka",
+        "holy son",
         "basra grandmaster",
         "top eater",
         "top eater",

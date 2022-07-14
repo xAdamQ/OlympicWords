@@ -16,34 +16,42 @@ public class StairEnv : EnvBase
     public Vector3 spacing;
 
 
-    protected override void GenerateDigitsModels(string word, Stair stair)
+    // protected override void GenerateDigits(string word, Stair stair)
+    // {
+    //     //digits
+    //     for (var d = 0; d < word.Length; d++)
+    //     {
+    //         var digitPoz = useRepetition
+    //             ? Vector3.right * d + Vector3.up * .1f
+    //             : Vector3.right * (-.5f + (d + .5f) / word.Length) + Vector3.up * 6f;
+    //
+    //         var digit = Instantiate(digitPrefab, stair.transform);
+    //         //the y scale of the stair is not related to digit y because digit is rotated
+    //         digit.transform.localScale =
+    //             new Vector3(1 / stair.transform.localScale.x, 1 / stair.transform.localScale.z, 1);
+    //         digit.transform.localPosition = digitPoz;
+    //         digit.GetComponent<TextMesh>().text = word[d].ToString();
+    //     }
+    //
+    //     stair.Word = word;
+    // }
+
+
+    public override GameObject[] GetWordObjects(int wordIndex)
     {
-        //digits
-        for (var d = 0; d < word.Length; d++)
-        {
-            var digitPoz = useRepetition
-                ? Vector3.right * d + Vector3.up * .1f
-                : Vector3.right * (-.5f + (d + .5f) / word.Length) + Vector3.up * 6f;
-
-            var digit = Instantiate(digitPrefab, stair.transform);
-            //the y scale of the stair is not related to digit y because digit is rotated
-            digit.transform.localScale =
-                new Vector3(1 / stair.transform.localScale.x, 1 / stair.transform.localScale.z, 1);
-            digit.transform.localPosition = digitPoz;
-            digit.GetComponent<TextMesh>().text = word[d].ToString();
-        }
-
-        stair.Word = word;
+        throw new NotImplementedException();
     }
 
-
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         I = this;
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+        
         for (var i = 0; i < capacity; i++)
             stairs.Add(new List<Stair>());
 
@@ -61,25 +69,30 @@ public class StairEnv : EnvBase
         }
     }
 
-    private void GenerateDigits(string word, Stair stair)
+    protected override void GenerateDigits()
     {
-        //digits
-        for (var d = 0; d < word.Length; d++)
-        {
-            var digitPoz = useRepetition
-                ? Vector3.right * d + Vector3.up * .1f
-                : Vector3.right * (-.5f + (d + .5f) / word.Length) + Vector3.up * 6f;
-
-            var digit = Instantiate(digitPrefab, stair.transform);
-            //the y scale of the stair is not related to digit y because digit is rotated
-            digit.transform.localScale =
-                new Vector3(1 / stair.transform.localScale.x, 1 / stair.transform.localScale.z, 1);
-            digit.transform.localPosition = digitPoz;
-            digit.GetComponent<TextMesh>().text = word[d].ToString();
-        }
-
-        stair.Word = word;
+        throw new NotImplementedException();
     }
+
+    // private void GenerateDigits(string word, Stair stair)
+    // {
+    //     //digits
+    //     for (var d = 0; d < word.Length; d++)
+    //     {
+    //         var digitPoz = useRepetition
+    //             ? Vector3.right * d + Vector3.up * .1f
+    //             : Vector3.right * (-.5f + (d + .5f) / word.Length) + Vector3.up * 6f;
+    //
+    //         var digit = Instantiate(digitPrefab, stair.transform);
+    //         //the y scale of the stair is not related to digit y because digit is rotated
+    //         digit.transform.localScale =
+    //             new Vector3(1 / stair.transform.localScale.x, 1 / stair.transform.localScale.z, 1);
+    //         digit.transform.localPosition = digitPoz;
+    //         digit.GetComponent<TextMesh>().text = word[d].ToString();
+    //     }
+    //
+    //     stair.Word = word;
+    // }
 
     public bool useConnected, circular, useRepetition;
 
@@ -159,7 +172,8 @@ public class StairEnv : EnvBase
                 //material
                 stair.GetComponent<Renderer>().sharedMaterial = PlayerMats[j];
 
-                GenerateDigits(words[i], stair);
+                //todo implement GenerateDigits, and get the needed word here
+                // GenerateDigits(words[i], stair);
 
                 stairs[j].Add(stair);
             }
@@ -211,7 +225,8 @@ public class StairEnv : EnvBase
             scale.x = stairSize;
             stair.transform.localScale = scale;
 
-            GenerateDigits(word, stair);
+            //todo implement GenerateDigits, and get the needed word here
+            // GenerateDigits(word, stair);
 
             stairs[i].Add(stair);
         }
@@ -220,7 +235,7 @@ public class StairEnv : EnvBase
 
     public override Vector3 GetDigitPozAt(int wordIndex, int digitIndex)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public override Vector3 GetDigitRotAt(int wordIndex, int digitIndex)

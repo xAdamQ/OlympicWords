@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MyStairPlayer : MyPlayerBase
 {
-    private Stair CurrentStair => StairEnv.I.stairs[Index][CurrentWordIndex];
+    private Stair CurrentStair => StairEnv.I.stairs[Index][wordIndex];
 
     public void Start()
     {
@@ -16,7 +16,7 @@ public class MyStairPlayer : MyPlayerBase
         var lowStep = StairEnv.I.spacing.y / CurrentStair.Word.Length;
 
         if (StairEnv.I.moveSteps)
-            stepMoveTween = CurrentStair.transform.DOBlendableMoveBy(Vector3.down * lowStep, .2f)
+            StepMoveTween = CurrentStair.transform.DOBlendableMoveBy(Vector3.down * lowStep, .2f)
                 .OnUpdate(() => transform.position = new Vector3(transform.position.x, CurrentStair.transform.position.y, transform.position.z));
     }
 

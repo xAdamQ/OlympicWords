@@ -89,11 +89,11 @@ namespace OlympicWords.Services
         //
         private string[] testSentences =
         {
-            "He swung back the fishing pole and cast the line which ell 25 feet away into the river.",
-            "There was nothing to indicate Nancy was going to change the world.",
-            "Twenty-five stars were neatly placed on the piece of paper.",
-            "The lone lamp post of the one-street town flickered.",
-            "Bryan had made peace with himself and felt comfortable with the choices he made.",
+            // "He swung back the fishing pole and cast the line which ell feet away into the river",
+            // "There was nothing to indicate Nancy was going to change the world",
+            // "Twenty five stars were neatly placed on the piece of paper",
+            // "The lone lamp post of the one street town flickered",
+            "Bryan had made peace with himself and felt comfortable with the choices he made Bryan had made peace with himself and felt comfortable with the choices he made Bryan had made peace with himself and felt comfortable with the choices he made ",
         };
 
 
