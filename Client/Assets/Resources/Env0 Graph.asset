@@ -111,9 +111,9 @@ MonoBehaviour:
     Type: 0
   - Position: {x: 56.721756, y: 0.041397095, z: 27.602118}
     Type: 0
-  - Position: {x: 26.706985, y: 0, z: 27.60502}
+  - Position: {x: 28.746084, y: 0, z: 29.598219}
     Type: 0
-  - Position: {x: 29.495068, y: -0.0000019073486, z: 36.647617}
+  - Position: {x: 29.323105, y: -0.0000019073486, z: 39.295956}
     Type: 0
   - Position: {x: 30.985416, y: 0, z: 41.955986}
     Type: 0
@@ -181,46 +181,21 @@ MonoBehaviour:
     Type: 0
   - Position: {x: 95.1315, y: 0, z: 53.983982}
     Type: 0
-  - Position: {x: 100.51092, y: 0, z: 137.52162}
+  - Position: {x: -0.69219434, y: 0.0000009536743, z: 141.55988}
     Type: 0
-  - Position: {x: 96.63432, y: 0, z: 143.74316}
+  - Position: {x: -1.2568638, y: 0, z: 137.47581}
     Type: 0
-  - Position: {x: 90.67419, y: 0, z: 136.4854}
+  - Position: {x: 0.5612999, y: 0, z: 135.85904}
+    Type: 0
+  - Position: {x: 2.6284575, y: 0.0000009536743, z: 136.01344}
     Type: 0
   Edges:
-  - Type: 0
-    Start: 4
-    End: 5
-  - Type: 1
-    Start: 5
-    End: 6
-  - Type: 0
-    Start: 6
-    End: 7
   - Type: 1
     Start: 7
     End: 8
   - Type: 0
-    Start: 8
-    End: 9
-  - Type: 0
-    Start: 10
-    End: 11
-  - Type: 0
     Start: 13
     End: 14
-  - Type: 0
-    Start: 15
-    End: 16
-  - Type: 1
-    Start: 16
-    End: 17
-  - Type: 1
-    Start: 18
-    End: 19
-  - Type: 0
-    Start: 21
-    End: 22
   - Type: 0
     Start: 24
     End: 6
@@ -230,30 +205,18 @@ MonoBehaviour:
   - Type: 0
     Start: 7
     End: 10
-  - Type: 0
-    Start: 25
-    End: 26
   - Type: 1
     Start: 26
     End: 27
   - Type: 0
-    Start: 29
-    End: 30
-  - Type: 0
     Start: 31
     End: 28
-  - Type: 0
-    Start: 31
-    End: 27
   - Type: 1
     Start: 25
     End: 32
   - Type: 1
     Start: 38
     End: 27
-  - Type: 1
-    Start: 31
-    End: 30
   - Type: 0
     Start: 38
     End: 37
@@ -269,9 +232,6 @@ MonoBehaviour:
   - Type: 0
     Start: 2
     End: 0
-  - Type: 1
-    Start: 34
-    End: 33
   - Type: 0
     Start: 23
     End: 24
@@ -288,9 +248,6 @@ MonoBehaviour:
     Start: 1
     End: 3
   - Type: 0
-    Start: 17
-    End: 18
-  - Type: 0
     Start: 33
     End: 32
   - Type: 1
@@ -299,9 +256,6 @@ MonoBehaviour:
   - Type: 0
     Start: 15
     End: 24
-  - Type: 0
-    Start: 39
-    End: 40
   - Type: 0
     Start: 41
     End: 42
@@ -315,20 +269,8 @@ MonoBehaviour:
     Start: 44
     End: 45
   - Type: 0
-    Start: 46
-    End: 47
-  - Type: 0
-    Start: 47
-    End: 0
-  - Type: 0
-    Start: 39
-    End: 48
-  - Type: 0
     Start: 48
     End: 49
-  - Type: 1
-    Start: 49
-    End: 46
   - Type: 0
     Start: 49
     End: 50
@@ -363,15 +305,6 @@ MonoBehaviour:
     Start: 60
     End: 56
   - Type: 0
-    Start: 39
-    End: 60
-  - Type: 0
-    Start: 28
-    End: 59
-  - Type: 0
-    Start: 19
-    End: 20
-  - Type: 0
     Start: 58
     End: 57
   - Type: 0
@@ -389,39 +322,12 @@ MonoBehaviour:
   - Type: 0
     Start: 61
     End: 62
-  - Type: 0
-    Start: 62
-    End: 63
-  - Type: 0
-    Start: 62
-    End: 64
-  - Type: 0
-    Start: 65
-    End: 66
   - Type: 1
     Start: 66
     End: 67
-  - Type: 0
-    Start: 67
-    End: 68
-  - Type: 0
-    Start: 63
-    End: 69
-  - Type: 0
-    Start: 69
-    End: 70
-  - Type: 1
-    Start: 70
-    End: 47
-  - Type: 1
-    Start: 68
-    End: 48
   - Type: 1
     Start: 27
     End: 29
-  - Type: 1
-    Start: 37
-    End: 25
   - Type: 1
     Start: 14
     End: 15
@@ -435,14 +341,8 @@ MonoBehaviour:
     Start: 72
     End: 73
   - Type: 0
-    Start: 73
-    End: 74
-  - Type: 0
     Start: 74
     End: 75
-  - Type: 0
-    Start: 73
-    End: 76
   - Type: 0
     Start: 76
     End: 77
@@ -450,20 +350,11 @@ MonoBehaviour:
     Start: 77
     End: 59
   - Type: 0
-    Start: 75
-    End: 78
-  - Type: 0
-    Start: 78
-    End: 59
-  - Type: 0
     Start: 71
     End: 79
   - Type: 0
     Start: 79
     End: 80
-  - Type: 0
-    Start: 80
-    End: 81
   - Type: 0
     Start: 81
     End: 82
@@ -474,17 +365,125 @@ MonoBehaviour:
     Start: 83
     End: 75
   - Type: 1
-    Start: 45
-    End: 46
-  - Type: 1
     Start: 43
     End: 44
+  - Type: 0
+    Start: 80
+    End: 81
   - Type: 1
-    Start: 65
+    Start: 34
+    End: 33
+  - Type: 0
+    Start: 25
+    End: 26
+  - Type: 1
+    Start: 32
+    End: 37
+  - Type: 0
+    Start: 29
+    End: 30
+  - Type: 1
+    Start: 30
+    End: 31
+  - Type: 1
+    Start: 16
+    End: 17
+  - Type: 0
+    Start: 17
+    End: 18
+  - Type: 0
+    Start: 15
+    End: 16
+  - Type: 1
+    Start: 18
+    End: 19
+  - Type: 0
+    Start: 19
+    End: 20
+  - Type: 0
+    Start: 21
+    End: 22
+  - Type: 0
+    Start: 28
+    End: 59
+  - Type: 0
+    Start: 11
+    End: 10
+  - Type: 0
+    Start: 9
+    End: 8
+  - Type: 0
+    Start: 6
+    End: 7
+  - Type: 0
+    Start: 5
+    End: 4
+  - Type: 1
+    Start: 5
+    End: 6
+  - Type: 1
+    Start: 1
+    End: 2
+  - Type: 0
+    Start: 78
+    End: 75
+  - Type: 0
+    Start: 78
+    End: 59
+  - Type: 0
+    Start: 73
+    End: 76
+  - Type: 0
+    Start: 73
+    End: 74
+  - Type: 0
+    Start: 70
+    End: 69
+  - Type: 0
+    Start: 69
+    End: 63
+  - Type: 0
+    Start: 63
+    End: 62
+  - Type: 0
+    Start: 62
     End: 64
+  - Type: 1
+    Start: 64
+    End: 65
   - Type: 0
-    Start: 86
-    End: 85
+    Start: 65
+    End: 66
   - Type: 0
-    Start: 85
-    End: 84
+    Start: 67
+    End: 68
+  - Type: 1
+    Start: 70
+    End: 47
+  - Type: 0
+    Start: 47
+    End: 0
+  - Type: 0
+    Start: 45
+    End: 46
+  - Type: 0
+    Start: 46
+    End: 47
+  - Type: 0
+    Start: 40
+    End: 39
+  - Type: 0
+    Start: 11
+    End: 39
+  - Type: 0
+    Start: 49
+    End: 46
+  - Type: 0
+    Start: 39
+    End: 48
+  - Type: 1
+    Start: 68
+    End: 39
+  - Type: 0
+    Start: 31
+    End: 27

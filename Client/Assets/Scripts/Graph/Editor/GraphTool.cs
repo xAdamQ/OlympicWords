@@ -6,6 +6,7 @@ using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR;
 
 [EditorTool("GraphTool")]
 internal class GraphTool : EditorTool
@@ -17,8 +18,7 @@ internal class GraphTool : EditorTool
 
     private bool PointerEnabled, DrawMode, JumperDraw, ViewMode, AlgoMode, CheckMode;
 
-    
-    
+
     private List<Node> Nodes => GraphData.Nodes;
     private List<Edge> Edges => GraphData.Edges;
 
@@ -34,15 +34,17 @@ internal class GraphTool : EditorTool
     private void OnEnable()
     {
         testLetter = GameObject.Find("testLetter");
-        
+
         StartNode = -1;
 
         Load();
     }
 
+    private List<Vector3> smoothGraph;
+
     public override void OnToolGUI(EditorWindow window)
     {
-        if (window is not SceneView or null || !ToolManager.IsActiveTool(this)) return;
+        if (window is not SceneView or null || !ToolManager.IsActiveTool(this) || GraphData is null) return;
 
         var spawnPoz = GetSpawnPosition();
 
@@ -99,6 +101,15 @@ internal class GraphTool : EditorTool
                 case KeyCode.Backslash:
                     DeleteOrphans();
                     break;
+                case KeyCode.H:
+                    smoothLevel++;
+                    Debug.Log(smoothLevel);
+                    break;
+                case KeyCode.F:
+                    smoothLevel--;
+                    if (smoothLevel < 0) smoothLevel = 0;
+                    Debug.Log(smoothLevel);
+                    break;
             }
         }
 
@@ -130,21 +141,23 @@ internal class GraphTool : EditorTool
         Handles.DrawWireCube(spawnPoz, Vector3.one * .2f);
     }
 
-    private List<int> OrphanNodes = new ();
+    private List<int> OrphanNodes = new();
 
     private void Check()
     {
         // CheckMode = !CheckMode;
         // SceneView.lastActiveSceneView.ShowNotification(new GUIContent("CheckMode " + CheckMode), .1f);
-        
-        foreach (var edge in Edges.Where(edge => edge.Start < 0 || edge.Start >= Nodes.Count || edge.End < 0 || edge.End >= Nodes.Count))
+
+        foreach (var edge in Edges.Where(edge =>
+                     edge.Start < 0 || edge.Start >= Nodes.Count || edge.End < 0 || edge.End >= Nodes.Count))
             Debug.Log($"Edge {edge.Start} -> {edge.End} is orphan");
 
         OrphanNodes = Enumerable.Range(0, Nodes.Count)
             .Where(i => Edges.Count(e => e.Start == i || e.End == i) < 2)
             .ToList();
-        
+
         Debug.Log($"there's {OrphanNodes.Count} orphans");
+        foreach (var node in OrphanNodes) Debug.Log(Nodes[node]);
         // OrphanNodes = Nodes.Select((_,i)=>i).Where( i => Edges.Count(e => e.Start == i || e.End == i) < 2).ToList();
 
         foreach (var edge in Edges.Where(edge => edge.Start == edge.End).ToList())
@@ -197,7 +210,7 @@ internal class GraphTool : EditorTool
         var loadedScenes = Enumerable.Range(0, SceneManager.sceneCount).Select(SceneManager.GetSceneAt).ToList();
 
         var envScene = loadedScenes.First(sc => sc.name.Contains("Env"));
-        
+
         if (GraphData == null)
             GraphData = Resources.Load<GraphData>(envScene.name + " Graph");
 
@@ -212,8 +225,7 @@ internal class GraphTool : EditorTool
         return validSpawn ? worldPoz : HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).GetPoint(10);
     }
 
-    
-    
+
     private void DrawNodes()
     {
         if (ViewMode) return;
@@ -238,8 +250,9 @@ internal class GraphTool : EditorTool
             }
 
             var buttonSize = OrphanNodes.Contains(i) ? 1f : .25f;
-            
-            if (Handles.Button(node.Position + Vector3.one * .0f, Quaternion.identity, buttonSize, .25f, Handles.SphereHandleCap))
+
+            if (Handles.Button(node.Position + Vector3.one * .0f, Quaternion.identity, buttonSize, .25f,
+                    Handles.SphereHandleCap))
             {
                 if (Event.current.control)
                 {
@@ -272,8 +285,8 @@ internal class GraphTool : EditorTool
         Handles.DrawLine(Nodes[StartNode].Position, spawnPoint, 7f);
     }
 
-    public GameObject testLetter;  
-    
+    public GameObject testLetter;
+
     private void DrawEdges()
     {
         for (var i = 0; i < Edges.Count; i++)
@@ -288,8 +301,9 @@ internal class GraphTool : EditorTool
             Handles.zTest = CompareFunction.Always;
             if (!ViewMode)
             {
-                var clicked = Handles.Button(Vector3.Lerp(Nodes[edge.Start].Position, Nodes[edge.End].Position, .5f), Quaternion.identity, .15f, .15f, Handles.CubeHandleCap);
-                if (clicked)
+                var clicked = Handles.Button(Vector3.Lerp(Nodes[edge.Start].Position, Nodes[edge.End].Position, .5f),
+                    Quaternion.identity, .15f, .15f, Handles.CubeHandleCap);
+                if (clicked && Event.current.control)
                 {
                     StartNode = -1;
 
@@ -306,11 +320,18 @@ internal class GraphTool : EditorTool
         if (AlgoMode)
         {
             var center = Vector3.Lerp(Nodes[lastEdge.Start].Position, Nodes[lastEdge.End].Position, .5f);
-            
+
             var upDir = Vector3.Cross(dir, Vector3.forward).normalized;
-            
-            Handles.DrawLine(center, upDir*10, 3f);
+
+            Handles.DrawLine(center, upDir * 10, 3f);
         }
+
+        Handles.color = Color.magenta;
+        var subPath = Nodes.Where((_, i) => i > Nodes.Count - 5).Select(n => n.Position).ToList();
+        for (int i = 0; i < smoothLevel; i++) subPath = CityEnv.SmoothenAngles(subPath);
+        for (int i = 0; i < subPath.Count - 1; i++) Handles.DrawLine(subPath[i], subPath[i + 1]);
+        subPath.ForEach(n => Handles.DrawWireCube(n, Vector3.one * .1f));
+
 
         // var arc =  GetArc(Nodes[^2].Position.TakeXZ(), Nodes[^1].Position.TakeXZ(), Nodes[^3].Position.TakeXZ(), 1.5f);
         // for (var i = 0; i < 10; i++)
@@ -323,7 +344,7 @@ internal class GraphTool : EditorTool
         //     Handles.DrawWireCube( new Vector3(ax, 0, ay), Vector3.one *.125f);
         // }
 
-        
+
         // var endAngle = arc.startAngle + arc.angle;
         // var endAngle = Vector2.SignedAngle(arc.end - arc.center, Vector2.up) * Mathf.Deg2Rad;
         // var anglePointer = arc.startAngle;
@@ -350,8 +371,6 @@ internal class GraphTool : EditorTool
         // Handles.DrawWireCube(p3.XYInXZ(),  Vector3.one*.1f);
         // Handles.DrawWireCube(p4.XYInXZ(),  Vector3.one*.1f);
     }
-
-
 
 
     private void ConnectNode(int node)
@@ -439,6 +458,7 @@ internal class GraphTool : EditorTool
     private List<(int node, bool isWalkable)> AlgoPath;
     private List<Edge> RemainingAlgoEdges;
     private int AlgoFinishNode;
+    private int smoothLevel;
 
     private void CreateRandomPath()
     {
@@ -458,9 +478,9 @@ internal class GraphTool : EditorTool
             Handles.color = AlgoPath[i + 1].isWalkable ? Color.yellow : Color.white;
             Handles.DrawLine(Nodes[AlgoPath[i].node].Position, Nodes[AlgoPath[i + 1].node].Position, 10f);
         }
-        
+
         Handles.color = Color.green;
-        if(RemainingAlgoEdges!=null)
+        if (RemainingAlgoEdges != null)
             foreach (var edge in RemainingAlgoEdges)
                 Handles.DrawLine(Nodes[edge.Start].Position, Nodes[edge.End].Position, 10f);
     }
