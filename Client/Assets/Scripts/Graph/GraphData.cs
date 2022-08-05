@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using DG.Tweening.Core.Easing;
+using PlasticPipe.PlasticProtocol.Client;
 using UnityEngine;
 
 
@@ -155,8 +156,30 @@ public class Edge
         Type = type;
     }
 
-    public int Type;
+    public int Type, Direction, Group;
     public int Start, End;
+
+    public int RealFinish => Direction switch
+    {
+        0 => -1,
+        1 => End,
+        -1 => Start,
+        _ => throw new ArgumentOutOfRangeException()
+    };
+
+    public int RealStart => Direction switch
+    {
+        0 => -1,
+        1 => Start,
+        -1 => End,
+        _ => throw new ArgumentOutOfRangeException()
+    };
+
+    public bool CanMoveOut(int node)
+    {
+        var realStart = RealStart;
+        return realStart == -1 || realStart == node;
+    }
 
     public override string ToString()
     {
@@ -218,8 +241,3 @@ because references are broken when I make undo, but this won't solve the update 
 no It will solve the issue because their will be always a single node => Nodes[i]
 
  */
-
-public struct tstStruct
-{
-    public int prop;
-}

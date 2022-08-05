@@ -72,22 +72,31 @@ public class Arc
 public class CityEnv : EnvBase
 {
     private const float DIGIT_SIZE = .7f,
-        DIGIT_FILL_PERCENT = .9f,
-        SPACE_DISTANCE = 1.3f,
+        DIGIT_FILL_PERCENT = .8f,
+        SPACE_DISTANCE = 1f,
         MAX_DIGIT_SIZE = 1.5f,
         DIGIT_Y_EXTEND = .13f,
         SPACING_Y = .1f;
 
-    [SerializeField] private GraphData cityGraph;
+    [SerializeField] private GraphData[] cityGraphs;
+    private GraphData cityGraph => cityGraphs[chosenGraphIndex];
+    private int chosenGraphIndex;
 
     private GameObject[][] wordObjects;
 
 
     private readonly Vector3 digitAddedRotation = Vector3.zero;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        chosenGraphIndex = Random.Range(0, cityGraphs.Length);
+    }
+
     protected override void Start()
     {
         base.Start();
+
 
         MyPlayer.MovedADigit += OnMyDigitMoved;
 
@@ -148,7 +157,7 @@ public class CityEnv : EnvBase
         var digitRenderer = digit.GetComponent<Renderer>();
 
         digitRenderer.material = fadeMaterial;
-        digitRenderer.material.DOFade(.2f, .3f).SetEase(Ease.OutCirc)
+        digitRenderer.material.DOFade(.1f, .3f).SetEase(Ease.OutCirc)
             .OnComplete(() => fadeMaterial.color = Color.white);
     }
 
@@ -185,25 +194,27 @@ public class CityEnv : EnvBase
 
         path = GraphManager.GetRandomPath(cityGraph);
 
-        // ReSharper disable once GenericEnumeratorNotDisposed
         nodes = path.Select(n => (cityGraph.Nodes[n.node], n.isWalkable)).ToList();
         var nodeCounter = 1;
 
-        (Vector2 start, Vector2 end, List<Arc>) getDynamicPath(List<Vector3> path)
-        {
-            var res = new List<Arc>();
-            const float cut = 1.5f;
-            for (var i = 2; i < path.Count; i++)
-            {
-                var arc = new Arc(path[i - 1], path[i - 2], path[i], cut);
+        // (Vector2 start, Vector2 end, List<Arc>) getDynamicPath(List<Vector2> path)
+        // {
+        //     var res = new List<Arc>();
+        //     const float cut = 1.5f;
+        //     for (var i = 2; i < path.Count; i++)
+        //     {
+        //         var arc = new Arc(path[i - 1], path[i - 2], path[i], cut);
+        //
+        //         res.Add(arc);
+        //     }
+        //
+        //     return (path[0], path[^1], res);
+        // }
 
-                res.Add(arc);
-            }
-
-            return (path[0], path[^1], res);
-        }
+        // Debug.Log(string.Join(", ", nodes.Select(n => n.isWalkable)));
 
         //there would be at least 2 nodes in the path
+
         for (var w = 0; w < words.Count; w++)
         {
             while (!nodes[nodeCounter].isWalkable && nextNode())
@@ -215,14 +226,18 @@ public class CityEnv : EnvBase
             //the first edge is added anyway, this is the first nodes of it and the second in do statement
 
             do subPath.Add(nodes[nodeCounter].node.Position);
-            while (nodes[nodeCounter].isWalkable && nextNode());
-            //edge type follows the second node
+            while (nextNode() && nodes[nodeCounter].isWalkable);
+            //add all walkable edges //edge type follows the second node
+
+            subPath = SmoothenAngles(subPath);
+            subPath = SmoothenAngles(subPath);
 
             var fillableWords = 1;
             var totalDigits = words[w].Length;
             //there at least the current word in the edge
 
             var edgesLength = GetEdgeLengths(subPath);
+            // var edgesLength = GetEdgeLengths(start, end, arcs);
 
             while (w + 1 < words.Count && totalDigits + fullWordLength(words[w + 1]) <= edgesLength)
             {
@@ -238,6 +253,8 @@ public class CityEnv : EnvBase
 
             var passedDistance = SPACE_DISTANCE / 2f;
 
+            using var subPathE = subPath.AsEnumerable().GetEnumerator();
+
             for (var lw = 0; lw < fillableWords; lw++)
             {
                 var globalWordIndex = w - (fillableWords - 1) + lw;
@@ -252,6 +269,9 @@ public class CityEnv : EnvBase
                 {
                     passedDistance += actualDigitSize;
 
+                    // var digitEndPoint = GetPointOnPath(start, end, arcs, passedDistance);
+                    // subPathE = ShortenPath(subPathE, passedDistance);
+                    // var digitEndPoint = subPathE.Current;
                     var digitEndPoint = GetPointOnPath(subPath, passedDistance);
 
                     var digitStartProjection = GetProjectedPoz(digitStartPoint);
@@ -313,6 +333,20 @@ public class CityEnv : EnvBase
         return res;
     }
 
+    // private static float GetEdgeLengths(Vector2 start, Vector2 end, List<Arc> arcs)
+    // {
+    //     if (arcs.Count == 0) return Vector3.Distance(start, end);
+    //
+    //     var totalDistance = Vector3.Distance(start, arcs[0].start);
+    //
+    //     for (var i = 0; i < arcs.Count - 1; i++)
+    //         totalDistance += arcs[i].length + Vector2.Distance(arcs[i].end, arcs[i + 1].start);
+    //
+    //     totalDistance += arcs[^1].length + Vector3.Distance(arcs[^1].end, end);
+    //
+    //     return totalDistance;
+    // }
+
     private static float GetEdgeLengths(List<Vector3> nodes)
     {
         var totalDistance = 0f;
@@ -321,6 +355,88 @@ public class CityEnv : EnvBase
 
         return totalDistance;
     }
+
+    public static List<Vector3> SmoothenAngles(List<Vector3> path)
+    {
+        if (path.Count <= 2) return path;
+
+        const float cutRatio = .45f, cutValue = 1f;
+
+        var res = new List<Vector3> { path[0] };
+        for (var i = 1; i < path.Count - 1; i++)
+        {
+            var start = path[i - 1] - path[i];
+            var end = path[i + 1] - path[i];
+
+            //the cut value is relatively big
+            var realStartCut = cutValue > start.magnitude * .5f ? start.magnitude * cutRatio : cutValue;
+            var realEndCut = cutValue > end.magnitude * .5f ? end.magnitude * cutRatio : cutValue;
+
+            var startCutPoint = start.normalized * realStartCut + path[i];
+            var endCutPoint = end.normalized * realEndCut + path[i];
+
+            res.Add(startCutPoint);
+            res.Add(endCutPoint);
+        }
+
+        res.Add(path[^1]);
+
+        return res;
+    }
+
+    // private static Vector2 GetPointOnPath(Vector2 start, Vector2 end, List<Arc> arcs, float passedDistance)
+    // {
+    //     if (arcs.Count == 0) return Vector3.Lerp(start, end, passedDistance / Vector3.Distance(start, end));
+    //
+    //     var distanceCounter = 0f;
+    //     var isArc = false;
+    //     var arcIndex = 0;
+    //
+    //     while (true)
+    //     {
+    //         float edgeDistance;
+    //
+    //         if (isArc)
+    //         {
+    //             edgeDistance = arcs[arcIndex].length;
+    //
+    //             if (passedDistance < distanceCounter + edgeDistance)
+    //             {
+    //                 var edgePassedDistance = passedDistance - distanceCounter;
+    //                 return arcs[arcIndex].GetPointAt(edgePassedDistance);
+    //             }
+    //
+    //             arcIndex++;
+    //         }
+    //         else
+    //         {
+    //             Vector2 curStart, curEnd;
+    //
+    //             if (arcIndex == arcs.Count - 1)
+    //                 (curStart, curEnd) = (arcs[^1].end, end);
+    //             else if (arcIndex == 0)
+    //                 (curStart, curEnd) = (start, arcs[0].start);
+    //             else
+    //                 (curStart, curEnd) = (arcs[arcIndex - 1].end, arcs[arcIndex].start);
+    //
+    //             edgeDistance = Vector2.Distance(curStart, curEnd);
+    //
+    //             if (passedDistance < distanceCounter + edgeDistance)
+    //             {
+    //                 var edgePassedDistance = passedDistance - distanceCounter;
+    //                 return Vector2.Lerp(curStart, curEnd, edgePassedDistance / edgeDistance);
+    //             }
+    //
+    //             if (arcIndex == arcs.Count) break;
+    //         }
+    //
+    //         isArc = !isArc;
+    //         distanceCounter += edgeDistance;
+    //     }
+    //
+    //     throw new ArgumentOutOfRangeException(nameof(passedDistance),
+    //         "the passed distance exceeds the given path length");
+    // }
 
     private static Vector3 GetPointOnPath(List<Vector3> path, float passedDistance)
     {
@@ -343,78 +459,65 @@ public class CityEnv : EnvBase
             "the passed distance exceeds the given path length");
     }
 
-    private void DrawRoundedCorner(Graphics graphics, Vector2 angularPoint, Vector2 p1, Vector2 p2)
+    // private static List<Vector3> ShortenPath(List<Vector3> path, float passedDistance)
+    // {
+    //     var distanceCounter = 0f;
+    //     for (var i = 1; i < path.Count; i++)
+    //     {
+    //         var edgeDistance = Vector3.Distance(path[i - 1], path[i]);
+    //
+    //         if (passedDistance < distanceCounter + edgeDistance)
+    //         {
+    //             var edgePassedDistance = passedDistance - distanceCounter;
+    //             var passedDistanceRatio = edgePassedDistance / edgeDistance;
+    //             var start = Vector3.Lerp(path[i - 1], path[i], passedDistanceRatio);
+    //
+    //             var res = new List<Vector3>(path.Count - i + 1) { start };
+    //             res.AddRange(path.GetRange(i, path.Count - i));
+    //
+    //             return res;
+    //         }
+    //
+    //         distanceCounter += edgeDistance;
+    //     }
+    //
+    //     throw new ArgumentOutOfRangeException(nameof(passedDistance),
+    //         "the passed distance exceeds the given path length");
+    // }
+
+    private static IEnumerator<Vector3> ShortenPath(IEnumerator<Vector3> path, float passedDistance)
     {
-        //Vector 1,2
-        var d1 = angularPoint - p1;
-        var d2 = angularPoint - p2;
+        var distanceCounter = 0f;
 
-        //Angle between vector 1 and vector 2 divided by 2
-        var angle = (Math.Atan2(d1.y, d1.x) - Math.Atan2(d2.y, d2.x)) / 2;
-
-        //calc the segment that makes roundest corner
-        var segment = Math.Min(d1.magnitude, d2.magnitude);
-
-        var tan = Math.Abs(Math.Tan(angle));
-        var radius = (float)(segment * tan);
-
-        // Points of intersection are calculated by the proportion between 
-        // the coordinates of the vector, length of vector and the length of the segment.
-        var p1Cross = GetProportionPoint(angularPoint, segment, d1.magnitude, d1);
-        var p2Cross = GetProportionPoint(angularPoint, segment, d2.magnitude, d2);
-
-        // Calculation of the coordinates of the circle 
-        // center by the addition of angular vectors.
-        var dc = angularPoint * 2 - (p1Cross + p2Cross);
-
-        var d = GetLength(segment, radius);
-
-        var circlePoint = GetProportionPoint(angularPoint, d, dc.magnitude, dc);
-
-        //StartAngle and EndAngle of arc
-        var startAngle = Math.Atan2(p1Cross.y - circlePoint.y, p1Cross.x - circlePoint.x);
-        var endAngle = Math.Atan2(p2Cross.y - circlePoint.y, p2Cross.x - circlePoint.x);
-
-        //Sweep angle
-        var sweepAngle = endAngle - startAngle;
-
-        //Some additional checks
-        if (sweepAngle < 0)
+        path.MoveNext();
+        var first = path.Current;
+        while (path.MoveNext())
         {
-            startAngle = endAngle;
-            sweepAngle = -sweepAngle;
+            var second = path.Current;
+
+            var edgeDistance = Vector3.Distance(first, second);
+
+            if (passedDistance < distanceCounter + edgeDistance)
+            {
+                var edgePassedDistance = passedDistance - distanceCounter;
+                var passedDistanceRatio = edgePassedDistance / edgeDistance;
+                var start = Vector3.Lerp(first, second, passedDistanceRatio);
+
+                yield return start;
+                while (path.MoveNext()) yield return path.Current;
+
+                yield break;
+
+                // var res = new List<Vector3>(path.Count - i + 1) { start };
+                // res.AddRange(path.GetRange(i, path.Count - i));
+                // return res;
+            }
+
+            distanceCounter += edgeDistance;
+            first = second;
         }
 
-        if (sweepAngle > Math.PI)
-            sweepAngle = Math.PI - sweepAngle;
-
-        // //Draw result using graphics
-        // var pen = new Pen(Color.Black);
-        //
-        // graphics.Clear(Color.White);
-        // graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        //
-        // graphics.DrawLine(pen, p1, p1Cross);
-        // graphics.DrawLine(pen, p2, p2Cross);
-        //
-        // var left = circlePoint.X - radius;
-        // var top = circlePoint.Y - radius;
-        // var diameter = 2 * radius;
-        // var degreeFactor = 180 / Math.PI;
-        //
-        // graphics.DrawArc(pen, left, top, diameter, diameter, 
-        //                  (float)(startAngle * degreeFactor), 
-        //                  (float)(sweepAngle * degreeFactor));
-    }
-
-    private static double GetLength(double dx, double dy)
-    {
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
-
-    private static Vector2 GetProportionPoint(Vector2 angularPoint, double segment, double magP, Vector2 p)
-    {
-        var factor = segment / magP;
-        return new Vector2((float)(angularPoint.x - p.x * factor), (float)(angularPoint.y - p.y * factor));
+        throw new ArgumentOutOfRangeException(nameof(passedDistance),
+            "the passed distance exceeds the given path length");
     }
 }

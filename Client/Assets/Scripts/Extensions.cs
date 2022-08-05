@@ -24,7 +24,7 @@ public static partial class Extensions
     public static T GetRandom<T>(this List<T> list)
     {
         if (list.Count == 0)
-            throw new System.Exception("you are trying to get a random element from an empty list");
+            throw new Exception("you are trying to get a random element from an empty list");
 
         var randIndex = Random.Range(0, list.Count);
         return list[randIndex];
@@ -169,7 +169,7 @@ public static partial class Extensions
     {
         return new Vector2(vector3.x, vector3.z);
     }
-    
+
     public static Vector3 XYInXZ(this Vector2 vector)
     {
         return new Vector3(vector.x, 0, vector.y);

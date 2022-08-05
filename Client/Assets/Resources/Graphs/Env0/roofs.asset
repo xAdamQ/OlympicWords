@@ -1,0 +1,244 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e6ca90faad4746a4e86da52a2495cf, type: 3}
+  m_Name: roofs
+  m_EditorClassIdentifier: 
+  Nodes:
+  - Position: {x: 15.371992, y: 12.74354, z: 30.05259}
+    Type: 0
+  - Position: {x: 13.706688, y: 12.495031, z: 23.668575}
+    Type: 0
+  - Position: {x: 10.408993, y: 12.495031, z: 18.26786}
+    Type: 0
+  - Position: {x: 20.76126, y: 12.492739, z: 10.263527}
+    Type: 0
+  - Position: {x: 27.650503, y: 12.495031, z: 7.1292114}
+    Type: 0
+  - Position: {x: 29.858576, y: 15.4998665, z: 4.8597474}
+    Type: 0
+  - Position: {x: 36.977566, y: 15.499868, z: 7.5936937}
+    Type: 0
+  - Position: {x: 43.50969, y: 15.4998665, z: 9.57496}
+    Type: 0
+  - Position: {x: 47.22474, y: 12.495032, z: 10.996367}
+    Type: 0
+  - Position: {x: 51.023567, y: 12.74354, z: 15.063417}
+    Type: 0
+  - Position: {x: 75.047935, y: 12.74354, z: 25.001804}
+    Type: 0
+  - Position: {x: 75.00911, y: 12.74354, z: 33.802048}
+    Type: 0
+  - Position: {x: 84.94716, y: 12.743538, z: 39.555473}
+    Type: 0
+  - Position: {x: 85.18132, y: 12.743538, z: 62.5387}
+    Type: 0
+  - Position: {x: 71.30467, y: 12.495031, z: 62.954212}
+    Type: 0
+  - Position: {x: 65.74418, y: 15.499868, z: 65.45854}
+    Type: 0
+  - Position: {x: 54.94878, y: 15.4998665, z: 65.86792}
+    Type: 0
+  - Position: {x: 53.233932, y: 12.495033, z: 65.57447}
+    Type: 0
+  - Position: {x: 44.083042, y: 13.305719, z: 63.939983}
+    Type: 0
+  - Position: {x: 35.802605, y: 13.261011, z: 63.9428}
+    Type: 0
+  - Position: {x: 24.811617, y: 13.999868, z: 66.650764}
+    Type: 0
+  - Position: {x: 15.38491, y: 10.9998665, z: 49.84923}
+    Type: 0
+  - Position: {x: 52.69568, y: 12.74354, z: 70.03358}
+    Type: 0
+  - Position: {x: 23.776602, y: 13.9998665, z: 75.31392}
+    Type: 0
+  - Position: {x: 23.41781, y: 10.995031, z: 77.267296}
+    Type: 0
+  - Position: {x: 24.674076, y: 10.992739, z: 84.41275}
+    Type: 0
+  - Position: {x: 35.016846, y: 25.613285, z: 123.731514}
+    Type: 0
+  - Position: {x: 49.404156, y: 25.73261, z: 123.77196}
+    Type: 0
+  - Position: {x: 49.041164, y: 25.47453, z: 109.706955}
+    Type: 0
+  - Position: {x: 34.6941, y: 25.29441, z: 110.13004}
+    Type: 0
+  - Position: {x: 64.93707, y: 12.74354, z: 62.00902}
+    Type: 0
+  - Position: {x: 63.428173, y: 9.499868, z: 62.698288}
+    Type: 0
+  - Position: {x: 55.751198, y: 9.499868, z: 62.579945}
+    Type: 0
+  - Position: {x: 55.04331, y: 12.74354, z: 62.098938}
+    Type: 0
+  - Position: {x: 45.20556, y: 12.495031, z: 63.6966}
+    Type: 0
+  - Position: {x: 45.484127, y: 12.495031, z: 65.27452}
+    Type: 0
+  - Position: {x: 45.750824, y: 12.495031, z: 64.38213}
+    Type: 0
+  - Position: {x: 54.973316, y: 15.4998665, z: 69.86505}
+    Type: 0
+  - Position: {x: 15.084067, y: 11.103098, z: 77.27679}
+    Type: 0
+  - Position: {x: 24.221489, y: 10.992739, z: 53.58004}
+    Type: 0
+  - Position: {x: 23.878256, y: 13.9998665, z: 59.688553}
+    Type: 0
+  - Position: {x: 24.019085, y: 10.99503, z: 58.280434}
+    Type: 0
+  Edges:
+  - Type: 0
+    Start: 0
+    End: 1
+  - Type: 0
+    Start: 1
+    End: 2
+  - Type: 0
+    Start: 2
+    End: 3
+  - Type: 0
+    Start: 3
+    End: 4
+  - Type: 1
+    Start: 4
+    End: 5
+  - Type: 0
+    Start: 5
+    End: 6
+  - Type: 0
+    Start: 6
+    End: 7
+  - Type: 1
+    Start: 7
+    End: 8
+  - Type: 0
+    Start: 8
+    End: 9
+  - Type: 1
+    Start: 9
+    End: 10
+  - Type: 0
+    Start: 10
+    End: 11
+  - Type: 0
+    Start: 11
+    End: 12
+  - Type: 0
+    Start: 12
+    End: 13
+  - Type: 0
+    Start: 13
+    End: 14
+  - Type: 1
+    Start: 14
+    End: 15
+  - Type: 0
+    Start: 15
+    End: 16
+  - Type: 1
+    Start: 16
+    End: 17
+  - Type: 0
+    Start: 18
+    End: 19
+  - Type: 1
+    Start: 19
+    End: 20
+  - Type: 1
+    Start: 21
+    End: 0
+  - Type: 0
+    Start: 22
+    End: 17
+  - Type: 0
+    Start: 20
+    End: 23
+  - Type: 1
+    Start: 23
+    End: 24
+  - Type: 0
+    Start: 24
+    End: 25
+  - Type: 0
+    Start: 26
+    End: 27
+  - Type: 0
+    Start: 27
+    End: 28
+  - Type: 0
+    Start: 28
+    End: 29
+  - Type: 1
+    Start: 28
+    End: 22
+  - Type: 0
+    Start: 14
+    End: 30
+  - Type: 1
+    Start: 30
+    End: 31
+  - Type: 0
+    Start: 31
+    End: 32
+  - Type: 1
+    Start: 32
+    End: 33
+  - Type: 0
+    Start: 33
+    End: 34
+  - Type: 0
+    Start: 22
+    End: 35
+  - Type: 0
+    Start: 17
+    End: 36
+  - Type: 1
+    Start: 36
+    End: 18
+  - Type: 1
+    Start: 34
+    End: 18
+  - Type: 1
+    Start: 35
+    End: 18
+  - Type: 0
+    Start: 15
+    End: 37
+  - Type: 1
+    Start: 37
+    End: 22
+  - Type: 0
+    Start: 25
+    End: 38
+  - Type: 0
+    Start: 38
+    End: 21
+  - Type: 1
+    Start: 25
+    End: 29
+  - Type: 0
+    Start: 26
+    End: 29
+  - Type: 0
+    Start: 21
+    End: 39
+  - Type: 0
+    Start: 20
+    End: 40
+  - Type: 0
+    Start: 41
+    End: 39
+  - Type: 1
+    Start: 41
+    End: 40
