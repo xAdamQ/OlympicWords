@@ -1,0 +1,13 @@
+﻿fapi > conventions, annotations
+
+dependent, principle entities
+why they are
+
+nav props
+
+In this example, the user has `IStates` property but I don't mock it, I set a return value `PlayedGames` directly.
+`user.Setup(u => u.States.PlayedGames).Returns(143);`
+
+Now I want to achieve similar behavior but the property is an array. e.g.
+`pending.Setup(p => p.Users[u].CardsCount).Returns(CardsLengths[u]);`
+What I did to solve this is making an array of `Mock<IUser>` and setup every user then pass `Object` of each one as an array to `pending`, can I skip making the mock array and setup the properties on it directly? for example set `pending` to get a specific value when it's asked for `CardsCount` at `u` 
