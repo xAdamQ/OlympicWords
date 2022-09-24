@@ -1,0 +1,227 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e6ca90faad4746a4e86da52a2495cf, type: 3}
+  m_Name: planets 1
+  m_EditorClassIdentifier: 
+  Nodes:
+  - Position: {x: -77.16188, y: 6.4191265, z: 23.08598}
+    Type: 0
+  - Position: {x: -78.52871, y: 5.759933, z: 19.533169}
+    Type: 0
+  - Position: {x: -80.6028, y: 4.7827597, z: 18.967913}
+    Type: 0
+  - Position: {x: -81.67819, y: 1.2837954, z: 17.256582}
+    Type: 0
+  - Position: {x: -82.97454, y: -1.8381958, z: 18.741077}
+    Type: 0
+  - Position: {x: -83.98826, y: -0.41220045, z: 20.143892}
+    Type: 0
+  - Position: {x: -83.97343, y: 1.4117274, z: 20.589249}
+    Type: 0
+  - Position: {x: -83.820786, y: 2.3306694, z: 21.153131}
+    Type: 0
+  - Position: {x: -82.56205, y: 3.5095057, z: 25.148289}
+    Type: 0
+  - Position: {x: -82.04779, y: 3.1525793, z: 26.193493}
+    Type: 0
+  - Position: {x: -79.372894, y: 0.038986504, z: 28.670792}
+    Type: 0
+  - Position: {x: -77.868996, y: 0.55112994, z: 28.811155}
+    Type: 0
+  - Position: {x: -75.36754, y: 1.448659, z: 28.1291}
+    Type: 0
+  - Position: {x: -74.82261, y: 2.461463, z: 27.476479}
+    Type: 0
+  - Position: {x: -74.15022, y: 3.861697, z: 25.911871}
+    Type: 0
+  - Position: {x: -73.51549, y: 3.9968593, z: 24.882921}
+    Type: 0
+  - Position: {x: -72.85127, y: 3.9978294, z: 22.084627}
+    Type: 0
+  - Position: {x: -76.20057, y: 4.9777937, z: 18.632345}
+    Type: 0
+  - Position: {x: -77.1222, y: 4.699686, z: 18.011057}
+    Type: 0
+  - Position: {x: -81.131744, y: 1.4763668, z: 16.945545}
+    Type: 0
+  - Position: {x: -75.81381, y: 6.039127, z: 23.166521}
+    Type: 0
+  - Position: {x: -74.176384, y: 4.417631, z: 25.218164}
+    Type: 0
+  - Position: {x: -74.06724, y: 5.1634264, z: 21.981989}
+    Type: 0
+  - Position: {x: -79.16372, y: 6.0969152, z: 24.028467}
+    Type: 0
+  - Position: {x: -81.28465, y: 5.4177814, z: 23.280655}
+    Type: 0
+  - Position: {x: -82.47508, y: 4.3342533, z: 20.92894}
+    Type: 0
+  - Position: {x: -81.48701, y: 4.8230247, z: 19.998453}
+    Type: 0
+  - Position: {x: -78.958176, y: 5.96193, z: 20.147621}
+    Type: 0
+  Edges:
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 0
+    End: 1
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 1
+    End: 2
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 2
+    End: 3
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 3
+    End: 4
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 4
+    End: 5
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 5
+    End: 6
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 6
+    End: 7
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 7
+    End: 8
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 8
+    End: 9
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 9
+    End: 10
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 10
+    End: 11
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 11
+    End: 12
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 12
+    End: 13
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 13
+    End: 14
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 14
+    End: 15
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 15
+    End: 16
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 16
+    End: 17
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 17
+    End: 18
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 18
+    End: 19
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 19
+    End: 3
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 0
+    End: 20
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 20
+    End: 21
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 21
+    End: 14
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 20
+    End: 22
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 22
+    End: 16
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 0
+    End: 23
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 23
+    End: 24
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 24
+    End: 25
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 25
+    End: 26
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 26
+    End: 27
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 1
+    End: 27
