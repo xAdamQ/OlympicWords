@@ -105,7 +105,7 @@ public class Shop : MonoBehaviour
         BackgroundType.hearts,
     };
 
-    private readonly List<ShopItem> shopItems = new List<ShopItem>();
+    private readonly List<ShopItem> shopItems = new();
 
     public ItemType ItemType { get; private set; }
 

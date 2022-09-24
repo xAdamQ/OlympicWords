@@ -2,11 +2,8 @@ using System;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using Basra.Common;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 [Rpc]
 public class RoomController : MonoModule<RoomController>
@@ -26,7 +23,7 @@ public class RoomController : MonoModule<RoomController>
 
     public string[] Words;
 
-    public int[] OppoIndicies;
+    public int[] OppoIndices;
 
     #endregion
 
@@ -58,9 +55,11 @@ public class RoomController : MonoModule<RoomController>
         MyTurn = roomArgs.myTurn;
         Text = roomArgs.text;
 
-        Words = Text.Split(' ');
+        Words = Text.Split(' ').Select(w => " " + w).ToArray(); //each word has space before it
+        // Words[0] = " " + Words[0]; //add space at the front
+        // Words[^1] = Words[^1][..^1]; //the word doesn't have space at the end
 
-        OppoIndicies = Enumerable.Range(0, Capacity).Where(n => n != MyTurn).ToArray();
+        OppoIndices = Enumerable.Range(0, Capacity).Where(n => n != MyTurn).ToArray();
 
         // new RoomUserView.Manager();
 
@@ -94,5 +93,11 @@ public class RoomController : MonoModule<RoomController>
         NetManager.I.StartStreaming();
 
         BlockingPanel.Hide();
+    }
+
+    public event Action Destroyed;
+    private void OnDestroy()
+    {
+        Destroyed?.Invoke();
     }
 }

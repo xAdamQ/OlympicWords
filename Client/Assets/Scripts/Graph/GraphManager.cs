@@ -1,31 +1,50 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.EditorCoroutines.Editor;
 using UnityEngine;
-using Wintellect.PowerCollections;
 using Random = UnityEngine.Random;
 
 // ReSharper disable AccessToModifiedClosure
 
-public class GraphManager
+public static class GraphManager
 {
     public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData)
     {
+        return GetRandomPath(graphData, (-1, -1));
+    }
+
+    public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData,
+        (int start, int end) linkerEdge)
+    {
         var nodesEdges = GetNodeEdges(graphData);
         var remainingEdges = graphData.Edges.ToList();
-        var path = new List<(int, bool)>();
 
-        var startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom();
-        //get random walkable edge
-        var finishNode = startEdge.RealFinish;
-        if (finishNode == -1) finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
-        //if not directed choose random dir, otherwise stick with the dir
-        var startNode = startEdge.Start == finishNode ? startEdge.End : startEdge.Start;
-        //choose the other node as start
+        Edge startEdge;
+        int startNode, finishNode;
 
-        path.Add((startNode, startEdge.Type == 0));
-        path.Add((finishNode, startEdge.Type == 0));
+        if (linkerEdge == (-1, -1))
+        {
+            startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom();
+            //get random walkable edge
+            finishNode = startEdge.RealFinish;
+            if (finishNode == -1) finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
+            //if not directed choose random dir, otherwise stick with the dir
+            startNode = startEdge.Start == finishNode ? startEdge.End : startEdge.Start;
+            //choose the other node as start
+        }
+        else
+        {
+            startEdge = nodesEdges[linkerEdge.end]
+                .Where(e => e.Start != linkerEdge.start && e.End != linkerEdge.start)
+                .ToList().GetRandom();
+            startNode = linkerEdge.end;
+            finishNode = startEdge.OtherEnd(startNode);
+        }
+
+        var path = new List<(int, bool)>
+        {
+            (startNode, startEdge.Type == 0),
+            (finishNode, startEdge.Type == 0)
+        };
 
         //removing start edge will disjoint the graph, and prevent removing the finish branch
         if (getBranches(finishNode).Count == 2) removeEdge(startEdge);
@@ -58,9 +77,8 @@ public class GraphManager
             //reverse looping branches that has reversed order
 
             var eligibleBranches = branches
-                .Where(b =>
-                    b.edges[0].CanMoveOut(finishNode) &&
-                    (graphData.Nodes[finishNode].Type != 1 || b.edges[0].Group != lastEdge.Group))
+                .Where(b => b.edges[0].CanMoveOut(finishNode) &&
+                            (graphData.Nodes[finishNode].Type != 1 || b.edges[0].Group != lastEdge.Group))
                 .ToList();
 
             if (eligibleBranches.Count == 0)
@@ -113,6 +131,8 @@ public class GraphManager
                     //we don't delete edges as we go because this alter the graph and makes issues
                 {
                     lastExtend = nodesEdges[branchFinishNode].First(e => e != lastExtend);
+                    if (!lastExtend.CanMoveOut(branchFinishNode))
+                        break;
 
                     branchFinishNode = GetOtherEnd(lastExtend, branchFinishNode);
 
@@ -138,8 +158,6 @@ public class GraphManager
         }
     }
 
- 
-    
     public static int GetOtherEnd(Edge edge, int otherEnd) => edge.Start == otherEnd ? edge.End : edge.Start;
 
     public static Dictionary<int, List<Edge>> GetNodeEdges(GraphData graphData)

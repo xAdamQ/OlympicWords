@@ -20,15 +20,15 @@ public abstract class MonoModule<T> : MonoBehaviour where T : MonoBehaviour
         I = gameObject.GetComponent<T>(); //because "this" won't work
     }
 
-    public static void DestroyModule()
+    public void Destroy()
     {
-        if (I) Destroy(I.gameObject);
+        Destroy(I.gameObject);
         I = null;
     }
 }
 
 
-public interface IGameObject 
+public interface IGameObject
 {
     GameObject GameObject { get; }
 }
@@ -41,6 +41,4 @@ public abstract class MonoModule2<T> : MonoBehaviour where T : IGameObject
     {
         I = gameObject.GetComponent<T>(); //because "this" won't work
     }
-
-
 }

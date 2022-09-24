@@ -1,7 +1,8 @@
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
-public class MyCityPlayer : MyPlayerBase
+public class BasicGraphMyPlayer : MyPlayerBase
 {
     [SerializeField] private Material wordHighlightMat, digitHighlightMat, fadeMaterial;
 
@@ -14,13 +15,16 @@ public class MyCityPlayer : MyPlayerBase
 
         ColorActiveWord(0);
         ColorCurrentDigit(0, 0);
+
+        BasicGraphEnv.I.WordState(0, true);
+        BasicGraphEnv.I.WordState(1, true);
     }
 
-    private void OnMyDigitMoved(PlayerBase sender)
+    private void OnMyDigitMoved()
     {
-        ColorCurrentDigit(sender.WordIndex, sender.DigitIndex);
+        ColorCurrentDigit(WordIndex, DigitIndex);
 
-        var digit = Env.GetWordObjects(sender.WordIndex)[sender.DigitIndex];
+        var digit = Env.GetWordObjects(WordIndex)[DigitIndex];
         MinimizeDigit(digit);
     }
 
@@ -31,6 +35,8 @@ public class MyCityPlayer : MyPlayerBase
             .GetComponent<Renderer>().material = wordHighlightMat;
 
         var isLastLetter = letterIndex == Env.GetWordLengthAt(wordIndex) - 1;
+        var isLastWord = wordIndex == RoomController.I.Words.Length - 1;
+        if (isLastLetter && isLastWord) return;
         var targetWord = isLastLetter ? wordIndex + 1 : wordIndex;
         var targetLetter = isLastLetter ? 0 : letterIndex + 1;
 
@@ -54,5 +60,21 @@ public class MyCityPlayer : MyPlayerBase
         digitRenderer.material = fadeMaterial;
         digitRenderer.material.DOFade(.1f, .3f).SetEase(Ease.OutCirc)
             .OnComplete(() => fadeMaterial.color = Color.white);
+
+        digit.transform.DOScale(.3f, .3f);
+    }
+
+
+    protected override void JumpWord()
+    {
+        //previous word
+        BasicGraphEnv.I.WordState(WordIndex, false);
+
+        base.JumpWord();
+
+        //current word + 1
+        if (WordIndex + 1 == EnvBase.I.WordsCount) return;
+
+        BasicGraphEnv.I.WordState(WordIndex + 1, true);
     }
 }

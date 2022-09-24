@@ -42,6 +42,8 @@ public class StairEnv : EnvBase
         throw new NotImplementedException();
     }
 
+    public override int WordsCount => throw new NotImplementedException();
+
     protected override void Awake()
     {
         base.Awake();
@@ -51,7 +53,7 @@ public class StairEnv : EnvBase
     protected override void Start()
     {
         base.Start();
-        
+
         for (var i = 0; i < capacity; i++)
             stairs.Add(new List<Stair>());
 

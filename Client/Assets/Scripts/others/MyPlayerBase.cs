@@ -1,53 +1,54 @@
 ﻿using System;
 using System.Collections;
-using DG.Tweening;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MyPlayerBase : PlayerBase
+public abstract class MyPlayerBase : PlayerBase
 {
-    private void Awake()
+    protected override void Awake()
     {
-        if (TestController.I.UseTest)
-            offset = TestController.I.cameraPlayerOffset;
+        base.Awake();
 
-        mainCamera = Camera.main.transform;
+        if (TestController.I.UseTest)
+            cameraOffset = TestController.I.cameraPlayerOffset;
+
+        mainCamera = Camera.main!.transform;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
-        EnvBase.I.OnGameFinished += onGameFinished;
-        Keyboard.current.onTextInput += onTextInput;
-        
+        EnvBase.I.OnGameFinished += OnGameFinished;
+        Keyboard.current.onTextInput += OnTextInput;
+
         MovePozWithLinearY = transform.position;
     }
-    
 
-    private void onTextInput(char c)
+    private void OnTextInput(char c)
     {
         NetManager.I.StreamChar(c);
-        
+
         TakeInput(c);
 
-        if (IsLastDigit())
+        if (IsTextFinished())
             EnvBase.I.FinishGame();
     }
 
 
     private void OnDestroy()
     {
-        Keyboard.current.onTextInput -= onTextInput;
+        Keyboard.current.onTextInput -= OnTextInput;
     }
 
-    private void onGameFinished()
+    private void OnGameFinished()
     {
-        Keyboard.current.onTextInput -= onTextInput;
+        Keyboard.current.onTextInput -= OnTextInput;
     }
 
 
     #region camera follow
 
-    [SerializeField] private Vector3 offset;
+    [SerializeField] private Vector3 cameraOffset;
 
     private Vector3 lastLookAtPoz;
     private Coroutine followCo;
@@ -65,15 +66,15 @@ public class MyPlayerBase : PlayerBase
         mainCamera.position = GetTargetPoz();
         mainCamera.LookAt(transform);
     }
-    
+
     private Vector3 GetTargetPoz()
     {
-        var targetPosition = 
-                            transform.right * offset.z + 
-                            transform.up * offset.y +
-                            transform.forward * offset.x +
-                            MovePozWithLinearY;
-            
+        var targetPosition =
+            transform.right * cameraOffset.z +
+            transform.up * cameraOffset.y +
+            transform.forward * cameraOffset.x +
+            MovePozWithLinearY;
+
         return targetPosition;
     }
 
@@ -97,6 +98,6 @@ public class MyPlayerBase : PlayerBase
         }
         // ReSharper disable once IteratorNeverReturns
     }
-    
+
     #endregion
 }

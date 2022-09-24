@@ -432,6 +432,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -471,6 +483,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
       propertyPath: m_Controller
       value: 
@@ -495,21 +511,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 7609011456178209829}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d066fba4157b4e79bbf6149b930b8f1d, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d9275abb2e4441a84aa8d23bd1343a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Env: {fileID: 0}
   startTime: 0
-  wordIndex: 0
+  Index: 0
+  WordIndex: 0
+  DigitIndex: 1
+  CurrentWordLength: 0
+  globalCharIndex: 0
   nameText: {fileID: 9105993892489153531}
-  animator: {fileID: 7609011456187578341}
-  offset: {x: 0, y: 0, z: 0}
+  cameraOffset: {x: 6, y: 10, z: 9}
+  wordHighlightMat: {fileID: 2100000, guid: 5fc3ea5a3b5496e47a8d3181bb95e505, type: 2}
+  digitHighlightMat: {fileID: 2100000, guid: ed9a73b9520d7b44aabbd6f02beb62dd, type: 2}
+  fadeMaterial: {fileID: 2100000, guid: 13eceaee842705c4389f3f588d4d9515, type: 2}
 --- !u!4 &7609011456178575365 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
-  m_PrefabInstance: {fileID: 7609011456178176645}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &7609011456187578341 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 9500000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
   m_PrefabInstance: {fileID: 7609011456178176645}
   m_PrefabAsset: {fileID: 0}

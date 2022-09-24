@@ -1,19 +1,9 @@
-using Basra.Common;
 using BestHTTP;
-using BestHTTP.SignalRCore;
-using BestHTTP.SignalRCore.Encoders;
-using BestHTTP.SignalRCore.Messages;
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Web;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 #if !UNITY_WEBGL
 using Newtonsoft.Json;
 #endif
@@ -22,15 +12,10 @@ using Newtonsoft.Json;
 [Rpc]
 public class Controller : MonoModule<Controller>
 {
-    private void Update()
-    {
-        Keyboard.current.onTextInput += c => { Debug.Log(c); };
-    }
-
-    public Transform canvas { get; set; }
+    public Transform canvas;
 
     [SerializeField] private int targetFps;
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -80,7 +65,6 @@ public class Controller : MonoModule<Controller>
         TransitionData.Remove(name);
         return data;
     }
-
 
     #region out rpcs
 

@@ -11,6 +11,7 @@ using BestHTTP.SignalRCore.Messages;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class NetManager : MonoModule<NetManager>
 {
@@ -30,7 +31,7 @@ public class NetManager : MonoModule<NetManager>
 
     private void DownStream()
     {
-        var controller = hubConnection.GetDownStreamController<List<char>[]>("DownStreamCharBuffer");
+        var controller = hubConnection.GetDownStreamController<string[]>("DownStreamCharBuffer");
 
         controller.OnItem(DigitsReceived)
             .OnSuccess(_ => Debug.Log("Streaming finished!"))
@@ -54,16 +55,21 @@ public class NetManager : MonoModule<NetManager>
         Debug.Log(i);
     }
 
-    private void DigitsReceived(List<char>[] playerBuffers)
+    private void DigitsReceived(string[] playerBuffers)
     {
+        Debug.Log($"received: {JsonConvert.SerializeObject(playerBuffers)}");
         for (var p = 0; p < playerBuffers.Length; p++)
-            foreach (var digit in playerBuffers[p])
-                EnvBase.I.Players[p].TakeInput(digit);
+            if (p != RoomController.I.MyTurn)
+                foreach (var digit in playerBuffers[p])
+                    EnvBase.I.Players[p].TakeInput(digit);
     }
 
     private void UpStream()
     {
         upStreamItemController = hubConnection.GetUpStreamController<string, char>("UpStreamChar");
+        upStreamItemController.UploadParam((char)Random.Range(0, 200));
+        upStreamItemController.UploadParam((char)Random.Range(0, 200));
+        upStreamItemController.UploadParam((char)Random.Range(0, 200));
         // upStreamItemController.OnSuccess(result => { Debug.Log($"Upload finished: {result}"); });
     }
 
@@ -184,9 +190,9 @@ public class NetManager : MonoModule<NetManager>
         Debug.Log("connected to server");
 
 
-        SignInPanel.DestroyModule();
+        SignInPanel.I.Destroy();
 
-        LangSelector.DestroyModule();
+        LangSelector.I.Destroy();
 
         Destroy(FindObjectOfType<GuestView>()?.gameObject);
     }
@@ -229,8 +235,7 @@ public class NetManager : MonoModule<NetManager>
 
     #region rpc with reflections
 
-    private readonly Dictionary<string, (MethodInfo info, Type[] types)> rpcInfos =
-        new Dictionary<string, (MethodInfo info, Type[] types)>();
+    private readonly Dictionary<string, (MethodInfo info, Type[] types)> rpcInfos = new();
 
     private void FetchRpcInfos()
     {
@@ -252,7 +257,7 @@ public class NetManager : MonoModule<NetManager>
         }
     }
 
-    private readonly Dictionary<Type, object> rpcContainers = new Dictionary<Type, object>();
+    private readonly Dictionary<Type, object> rpcContainers = new();
 
     public void AddRpcContainer(object container)
     {
@@ -306,4 +311,17 @@ public class NetManager : MonoModule<NetManager>
     }
 
     #endregion
+
+    public void UpStreamCharTest()
+    {
+        var controller = hubConnection.GetUpStreamController<string, char>("UpStreamCharTest");
+        UniTask.Create(async () =>
+        {
+            while (true)
+            {
+                controller.UploadParam((char)Random.Range(0, 200));
+                await UniTask.Delay(500);
+            }
+        });
+    }
 }

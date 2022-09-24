@@ -188,6 +188,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -227,6 +239,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
       propertyPath: m_Controller
       value: 
@@ -247,20 +263,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 7609011456178209829}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4a7173b2cff48baa0e3a21f06dd8855, type: 3}
+  m_Script: {fileID: 11500000, guid: 7cfbc6feb3b14f8482db32e2b5aceeee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Env: {fileID: 0}
   startTime: 0
-  wordIndex: 0
+  Index: 0
+  WordIndex: 0
+  DigitIndex: 1
+  CurrentWordLength: 0
+  globalCharIndex: 0
   nameText: {fileID: 7409389636317943836}
-  animator: {fileID: 7609011456187578341}
 --- !u!4 &7609011456178575365 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
-  m_PrefabInstance: {fileID: 7609011456178176645}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &7609011456187578341 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 9500000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
   m_PrefabInstance: {fileID: 7609011456178176645}
   m_PrefabAsset: {fileID: 0}

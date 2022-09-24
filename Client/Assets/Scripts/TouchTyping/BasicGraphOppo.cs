@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public class CityOppo : OppoBase
+public class BasicGraphOppo : OppoBase
 {
 }

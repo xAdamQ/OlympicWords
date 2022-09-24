@@ -13,8 +13,8 @@ public class RoomUserView : MinUserView
     [SerializeField] private Image turnFillImage, turnFocusOutline;
 
     private static Color
-        TurnFillStartColor = new Color(1, .815f, 0),
-        TurnFillEndColor = new Color(1, 0, 0);
+        TurnFillStartColor = new(1, .815f, 0),
+        TurnFillEndColor = new(1, 0, 0);
 
     public void TurnFocus(bool getFocus)
     {

@@ -181,9 +181,20 @@ public class Edge
         return realStart == -1 || realStart == node;
     }
 
+    public bool CanMoveIn(int node)
+    {
+        var realFinish = RealFinish;
+        return realFinish == -1 || realFinish == node;
+    }
+
     public override string ToString()
     {
         return $"edge>> start: {Start} end: {End} type: {Type}";
+    }
+
+    public int OtherEnd(int node)
+    {
+        return Start == node ? End : Start;
     }
 }
 
@@ -207,7 +218,7 @@ public class Node
         return HashCode.Combine(Position, Type);
     }
 
-    public Vector3 Position;
+    public Vector3 Position, Normal;
 
     public int Type;
 

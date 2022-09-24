@@ -3,57 +3,72 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public abstract class EnvBase : MonoBehaviour
+[System.Serializable]
+public class Kvp<TKey, TValue>
 {
-    public static EnvBase I;
+    public TKey Key;
+    public TValue Value;
+}
 
+public abstract class EnvBase : MonoModule<EnvBase>
+{
     [SerializeField] protected GameObject
         myPlayerPrefab,
         oppoPlayerPrefab,
         digitPrefab;
 
-    public Material wordHighlightMat, digitHighlightMat;
-    
+
     /////////////// SERIALIZED FIELDS
     protected List<string> words;
     protected int capacity;
     public Material BaseMaterial;
 
-    [SerializeField] private Mesh[] DigitModels;
+    [SerializeField] private Mesh[] AlphabetModels;
+    [SerializeField] private List<Kvp<char, Mesh>> SpecialModels;
 
-    protected Mesh GetDigitMesh(char digit) => DigitModels[digit - 'a'];
+    [HideInInspector] public int TotalTextLength;
+
+    protected Mesh GetDigitMesh(char digit)
+    {
+        if (digit is >= 'a' and <= 'z')
+            return AlphabetModels[digit - 'a'];
+
+        return SpecialModels.First(c => c.Key == digit).Value;
+    }
 
     public char GetDigitAt(int wordIndex, int digitIndex)
     {
         var word = words[wordIndex];
-        return digitIndex >= word.Length ? ' ' : word[digitIndex];
+        return word[digitIndex]; //spaces are not treated synthetically now
+        // return digitIndex >= word.Length ? ' ' : word[digitIndex];
     }
+
+    public int GetWordLengthAt(int wordIndex) => words[wordIndex].Length;
 
     public abstract Vector3 GetDigitPozAt(int wordIndex, int digitIndex);
     public abstract Vector3 GetDigitRotAt(int wordIndex, int digitIndex);
-    public abstract GameObject[] GetWordObjects(int wordIndex);
-    // public abstract void MyPlayerMoveADigit(int wordIndex, int digitIndex);
-    
-    protected virtual void Awake()
-    {
-        I = this;
-    }
 
+    public abstract GameObject[] GetWordObjects(int wordIndex);
+
+    public abstract int WordsCount { get; }
+    
     protected virtual void Start()
     {
         NetManager.I.AddRpcContainer(this);
 
         capacity = RoomController.I.Capacity;
-        words = RoomController.I.Words.Select(w=>w.ToLower()).ToList();
+        words = RoomController.I.Words.Select(w => w.ToLower()).ToList();
+
+        TotalTextLength = RoomController.I.Text.Length + 1; //1 for the initial added space
 
         MakePlayersColorPalette();
 
         CreatePlayers();
-        
+
         GenerateDigits();
-        
+
         SetPlayersStartPoz();
-        
+
         SetCameraFollow();
     }
 
@@ -65,10 +80,10 @@ public abstract class EnvBase : MonoBehaviour
 
     private void SetPlayersStartPoz()
     {
-        Players.ForEach(p=>p.transform.position = GetDigitPozAt(0, 0));
-        Players.ForEach(p=>p.transform.eulerAngles = GetDigitRotAt(0, 0));
+        Players.ForEach(p => p.transform.position = GetDigitPozAt(0, 0));
+        Players.ForEach(p => p.transform.eulerAngles = GetDigitRotAt(0, 0));
     }
-    
+
     protected abstract void GenerateDigits();
 
     public Material[] PlayerMats;
@@ -111,16 +126,14 @@ public abstract class EnvBase : MonoBehaviour
             if (RoomController.I.MyTurn == i)
             {
                 MyPlayer = Instantiate(myPlayerPrefab).GetComponent<MyPlayerBase>();
-                MyPlayer.Init(RoomController.I.MyTurn);
+                MyPlayer.Init(RoomController.I.MyTurn, this);
 
                 Players.Add(MyPlayer);
-
-
             }
             else
             {
                 var oppo = Instantiate(oppoPlayerPrefab).GetComponent<OppoBase>();
-                oppo.Init(oppoPlaceCounter++);
+                oppo.Init(oppoPlaceCounter++, this);
 
                 Players.Add(oppo);
                 Oppos.Add(oppo);

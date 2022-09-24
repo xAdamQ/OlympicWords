@@ -60,14 +60,14 @@ public class FinalMuv : MonoBehaviour
 
     public void SetTemporalStatus()
     {
-        player.MovedADigit += (_, _) => UpdateWpm();
+        player.MovedADigit += UpdateWpm;
     }
 
 
     private void UpdateWpm()
     {
         var timeInterval = (Time.time - player.startTime) / 60f;
-        WpmText.text = (player.wordIndex / timeInterval).ToString("f2");
+        WpmText.text = (player.WordIndex / timeInterval).ToString("f2");
         Debug.Log("updating wpm");
     }
 

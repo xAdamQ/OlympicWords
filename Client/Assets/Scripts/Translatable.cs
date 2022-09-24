@@ -37,7 +37,7 @@ public class Translatable : MonoBehaviour
     //first lang is english, matches index 1 in enum
 
     private static Dictionary<string, string[]> Dictionary =
-        new Dictionary<string, string[]>
+        new()
         {
             { "player_rejected", new[] { "تم رفض اللعب من قبل اللاعب", "player rejected" } },
             { "creating_room", new[] { "يتم تجهيز الغرفه الان", "creating room" } },
