@@ -450,6 +450,7 @@ MonoBehaviour:
   scoreText: {fileID: 5059612700657425888}
   finalPositionText: {fileID: 5059612699855409501}
   followButton: {fileID: 1942673544077211986}
+  Finished: 0
 --- !u!1001 &3604986909573238495
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -487,7 +488,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4189659715013338005, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: translations.Array.data[0]
-      value: Basras
+      value: WPM
       objectReference: {fileID: 0}
     - target: {fileID: 7878697191330894570, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: m_Enabled
@@ -668,7 +669,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4189659715013338005, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: translations.Array.data[0]
-      value: Prize
+      value: position
       objectReference: {fileID: 0}
     - target: {fileID: 7878697191330894570, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: m_Enabled
@@ -841,7 +842,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4189659715013338005, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: translations.Array.data[0]
-      value: Eaten Cards
+      value: prize
       objectReference: {fileID: 0}
     - target: {fileID: 7878697191330894570, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: m_Enabled
@@ -1014,7 +1015,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4189659715013338005, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: translations.Array.data[0]
-      value: Super Basras
+      value: score
       objectReference: {fileID: 0}
     - target: {fileID: 7878697191330894570, guid: 1df16ed5a8f18834a9d1017d902183a5, type: 3}
       propertyPath: m_Enabled

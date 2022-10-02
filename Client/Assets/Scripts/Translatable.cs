@@ -58,7 +58,8 @@ public class Translatable : MonoBehaviour
     }
 
     //we get current lang from presisitant storage like instantGames 1mb
-    private static Language currentLanguage = Language.Arabic;
+    private static Language currentLanguage = Language.English;
+
     public static Language CurrentLanguage
     {
         get { return currentLanguage; }

@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class BlockingOperationManager : Singleton<BlockingOperationManager>
 {
@@ -28,6 +29,25 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
             throw;
         }
     }
+
+    /// <summary>
+    /// uses BlockingPanel 
+    /// </summary>
+    public async UniTask Start(AsyncOperationHandle operation, string message = null)
+    {
+        BlockingPanel.Show(operation, message).Forget();
+        try
+        {
+            await operation;
+            BlockingPanel.Hide();
+        }
+        catch (BadUserInputException)
+        {
+            BlockingPanel.Done("operation failed");
+            throw;
+        }
+    }
+
 
     public void Forget<T>(UniTask<T> operation, Action<T> onComplete)
     {

@@ -51,7 +51,7 @@ public abstract class PlayerBase : MonoBehaviour
 
     protected bool IsTextFinished()
     {
-        return globalCharIndex == RoomController.I.Text.Length;
+        return globalCharIndex == RoomBase.I.Text.Length;
         // return WordIndex == RoomController.I.Words.Length - 1 && CurrentDigit == ' ';
     }
 

@@ -74,7 +74,7 @@ namespace OlympicWords.Services
             {
                 await foreach (var chr in stream.WithCancellation(roomUser.Cancellation.Token))
                 {
-                    logger.LogInformation("received {Chr}", chr);
+                    // logger.LogInformation("received {Chr}", chr);
 
                     await ProcessDigit(chr);
                 }
@@ -92,18 +92,23 @@ namespace OlympicWords.Services
             var roomActor = scopeRepo.RoomActor;
             var room = roomActor.Room;
 
+            if (roomActor.TextPointer == room.Text.Length) return;
+            //in case the last input was string not char, and the finalization was already done
+
             roomActor.CharBuffer[roomActor.BufferPointer] = chr;
             roomActor.BufferPointer++;
 
             if (roomActor.BufferPointer > RoomActor.MAX_BUFFER - 1)
             {
                 await Surrender();
-                logger.LogInformation("user has surrendered because of exceeding the possible amount of inputs");
+                logger.LogInformation(
+                    "user has surrendered because of exceeding the possible amount of inputs");
                 return;
             }
 
-            logger.LogInformation("received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}",
-                chr, room.Text[roomActor.TextPointer], roomActor.TextPointer);
+            logger.LogInformation(
+                "received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}, text size {textSize}",
+                chr, room.Text[roomActor.TextPointer], roomActor.TextPointer, room.Text.Length);
 
             if (room.Text[roomActor.TextPointer] == chr)
                 roomActor.TextPointer++;
@@ -141,7 +146,8 @@ namespace OlympicWords.Services
                     }
 
                     updateBuffer[u] = new string
-                        (otherActor.CharBuffer[roomUser.BufferSyncPointers[u]..otherActor.BufferPointer]);
+                    (otherActor.CharBuffer[
+                        roomUser.BufferSyncPointers[u]..otherActor.BufferPointer]);
                     //can return empty list
 
                     roomUser.BufferSyncPointers[u] = otherActor.BufferPointer;
@@ -149,8 +155,8 @@ namespace OlympicWords.Services
 
                 if (!updateBuffer.All(string.IsNullOrEmpty))
                 {
-                    logger.LogInformation("received digits {SerializeObject}",
-                        JsonConvert.SerializeObject(updateBuffer, Formatting.None));
+                    // logger.LogInformation("received digits {SerializeObject}",
+                    //     JsonConvert.SerializeObject(updateBuffer, Formatting.None));
 
                     yield return updateBuffer;
                 }

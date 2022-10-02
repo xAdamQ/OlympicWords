@@ -1,0 +1,7 @@
+{
+  "mimeTypes": {
+    ".data": "application/octet-stream",
+    ".wasm": "application/wasm",
+    ".symbols.json": "application/octet-stream"
+  }
+}

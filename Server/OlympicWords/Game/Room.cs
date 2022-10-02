@@ -64,7 +64,7 @@ public class Room
 
 
     //variable based on the room type, keep it simple
-    public int wrongDigitProb = -1, botTimeMin = 100, botTimeMax = 300;
+    public int wrongDigitProb = -1, botTimeMin = 200, botTimeMax = 700;
 
     //I may leave this prop public because some feature like nitro may use it
     public string[] Words { get; }

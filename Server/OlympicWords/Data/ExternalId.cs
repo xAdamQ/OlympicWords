@@ -13,6 +13,11 @@ namespace OlympicWords.Services
         [ForeignKey("User")] public string MainId { get; set; }
 
         public int Type { get; set; }
+        
+        //I don't have 2FA, no roles, no intention to add them
+        //much better to focus on real features
+        //and to make sure the current flow is safe
+        //anyway the game even could be played without authentication  
     }
 
     public enum ExternalIdType

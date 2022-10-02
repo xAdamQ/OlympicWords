@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,7 +18,7 @@ public class BasicGraphEnv : EnvBase
 
     private const float DIGIT_SIZE = .3f,
         DIGIT_FILL_PERCENT = .8f,
-        SPACE_DISTANCE = 1f,
+        SPACE_DISTANCE = .5f,
         MAX_DIGIT_SIZE = .5f,
         SPACING_Y = .1f;
 
@@ -29,12 +30,10 @@ public class BasicGraphEnv : EnvBase
         chosenGraphIndex = Random.Range(0, graphs.Length);
     }
 
-    public static Vector3 GetProjectedPoz(Vector3 at, Vector3 normal)
+    public static (Vector3 poz, Vector3 normal) GetProjectedPoz(Vector3 at, Vector3 normal)
     {
-        if (normal == Vector3.zero) normal = Vector3.up;
         var rayHit = Physics.Raycast(at + normal * 2, Vector3.down, out var hitInfo, 3, ~6);
-
-        return !rayHit ? at : hitInfo.point + Vector3.up * SPACING_Y;
+        return !rayHit ? (at, normal) : (hitInfo.point + Vector3.up * SPACING_Y, hitInfo.normal);
     }
 
     public override Vector3 GetDigitPozAt(int wordIndex, int digitIndex)
@@ -63,8 +62,23 @@ public class BasicGraphEnv : EnvBase
 
     public void WordState(int wordIndex, bool state)
     {
-        foreach (var wordObject in wordObjects[wordIndex])
-            wordObject.SetActive(state);
+        var endScale = Vector3.one * (state ? 1 : 0);
+        if (state)
+        {
+            foreach (var wordObject in wordObjects[wordIndex])
+            {
+                wordObject.SetActive(true);
+                wordObject.transform.GetChild(0).transform.DOScale(endScale, .4f);
+            }
+        }
+        else
+        {
+            foreach (var wordObject in wordObjects[wordIndex])
+            {
+                wordObject.transform.GetChild(0).transform.DOScale(endScale, .4f)
+                    .OnComplete(() => wordObject.SetActive(false));
+            }
+        }
     }
 
     public override int WordsCount => wordObjects.Length;
@@ -217,11 +231,11 @@ public class BasicGraphEnv : EnvBase
                     var digitStartProjection = GetProjectedPoz(digitStartPoint, digitStartNormal);
                     var digitEndProjection = GetProjectedPoz(digitEndPoint, digitEndNormal);
 
-                    var finalPoz = Vector3.Lerp(digitStartProjection, digitEndProjection, .5f);
-                    var finalRot = Vector3.Lerp(digitStartNormal, digitEndNormal, .5f);
+                    var finalPoz = Vector3.Lerp(digitStartProjection.poz, digitEndProjection.poz, .5f);
+                    var finalRot = Vector3.Lerp(digitStartProjection.normal, digitEndProjection.normal, .5f);
 
                     var digitObject = Instantiate(digitPrefab, finalPoz,
-                        Quaternion.LookRotation(digitEndPoint - digitStartPoint, finalRot),
+                        Quaternion.LookRotation(digitEndProjection.poz - digitStartProjection.poz, finalRot),
                         transform);
 
                     var currentDigit = currentWord[i];
@@ -266,7 +280,10 @@ public class BasicGraphEnv : EnvBase
         }
 
         foreach (var go in wordObjects.SelectMany(g => g))
+        {
+            go.transform.GetChild(0).transform.localScale = Vector3.zero;
             go.SetActive(false);
+        }
     }
 
     private static (Vector3, Vector3) GetPointOnPath(List<Vector3> path, List<Vector3> normals, float passedDistance)

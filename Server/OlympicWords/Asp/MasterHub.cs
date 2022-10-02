@@ -261,6 +261,7 @@ namespace OlympicWords.Services
                 yield return item;
         }
 
+
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
         public async IAsyncEnumerable<int> DownStreamTest(
             [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -324,8 +325,8 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App))]
         public async Task<string> UpStreamCharTest(IAsyncEnumerable<char> stream)
         {
-            await foreach (var chr in stream)
-                logger.LogInformation("received {Chr}", chr);
+            // await foreach (var chr in stream)
+            // logger.LogInformation("received {Chr}", chr);
 
             logger.LogInformation("test stream done");
             return "done";

@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //services
 var configuration = builder.Configuration;
-
+builder.WebHost.UseUrls("http://*:5112");
 
 // Add services to the container.
 
@@ -28,7 +28,10 @@ services.AddHttpContextAccessor();
 
 services.AddControllers();
 
-services.AddDbContext<MasterContext>(options => { options.UseSqlServer(configuration.GetConnectionString("Main")); });
+services.AddDbContext<MasterContext>(options =>
+{
+    options.UseSqlServer(configuration.GetConnectionString("Main"));
+});
 
 services.AddScoped<IGameplay, Gameplay>();
 services.AddScoped<IOfflineRepo, OfflineRepo>();

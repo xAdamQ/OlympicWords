@@ -35,7 +35,7 @@ public class BasicGraphMyPlayer : MyPlayerBase
             .GetComponent<Renderer>().material = wordHighlightMat;
 
         var isLastLetter = letterIndex == Env.GetWordLengthAt(wordIndex) - 1;
-        var isLastWord = wordIndex == RoomController.I.Words.Length - 1;
+        var isLastWord = wordIndex == RoomBase.I.Words.Length - 1;
         if (isLastLetter && isLastWord) return;
         var targetWord = isLastLetter ? wordIndex + 1 : wordIndex;
         var targetLetter = isLastLetter ? 0 : letterIndex + 1;

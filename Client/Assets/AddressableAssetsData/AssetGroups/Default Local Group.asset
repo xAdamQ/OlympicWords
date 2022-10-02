@@ -21,218 +21,272 @@ MonoBehaviour:
     m_Address: ground
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: af3a47f10f07a2bc5b9ae50840851838
     m_Address: player3
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 91cc747f46429b00e945c1e73e073c70
     m_Address: card
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8d7fc7449ba5f5d4c8bf3fbe2ef81ffb
     m_Address: front
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: de67c529bd241f24d95f21f7dd3a1059
     m_Address: myRoomResultView
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fb2de139dc7dbe33084ada8c92f496a8
     m_Address: canvas
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 84ec9ea54801264d7b30ac63de8eb2d4
     m_Address: eventSystem
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 26c193700bec480e39931d410bae34e3
     m_Address: camera
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4046388fe8fbd574c97dbb0e19c38143
     m_Address: finalMuv
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 84cd31e223a1faa43a34da0305d4e5e0
     m_Address: finalMuvParent
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 97da8805524200bfc8b58743065da8a5
     m_Address: background
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c47d55e75abeeaac9963a8a5ab831b63
     m_Address: toast
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3dff5a4b4601f8050a20442466454b02
     m_Address: blockingPanel
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c9d5b889e4f409ef0848ebd8cd2c097d
     m_Address: cardbackShop
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cf0222e9f7b8c382a9b5df6f44871e7d
     m_Address: backgroundShop
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 39883e13245f1054aac7b33760e03982
     m_Address: frontSprites
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 13dc3a622487cf34d9267831bf8cb01a
     m_Address: fullUserView
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 39ba3d0dd99d1c27da0ab437169fa420
     m_Address: minUserView
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e9653981e976b5265a5fcf36d92e3413
     m_Address: friendsView
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9cb2e360cbffd51fdab5ac815b786318
     m_Address: roomRequester
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 976c5317dbbf86543982f2deebb994e1
     m_Address: personalActiveUserView
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b750050b3b1a0ace0a1a9f0205ff61f9
     m_Address: player2
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 21f289f0af72e66f6aae55d4e6afe741
     m_Address: player1
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0aec6ccccb153d3fbaa3fd23f5565cfa
     m_Address: player0
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e1f2a16fdc7e58d1b8a0ec2f5bad3c73
     m_Address: roomUserView2
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 075222e41633a6ff09ccf8e619053bee
     m_Address: roomUserView1
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: eea5418db741a29d4983abab5dbbbee8
     m_Address: roomUserView0
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f6d1aedb40898702ab59d420847fc64d
     m_Address: roomUserView3
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: aee46fed1431b162591ed610e08715aa
     m_Address: chatSystem
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d7d87b32822319cf4af43a82872dab31
     m_Address: guestView
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4d5d60543ce6c8c88983df6d7a991c8c
     m_Address: redStarPlus
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e1d5a1bb8c6cf0459ad090b6e4da1cfa
     m_Address: redStar
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8007e32e748c107c6ac5ec8297159a45
     m_Address: redRect
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7b9430c7537c4a7d18f3a0dcf6f4b2ac
     m_Address: red
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f03d816863facd25eb348a3da1c627b5
     m_Address: greenStarPlus
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0dc42bb1f85f0aca696e48d300f4e55f
     m_Address: greenStar
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9f55822368c447670831b69d6b7dfe6f
     m_Address: greenRect
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b1bd47be53a8dd0e49c45c31e87e00a0
     m_Address: green
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 645b107b824111003b4eab8b3534e758
     m_Address: blueStarPlus
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f3d7f6f3eae9757bb8965a8d75dc6bfa
     m_Address: blueStar
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bad45651e90e3a8aab33a89eef9b6388
     m_Address: blueRect
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ce208150fe4b1e57e9ee084f9534d6dc
     m_Address: blue
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 23439f6f8b0c42cf6a991002fc201565
     m_Address: personalFuv
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b88df44ca29b82cbf8edd03e50ba2059
     m_Address: challengeResponsePanel
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3dd6197a88a52531b886335b1e091095
     m_Address: signInPanel
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e472a5005f55d2e30862196db83c81d3
     m_Address: levelUpPanel
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7079fdbf10628a11daacdb86f4687e1c
     m_Address: prizeView
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 696122235d23ffbc49cbf33fe12eefc9
     m_Address: distributeClip
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9331bcf1bccf68c0981eb35188e0f32b
     m_Address: throwClip
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ddad84f7a78e4d57d96539bc9b1dae60
     m_Address: turnClip
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: feb1582f02f3cfd83838e2d01ecf07b7
     m_Address: soundButton
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 58c25eef57b507e1a9e20bcdd8ee1481
     m_Address: iapShop
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7d372d430443807219f3647b458cacd1
     m_Address: addMoneyPopup
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dba2c421b870d9c24bef91c36ff6399c
     m_Address: langSelector
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: b2c7024f110de7f4f9f1208d9a0e5d05, type: 2}
   m_SchemaSet:

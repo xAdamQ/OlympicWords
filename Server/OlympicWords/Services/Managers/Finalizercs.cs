@@ -22,12 +22,15 @@ namespace OlympicWords.Services
         private readonly IHubContext<MasterHub> masterHub;
         private readonly IOfflineRepo offlineRepo;
         private readonly IScopeRepo scopeRepo;
+        private readonly ILogger<Finalizer> logger;
 
-        public Finalizer(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo, IScopeRepo scopeRepo)
+        public Finalizer(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo,
+            IScopeRepo scopeRepo, ILogger<Finalizer> logger)
         {
             this.masterHub = masterHub;
             this.offlineRepo = offlineRepo;
             this.scopeRepo = scopeRepo;
+            this.logger = logger;
         }
 
         public async Task SurrenderFinalization()
@@ -50,6 +53,7 @@ namespace OlympicWords.Services
 
         public async Task FinalizeUser()
         {
+            logger.LogInformation("finalize room");
             var room = scopeRepo.Room;
             var roomActor = scopeRepo.RoomActor;
             var realUser = roomActor is RoomUser;
@@ -79,10 +83,12 @@ namespace OlympicWords.Services
             await offlineRepo.SaveChangesAsync();
 
             if (realUser)
-                await masterHub.SendOrderedAsync(scopeRepo.ActiveUser, "FinalizeRoom", userRoomStatus);
+                await masterHub.SendOrderedAsync(scopeRepo.ActiveUser, "FinalizeRoom",
+                    userRoomStatus);
 
             foreach (var oppo in room.InRoomUsers.Where(ru => ru != roomActor))
-                await masterHub.SendOrderedAsync(oppo.ActiveUser, "TakeOppoUserRoomStatus", roomActor.Index,
+                await masterHub.SendOrderedAsync(oppo.ActiveUser, "TakeOppoUserRoomStatus",
+                    roomActor.Index,
                     userRoomStatus);
 
             if (room.RoomUsers.All(ru => ru.Cancellation.IsCancellationRequested))
@@ -127,7 +133,8 @@ namespace OlympicWords.Services
                 roomDataUser.Money += totalMoneyReward;
 
                 if (activeUser != null)
-                    await masterHub.SendOrderedAsync(activeUser, "LevelUp", calcedLevel, totalMoneyReward);
+                    await masterHub.SendOrderedAsync(activeUser, "LevelUp", calcedLevel,
+                        totalMoneyReward);
             }
         } //separate this to be called on every XP change 
     }

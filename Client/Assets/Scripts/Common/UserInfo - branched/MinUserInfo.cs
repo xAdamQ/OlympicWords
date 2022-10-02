@@ -13,7 +13,7 @@ public class MinUserInfo
         UniTask.Create(async () =>
         {
             await UniTask.DelayFrame(1); //to get data from object inititalizer >> {abdc = value}
-            DownloadPicture().Forget();
+            // DownloadPicture().Forget();
         });
     }
 
@@ -24,6 +24,7 @@ public class MinUserInfo
 
     private const int MaxLevel = 999;
     private const float Expo = .55f, Divi = 10;
+
     private static int GetLevelFromXp(int xp)
     {
         var level = (int)(Mathf.Pow(xp, Expo) / Divi);

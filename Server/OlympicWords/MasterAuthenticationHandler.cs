@@ -17,7 +17,6 @@ namespace OlympicWords
 {
     public class MasterAuthenticationSchemeOptions : AuthenticationSchemeOptions
     {
-        
     }
 
     public class
@@ -25,7 +24,7 @@ namespace OlympicWords
     {
         public const string ProviderName = "Master";
 
-        private ILogger<MasterAuthenticationHandler> logger;
+        private readonly ILogger<MasterAuthenticationHandler> logger;
         private readonly SecurityManager securityManager;
 
         public MasterAuthenticationHandler(
@@ -41,7 +40,7 @@ namespace OlympicWords
 
         /// <summary>
         /// gets string after 6 chars (bearer)
-        /// exceptions: token header doesn't exist - does't have 6 chars (for bearer {so it can be any word with 6 char!})
+        /// exceptions: token header doesn't exist - doesn't have 6 chars (for bearer {so it can be any word with 6 char!})
         /// exceptions caught on higher level, you can identify them to avoid your faults
         /// look at the disabled function
         /// </summary>
@@ -51,7 +50,7 @@ namespace OlympicWords
             return authorizationHeader.Substring("bearer".Length).Trim();
         }
 
-        public const string PROVIDER_NAME = "Master";
+        private const string PROVIDER_NAME = "Master";
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
@@ -61,7 +60,7 @@ namespace OlympicWords
             Request.Query.TryGetValue("access_token", out var accessToken);
 
             var user = await securityManager.SignInAsync(accessToken,
-                (int) ExternalIdType.Demo, name, accessToken);
+                (int)ExternalIdType.Demo, name, accessToken);
             //these data maybe fetched from the auth provider in a custom way
 
             var genericClaims = new List<Claim>
@@ -70,7 +69,7 @@ namespace OlympicWords
             }; //this the only claims I can
             var genericIdentity =
                 new ClaimsIdentity(genericClaims, /*Scheme.Name*/ PROVIDER_NAME);
-            //fbig shoud (in theory) have more than idnetity, but the auth provider is the same.. how to differentiat
+            //fbig should (in theory) have more than identity, but the auth provider is the same.. how to differentiate
 
             var principal = new GenericPrincipal(genericIdentity, null);
 

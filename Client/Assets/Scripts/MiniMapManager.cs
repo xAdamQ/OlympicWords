@@ -22,12 +22,14 @@ public class MiniMapManager : MonoBehaviour
 
             miniMap.Init(playerBase);
             playerBase.MovedADigit += () => OnMovedADigit(miniMap, playerBase);
+            OnMovedADigit(miniMap, playerBase);
+            //set the initial values of each minimap
         }
     }
 
     private void OnMovedADigit(MiniMap miniMap, PlayerBase playerBase)
     {
-        SetFill(miniMap, playerBase.globalCharIndex / (float)EnvBase.I.TotalTextLength);
+        SetFill(miniMap, playerBase.globalCharIndex / (float)RoomBase.I.Text.Length);
     }
 
     private void SetFill(MiniMap miniMap, float percent)

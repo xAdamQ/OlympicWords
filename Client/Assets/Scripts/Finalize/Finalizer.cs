@@ -38,14 +38,14 @@ public class Finalizer : MonoModule<Finalizer>
 
         Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
 
-        FinalMuvs = new FinalMuv[RoomController.I.Capacity];
+        FinalMuvs = new FinalMuv[RoomBase.I.Capacity];
 
         UniTask.Create(async () =>
         {
-            for (var i = 0; i < RoomController.I.UserInfos.Count; i++)
-                FinalMuvs[i] = await FinalMuv.Create(RoomController.I.UserInfos[i], EnvBase.I.Players[i], transform);
+            for (var i = 0; i < RoomBase.I.UserInfos.Count; i++)
+                FinalMuvs[i] = await FinalMuv.Create(RoomBase.I.UserInfos[i], EnvBase.I.Players[i], transform);
 
-            FinalMuvs[RoomController.I.MyTurn].SetFinal(myUserRoomStatus);
+            FinalMuvs[RoomBase.I.MyTurn].SetFinal(myUserRoomStatus);
             FinishedUsersStatus.ForEach(rs => FinalMuvs[rs.index].SetFinal(rs.status));
 
             foreach (var finalMuv in FinalMuvs.Where(fm => !fm.Finished))

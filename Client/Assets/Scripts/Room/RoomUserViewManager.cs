@@ -14,9 +14,9 @@
 //     {
 //         _roomUserViewFactory.Create(0, _repository.PersonalFullInfo);
 
-//         for (var i = 1; i < _RoomController.Capacity; i++)
+//         for (var i = 1; i < _EnvBase.Capacity; i++)
 //         {
-//             _roomUserViewFactory.Create(i, _RoomController.OpposInfo[i - 1].FullUserInfo);
+//             _roomUserViewFactory.Create(i, _EnvBase.OpposInfo[i - 1].FullUserInfo);
 //         }
 //     }
 // }

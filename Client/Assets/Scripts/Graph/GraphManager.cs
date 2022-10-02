@@ -26,7 +26,8 @@ public static class GraphManager
             startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom();
             //get random walkable edge
             finishNode = startEdge.RealFinish;
-            if (finishNode == -1) finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
+            if (finishNode == -1) //this means the edge is bidirectional 
+                finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
             //if not directed choose random dir, otherwise stick with the dir
             startNode = startEdge.Start == finishNode ? startEdge.End : startEdge.Start;
             //choose the other node as start
@@ -78,7 +79,8 @@ public static class GraphManager
 
             var eligibleBranches = branches
                 .Where(b => b.edges[0].CanMoveOut(finishNode) &&
-                            (graphData.Nodes[finishNode].Type != 1 || b.edges[0].Group != lastEdge.Group))
+                            (graphData.Nodes[finishNode].Type != 1 ||
+                             b.edges[0].Group != lastEdge.Group))
                 .ToList();
 
             if (eligibleBranches.Count == 0)
@@ -95,7 +97,8 @@ public static class GraphManager
             branches.ForEach(b => b.edges.ForEach(removeEdge));
             //delete all branches
 
-            path.AddRange(chosenBranch.sequence.Select((n, i) => (n, chosenBranch.edges[i].Type == 0)));
+            path.AddRange(
+                chosenBranch.sequence.Select((n, i) => (n, chosenBranch.edges[i].Type == 0)));
             //add chosen sequence to the path
 
             if (chosenBranch.looping)
@@ -124,7 +127,8 @@ public static class GraphManager
 
                 var branchFinishNode = GetOtherEnd(lastExtend, node);
 
-                branches.Add((new List<Edge> { lastExtend }, new List<int> { branchFinishNode }, false));
+                branches.Add((new List<Edge> { lastExtend }, new List<int> { branchFinishNode },
+                    false));
 
 
                 while (nodesEdges[branchFinishNode].Count(e => e != lastExtend) == 1)
@@ -158,11 +162,13 @@ public static class GraphManager
         }
     }
 
-    public static int GetOtherEnd(Edge edge, int otherEnd) => edge.Start == otherEnd ? edge.End : edge.Start;
+    public static int GetOtherEnd(Edge edge, int otherEnd) =>
+        edge.Start == otherEnd ? edge.End : edge.Start;
 
     public static Dictionary<int, List<Edge>> GetNodeEdges(GraphData graphData)
     {
-        var nodeEdges = Enumerable.Range(0, graphData.Nodes.Count).ToDictionary(i => i, _ => new List<Edge>());
+        var nodeEdges = Enumerable.Range(0, graphData.Nodes.Count)
+            .ToDictionary(i => i, _ => new List<Edge>());
 
         foreach (var edge in graphData.Edges)
         {

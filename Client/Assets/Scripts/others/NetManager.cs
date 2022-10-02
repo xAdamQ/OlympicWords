@@ -10,7 +10,9 @@ using BestHTTP.SignalRCore.Encoders;
 using BestHTTP.SignalRCore.Messages;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class NetManager : MonoModule<NetManager>
@@ -27,6 +29,8 @@ public class NetManager : MonoModule<NetManager>
         DontDestroyOnLoad(this);
 
         FetchRpcInfos();
+
+        serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = getAddress();
     }
 
     private void DownStream()
@@ -57,11 +61,28 @@ public class NetManager : MonoModule<NetManager>
 
     private void DigitsReceived(string[] playerBuffers)
     {
-        Debug.Log($"received: {JsonConvert.SerializeObject(playerBuffers)}");
-        for (var p = 0; p < playerBuffers.Length; p++)
-            if (p != RoomController.I.MyTurn)
-                foreach (var digit in playerBuffers[p])
-                    EnvBase.I.Players[p].TakeInput(digit);
+        try
+        {
+            Debug.Log($"received: {JsonConvert.SerializeObject(playerBuffers)}");
+            for (var p = 0; p < playerBuffers.Length; p++)
+                if (p != RoomBase.I.MyTurn)
+                    foreach (var digit in playerBuffers[p])
+                        EnvBase.I.Players[p].TakeInput(digit);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("exception caught in my downstream code"
+                           + "\n--------------\n buffer lengths: " +
+                           playerBuffers.Length
+                           + "\n--------------\n players count: " +
+                           EnvBase.I.Players.Count
+                           + "\n--------------\n exce message: " +
+                           e.Message
+                           + "\n--------------\n" +
+                           e.InnerException
+                           + "\n--------------\n" +
+                           JsonUtility.ToJson(e));
+        }
     }
 
     private void UpStream()
@@ -102,9 +123,17 @@ public class NetManager : MonoModule<NetManager>
 
     [SerializeField] private int selectedAddress;
     [SerializeField] private string[] addresses;
+    [SerializeField] private ChoiceButton serverAddressChoice;
+    [SerializeField] private TMP_InputField customAddress;
+    [SerializeField] private TMP_Text chosenAddressText;
 
     private string getAddress()
     {
+        selectedAddress = serverAddressChoice.CurrentChoice;
+
+        if (selectedAddress >= addresses.Length)
+            return customAddress.text;
+
         return addresses[selectedAddress] + "/connect";
     }
 
@@ -189,10 +218,8 @@ public class NetManager : MonoModule<NetManager>
     {
         Debug.Log("connected to server");
 
-
-        SignInPanel.I.Destroy();
-
-        LangSelector.I.Destroy();
+        SignInPanel.DestroyModule();
+        LangSelector.DestroyModule();
 
         Destroy(FindObjectOfType<GuestView>()?.gameObject);
     }

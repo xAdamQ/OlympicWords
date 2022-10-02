@@ -91,7 +91,7 @@ public class FullUserView : MinUserView
         {
             UpdateFriendShipView();
             challengeButton.GetComponent<Button>().interactable = fullUserInfo
-                .EnableOpenMatches && RoomController.I == null;
+                .EnableOpenMatches && RoomBase.I == null;
         }
 
         base.Init(fullUserInfo);
@@ -109,7 +109,7 @@ public class FullUserView : MinUserView
 
     public void Challenge()
     {
-        if (Repository.I.PersonalFullInfo.Money < RoomController.MinBet)
+        if (Repository.I.PersonalFullInfo.Money < RoomBase.MinBet)
             Toast.I.Show(Translatable.GetText("no_money"));
 
         UniTask.Create(async () =>

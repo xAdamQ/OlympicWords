@@ -86,7 +86,7 @@
 //                 .ByNewContextPrefab(lobbyContextPrefab);
 //
 //         if (_moduleSwitches.EnableRoomFactory)
-//             Container.BindFactory<RoomSettings, ActiveRoomState, RoomController, RoomController.Factory>()
+//             Container.BindFactory<RoomSettings, ActiveRoomState, RoomController, EnvBase.Factory>()
 //                 .FromSubContainerResolve()
 //                 .ByNewContextPrefab<RoomInstaller>(roomContextPrefab);
 //

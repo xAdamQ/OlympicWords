@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7114d6ef75108404f89735e46fcda552, type: 3}
+  m_Name: Synty
+  m_EditorClassIdentifier: 
+  characters:
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 65
+    <Mesh>k__BackingField: {fileID: 4300000, guid: c4a326182d0232c4595dcff5d62f14b4, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 66
+    <Mesh>k__BackingField: {fileID: 4300000, guid: f8b668970249c7545b9cd8b2576a99e0, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 67
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 9fefd849b005cc94db5e63b3345495ce, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 68
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 365c64a8f546da7418e01cef88c95f10, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 69
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 3f9cf7357085d4240af14e0c644c7009, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 70
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 60335388ade52174981f8669e328ab25, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 71
+    <Mesh>k__BackingField: {fileID: 4300000, guid: e3039bd915178c942a71e849e381c6b1, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 72
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 85916b8c69e862b43b8c64b657be7256, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 73
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 01f6cbf9f743ea647aae091024d2319c, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 74
+    <Mesh>k__BackingField: {fileID: 4300000, guid: e700edc0ab7df714e93e9c7c62bc5b62, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 75
+    <Mesh>k__BackingField: {fileID: 4300000, guid: d0ed42607d4e6cd4e8d36889b8618f06, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 76
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 0e8458f1281f2a042b4e10fae00140a5, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 77
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 5247f88ce588e684d9018b28a3740a53, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 78
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 27295244db5875d4881eafe353ede79e, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 79
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 2419f22b6f730a24bb72b4b9918b85a5, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 80
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 96c5082e37cdd004bab9939d37ca1c6a, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 81
+    <Mesh>k__BackingField: {fileID: 4300000, guid: bae39fe6ea811374fbec339ce432f7df, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 82
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 17a7e2f3090208946a00de38af6bba0e, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 83
+    <Mesh>k__BackingField: {fileID: 4300000, guid: b86d39a569f58004d813b29f6657ae43, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 84
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 2347aab528e7a1849b847e64b6f9637d, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 85
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 32de2fad00b2a4642ad553a0787563d3, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 86
+    <Mesh>k__BackingField: {fileID: 4300000, guid: b8386beee4e888e419f34a4aeceb26dd, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 87
+    <Mesh>k__BackingField: {fileID: 4300000, guid: c39f9ed7ee3aa3446a35eb994fb0d4b3, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 88
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 1a927b6286c202f45908304ea767d19d, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 89
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 8335a2d28cba45b4496b7493bcd2bab9, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 90
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 626349a9c9ef3f349bb007735238ae25, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 48
+    <Mesh>k__BackingField: {fileID: 4300000, guid: a0d69f928e21aa64d9a7623bb2437c47, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 49
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 00f7cb2f294b7a44fbe9ef29f2617711, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 50
+    <Mesh>k__BackingField: {fileID: 4300000, guid: c43bdbcc7e025f5478cf3baaa514cf1a, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 51
+    <Mesh>k__BackingField: {fileID: 4300000, guid: f6d589a224998b341b2721e1125cb86c, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 52
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 8b83786211bd01c4ca551d1ae95b2571, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 53
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 65ae8e1479de7934f8aa43bd1b712e56, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 54
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 579ccb923f7e7a54b9c7a5d01d8d9dde, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 55
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 2245d72d357ac454e86ae7e3a835b39f, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 56
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 85ca2f864d629504fb66572a417bd1a1, type: 3}
+  - <FullName>k__BackingField: 
+    <Character>k__BackingField: 57
+    <Mesh>k__BackingField: {fileID: 4300000, guid: ad8fe9b0974f8ae488648e0a9585cd8b, type: 3}
+  - <FullName>k__BackingField: Comma
+    <Character>k__BackingField: 44
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 27354db407742514fa1a43416dae6d29, type: 3}
+  - <FullName>k__BackingField: Period
+    <Character>k__BackingField: 46
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 58b2175eaf18afa468131e8bd9b14a4f, type: 3}
+  - <FullName>k__BackingField: Exclamation
+    <Character>k__BackingField: 33
+    <Mesh>k__BackingField: {fileID: 4300000, guid: e4783fc20c83fb746907e6b4cc98289a, type: 3}
+  - <FullName>k__BackingField: Question
+    <Character>k__BackingField: 63
+    <Mesh>k__BackingField: {fileID: 4300000, guid: da19d437da6c6e841ab0c67f772f7c38, type: 3}
+  - <FullName>k__BackingField: Plus
+    <Character>k__BackingField: 43
+    <Mesh>k__BackingField: {fileID: 4300000, guid: b19a13513d44ad642b1a42c79df1d001, type: 3}
+  - <FullName>k__BackingField: Minus
+    <Character>k__BackingField: 45
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 950d8c5968bef324d9ec524fcc00bb5c, type: 3}
+  - <FullName>k__BackingField: Multiply
+    <Character>k__BackingField: 42
+    <Mesh>k__BackingField: {fileID: 4300000, guid: fb6f280a4dbadaf4ebb0bb0aa8f8907a, type: 3}
+  - <FullName>k__BackingField: Divide
+    <Character>k__BackingField: 47
+    <Mesh>k__BackingField: {fileID: 4300000, guid: e5be2348a705731408ebc5de9f78b975, type: 3}
+  - <FullName>k__BackingField: Percent
+    <Character>k__BackingField: 37
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 05ba658ff28f5924684750aac41ca0f0, type: 3}
+  - <FullName>k__BackingField: Equal
+    <Character>k__BackingField: 61
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 7310c2814d7f18447b1dff9ab3355182, type: 3}
+  - <FullName>k__BackingField: At
+    <Character>k__BackingField: 64
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 8392727e9f1dfb141b5eff82bddd6734, type: 3}
+  - <FullName>k__BackingField: Hash
+    <Character>k__BackingField: 35
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 521aae37a4d952c43b3ecdb6ba73aa8b, type: 3}
+  - <FullName>k__BackingField: Dollar
+    <Character>k__BackingField: 36
+    <Mesh>k__BackingField: {fileID: 4300000, guid: 09ba733cf2673614b8351cf84be8b0d5, type: 3}
+  - <FullName>k__BackingField: OpenedParenthesis
+    <Character>k__BackingField: 40
+    <Mesh>k__BackingField: {fileID: 0}
+  - <FullName>k__BackingField: ClosedParenthesis
+    <Character>k__BackingField: 41
+    <Mesh>k__BackingField: {fileID: 0}

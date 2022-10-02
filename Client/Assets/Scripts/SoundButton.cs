@@ -7,12 +7,6 @@ public class SoundButton : MonoModule<SoundButton>
     [SerializeField] private Sprite enabledSprite, disabledSprite;
     [SerializeField] private Image soundImage;
 
-    public static void Create()
-    {
-        Create("soundButton", LobbyController.I.Canvas)
-            .Forget(e => throw e);
-    }
-
     private void Start()
     {
         soundImage.sprite = AudioManager.I.SoundState()

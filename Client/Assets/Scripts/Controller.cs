@@ -1,8 +1,8 @@
+using System;
 using BestHTTP;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 #if !UNITY_WEBGL
 using Newtonsoft.Json;
@@ -12,6 +12,19 @@ using Newtonsoft.Json;
 [Rpc]
 public class Controller : MonoModule<Controller>
 {
+    [Serializable]
+    public class ScopeReferences
+    {
+        public MonoModule<LevelUpPanel> LevelUpView;
+
+        public void SetSources()
+        {
+            LevelUpPanel.SetSource(LevelUpView.gameObject, I.canvas);
+        }
+    }
+
+    public ScopeReferences References;
+
     public Transform canvas;
 
     [SerializeField] private int targetFps;
@@ -36,6 +49,8 @@ public class Controller : MonoModule<Controller>
         Toast.Create().Forget();
 
         NetManager.I.AddRpcContainer(this);
+
+        References.SetSources();
     }
 
     [Rpc]

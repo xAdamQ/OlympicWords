@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class Kvp<TKey, TValue>
 {
     public TKey Key;
@@ -25,8 +26,6 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     [SerializeField] private Mesh[] AlphabetModels;
     [SerializeField] private List<Kvp<char, Mesh>> SpecialModels;
-
-    [HideInInspector] public int TotalTextLength;
 
     protected Mesh GetDigitMesh(char digit)
     {
@@ -51,15 +50,11 @@ public abstract class EnvBase : MonoModule<EnvBase>
     public abstract GameObject[] GetWordObjects(int wordIndex);
 
     public abstract int WordsCount { get; }
-    
+
     protected virtual void Start()
     {
-        NetManager.I.AddRpcContainer(this);
-
-        capacity = RoomController.I.Capacity;
-        words = RoomController.I.Words.Select(w => w.ToLower()).ToList();
-
-        TotalTextLength = RoomController.I.Text.Length + 1; //1 for the initial added space
+        capacity = RoomBase.I.Capacity;
+        words = RoomBase.I.Words.ToList();
 
         MakePlayersColorPalette();
 
@@ -70,6 +65,8 @@ public abstract class EnvBase : MonoModule<EnvBase>
         SetPlayersStartPoz();
 
         SetCameraFollow();
+
+        NetManager.I.SendAsync("Ready").Forget(e => throw e);
     }
 
     private void SetCameraFollow()
@@ -121,12 +118,12 @@ public abstract class EnvBase : MonoModule<EnvBase>
         var oppoPlaceCounter = 1;
         //oppo place starts at 1 to 3
 
-        for (var i = 0; i < RoomController.I.Capacity; i++)
+        for (var i = 0; i < RoomBase.I.Capacity; i++)
         {
-            if (RoomController.I.MyTurn == i)
+            if (RoomBase.I.MyTurn == i)
             {
                 MyPlayer = Instantiate(myPlayerPrefab).GetComponent<MyPlayerBase>();
-                MyPlayer.Init(RoomController.I.MyTurn, this);
+                MyPlayer.Init(RoomBase.I.MyTurn, this);
 
                 Players.Add(MyPlayer);
             }

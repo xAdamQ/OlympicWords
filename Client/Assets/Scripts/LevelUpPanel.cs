@@ -14,7 +14,7 @@ public class LevelUpPanel : MonoModule<LevelUpPanel>
     {
         UniTask.Create(async () =>
         {
-            await Create("levelUpPanel", Controller.I.canvas);
+            Instantiate(Controller.I.References.LevelUpView, Controller.I.canvas);
 
             I.levelText.text = newLevel.ToString();
             I.moneyRewardText.text = moneyReward.ToString();

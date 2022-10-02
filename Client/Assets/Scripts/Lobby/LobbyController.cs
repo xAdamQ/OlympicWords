@@ -1,8 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 
 [Rpc]
@@ -28,13 +31,24 @@ public class LobbyController : MonoModule<LobbyController>
     {
         DestroyLobby();
 
-        var roomArgs = (RoomRequester.LastRequest.betChoice, RoomRequester.LastRequest.capacityChoice, userInfos,
+        var roomArgs = (RoomRequester.LastRequest.betChoice,
+            RoomRequester.LastRequest.capacityChoice, userInfos,
             myTurn, text);
 
         Controller.I.AddTransitionData(nameof(roomArgs), roomArgs);
 
         SceneManager.LoadScene("RoomBase");
-        SceneManager.LoadScene("Env" + RoomRequester.LastRequest.betChoice, LoadSceneMode.Additive);
+        var sceneName = "Env" + RoomRequester.LastRequest.betChoice;
+
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        //blocking panel already exists
+        // var handle = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+        // handle.Completed += SceneLoadComplete;
+    }
+
+    private void SceneLoadComplete(AsyncOperationHandle<SceneInstance> handle)
+    {
+        Debug.Log($"scene: {handle.Result.Scene.name} load status: {handle.Status}");
     }
 
     [Rpc]
