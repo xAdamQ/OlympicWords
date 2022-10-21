@@ -114,7 +114,7 @@ public class FullUserView : MinUserView
 
         UniTask.Create(async () =>
         {
-            var res = await NetManager.I.InvokeAsync<MatchRequestResult>("RequestMatch", Id);
+            var res = await MasterHub.I.RequestMatch(Id);
 
             if (res == MatchRequestResult.Available)
                 BlockingPanel.Show("a challenge request is sent to the player",
@@ -129,7 +129,7 @@ public class FullUserView : MinUserView
     {
         UniTask.Create(async () =>
         {
-            await NetManager.I.SendAsync("ToggleFollow", Id);
+            await MasterHub.I.ToggleFollow(Id);
 
             switch (FullUserInfo.Friendship)
             {
@@ -176,7 +176,7 @@ public class FullUserView : MinUserView
     {
         UniTask.Create(async () =>
         {
-            await NetManager.I.SendAsync("ToggleOpenMatches");
+            await MasterHub.I.ToggleOpenMatches();
             FullUserInfo.EnableOpenMatches = !FullUserInfo.EnableOpenMatches;
             UpdateOpenMatchesView();
         });

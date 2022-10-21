@@ -59,7 +59,7 @@ public class RoomUserView : MinUserView
 
             var oppoPlaceCounter = 1;
 
-            for (int i = 0; i < RoomBase.I.UserInfos.Count; i++)
+            for (var i = 0; i < RoomBase.I.UserInfos.Count; i++)
             {
                 var placeIndex = i == RoomBase.I.MyTurn ? 0 : oppoPlaceCounter++;
 

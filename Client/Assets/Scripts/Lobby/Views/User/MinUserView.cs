@@ -26,19 +26,19 @@ public class MinUserView : MonoBehaviour
         Title = PlayerBase.Titles[minUserInfo.SelectedTitleId];
 
         if (minUserInfo.IsPictureLoaded)
-            SetPicture(minUserInfo.Picture);
+            SetPicture(minUserInfo.PictureSprite);
         else
-            minUserInfo.PictureLoaded += pic => SetPicture(pic);
+        {
+            minUserInfo.PictureLoaded += _ => SetPicture(minUserInfo.PictureSprite);
+            StartCoroutine(minUserInfo.DownloadPicture());
+        }
     }
 
-    private void SetPicture(Texture2D texture2D)
+    private void SetPicture(Sprite sprite)
     {
-        if (destroyed) return;
+        if (destroyed || sprite is null) return;
 
-        if (texture2D != null)
-            picture.sprite =
-                Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height),
-                    new Vector2(.5f, .5f));
+        picture.sprite = sprite;
     }
 
     private bool destroyed;
@@ -53,8 +53,7 @@ public class MinUserView : MonoBehaviour
     /// </summary>
     public virtual void ShowFullInfo()
     {
-        var operation = NetManager.I.InvokeAsync<FullUserInfo>("GetUserData", Id);
-        BlockingOperationManager.I.Forget(operation, FullUserView.Show);
+        BlockingOperationManager.I.Forget(MasterHub.I.GetUserData(Id), FullUserView.Show);
     }
 
     protected string Id;

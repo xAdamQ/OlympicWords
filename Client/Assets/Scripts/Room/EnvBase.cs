@@ -51,7 +51,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     public abstract int WordsCount { get; }
 
-    protected virtual void Start()
+    protected virtual async UniTaskVoid Start()
     {
         capacity = RoomBase.I.Capacity;
         words = RoomBase.I.Words.ToList();
@@ -66,7 +66,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
         SetCameraFollow();
 
-        NetManager.I.SendAsync("Ready").Forget(e => throw e);
+        await MasterHub.I.Ready();
     }
 
     private void SetCameraFollow()

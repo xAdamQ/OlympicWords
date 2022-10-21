@@ -82,8 +82,11 @@ public class ShopItem : MonoBehaviour
             return;
         }
 
-        var rpcName = Shop.Active.ItemType == ItemType.Cardback ? "BuyCardback" : "BuyBackground";
-        await NetManager.I.SendAsync(rpcName, id);
+        if (Shop.Active.ItemType == ItemType.Cardback)
+            await MasterHub.I.BuyCardback(id);
+        else
+            await MasterHub.I.BuyBackground(id);
+
         //stop interaction? it depends on whether interacting will create issues or not.
         //and usually it will
         //await feedback
@@ -119,8 +122,10 @@ public class ShopItem : MonoBehaviour
                 return;
         }
 
-        var rpcName = Shop.Active.ItemType == ItemType.Cardback ? "SelectCardback" : "SelectBackground";
-        await NetManager.I.SendAsync(rpcName, id);
+        if (Shop.Active.ItemType == ItemType.Cardback)
+            await MasterHub.I.SelectCardback(id);
+        else
+            await MasterHub.I.SelectBackground(id);
 
         if (Shop.Active.ItemType == ItemType.Cardback)
             Repository.I.PersonalFullInfo.SelectedCardback = id;

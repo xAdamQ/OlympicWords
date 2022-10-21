@@ -1,23 +1,38 @@
+using System.Net;
 using Hangfire;
 using Hangfire.MemoryStorage;
-using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using OlympicWords;
 using OlympicWords.Services;
-using MasterAuthenticationHandler = OlympicWords.MasterAuthenticationHandler;
-using MasterAuthenticationSchemeOptions = OlympicWords.MasterAuthenticationSchemeOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 //services
 var configuration = builder.Configuration;
-builder.WebHost.UseUrls("http://*:5112");
 
-// Add services to the container.
+// var hostAddress = Dns.GetHostAddresses("").First();
+
+// builder.WebHost.UseUrls("http://*:5112");
+
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.Listen(hostAddress, 5112,
+//         listenOptions =>
+//         {
+//             listenOptions.UseHttps(options =>
+//             {
+//                 
+//             });
+//         });
+// });
+
+//how to enable the tls?
 
 // builder.Services.AddCors();
 var services = builder.Services;
+
 
 services.AddSignalR(options =>
 {
@@ -46,11 +61,9 @@ services.AddSingleton(new PersistantData());
 services.AddSingleton(new MasterHub.MethodDomains());
 services.AddSingleton<IServerLoop, ServerLoop>();
 
-
-services.AddAuthentication(MasterAuthenticationHandler.ProviderName)
+services.AddAuthentication(MasterAuthenticationHandler.PROVIDER_NAME)
     .AddScheme<MasterAuthenticationSchemeOptions, MasterAuthenticationHandler>(
-        MasterAuthenticationHandler.ProviderName, null);
-
+        MasterAuthenticationHandler.PROVIDER_NAME, null);
 
 services.AddHangfire(config =>
 {
@@ -65,18 +78,21 @@ services.AddHangfireServer();
 
 var app = builder.Build();
 
+
 app.UseAuthentication();
+app.MapControllers();
 
 app.UseCors(corsPolicyBuilder => corsPolicyBuilder
     .AllowAnyOrigin()
     .AllowAnyHeader()
     .AllowAnyMethod()
 );
-app.UseRouting();
 
+app.MapGet("/weatherforecast", () => new List<int> { 1, 2, 3 });
+
+app.UseRouting();
 app.UseEndpoints(endpoint => endpoint.MapHub<MasterHub>("/connect"));
 
-app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 app.Run();
 

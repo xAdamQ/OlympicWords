@@ -37,7 +37,8 @@ namespace OlympicWords.Services
         private readonly IOfflineRepo offlineRepo;
         private readonly IScopeRepo scopeRepo;
 
-        public MatchMaker(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo, IScopeRepo scopeRepo,
+        public MatchMaker(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo,
+            IScopeRepo scopeRepo,
             IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger)
         {
             this.masterHub = masterHub;
@@ -122,7 +123,7 @@ namespace OlympicWords.Services
             //validated by the client 
 
             var oppoUser = await offlineRepo.GetUserByIdAsyc(oppoId);
-            var friendship = offlineRepo.GetFriendship(activeUser.Id, oppoId);
+            var friendship = await offlineRepo.GetFriendship(activeUser.Id, oppoId);
 
             if (friendship is FriendShip.None or FriendShip.Follower && !oppoUser.EnableOpenMatches)
                 throw new Exceptions.BadUserInputException();
@@ -206,7 +207,8 @@ namespace OlympicWords.Services
 
         private Room MakeRoom(int capacityChoice, int category)
         {
-            return scopeRepo.AddRoom(new Room(capacityChoice, category, offlineRepo.GetRandomRoomWords(category)));
+            return scopeRepo.AddRoom(new Room(capacityChoice, category,
+                offlineRepo.GetRandomRoomWords(category)));
         }
 
         public async Task MakeRoomUserReadyRpc()
@@ -248,7 +250,7 @@ namespace OlympicWords.Services
                 var userInfo = turnSortedUsersInfo[i];
                 foreach (var otherUser in turnSortedUsersInfo.Where(u => u != userInfo))
                     otherUser.Friendship =
-                        (int)offlineRepo.GetFriendship(userInfo.Id, otherUser.Id);
+                        (int)await offlineRepo.GetFriendship(userInfo.Id, otherUser.Id);
 
                 if (room.RoomActors[i] is not RoomUser ru) continue;
 

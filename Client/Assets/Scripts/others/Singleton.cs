@@ -8,10 +8,10 @@ public abstract class Singleton<T> where T : Singleton<T>
 
     protected Singleton()
     {
-        if (I != null)
-            throw new SingletonException();
+        // if (I != null)
+        // throw new SingletonException();
 
-        I = (T) this;
+        I = (T)this;
         Debug.Log("base constructor is called");
     }
 }

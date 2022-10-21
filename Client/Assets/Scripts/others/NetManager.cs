@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
+using BestHTTP;
 using BestHTTP.SignalRCore;
 using UnityEngine;
 using BestHTTP.SignalRCore.Encoders;
@@ -21,6 +24,12 @@ public class NetManager : MonoModule<NetManager>
     private readonly MyReconnectPolicy myReconnectPolicy = new();
     private HubConnection hubConnection;
     private UpStreamItemController<string> upStreamItemController;
+    private const int MAX_DEBUG_LENGTH = 200;
+
+    private readonly JsonSerializerSettings serializationSettings = new()
+    {
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+    };
 
     protected override void Awake()
     {
@@ -30,7 +39,7 @@ public class NetManager : MonoModule<NetManager>
 
         FetchRpcInfos();
 
-        serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = getAddress();
+        serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = GetServerAddress();
     }
 
     private void DownStream()
@@ -105,7 +114,7 @@ public class NetManager : MonoModule<NetManager>
         upStreamItemController.UploadParam(chr);
     }
 
-    public async UniTask<object> SendAsync(string method, params object[] args)
+    public async Task<object> SendAsync(string method, params object[] args)
     {
         return await hubConnection.SendAsync(method, args);
     }
@@ -115,11 +124,10 @@ public class NetManager : MonoModule<NetManager>
         hubConnection.Send(method, args);
     }
 
-    public async UniTask<T> InvokeAsync<T>(string method, params object[] args)
+    public Task<T> InvokeAsync<T>(string method, params object[] args)
     {
-        return await hubConnection.InvokeAsync<T>(method, args);
+        return hubConnection.InvokeAsync<T>(method, args);
     }
-
 
     [SerializeField] private int selectedAddress;
     [SerializeField] private string[] addresses;
@@ -127,51 +135,85 @@ public class NetManager : MonoModule<NetManager>
     [SerializeField] private TMP_InputField customAddress;
     [SerializeField] private TMP_Text chosenAddressText;
 
-    private string getAddress()
+    private (string token, string provider) CurrentAuth;
+
+    public async UniTask<T> GetAsync<T>(string methodName,
+        (string key, string value)[] queryParams = null,
+        string json = null)
     {
-        selectedAddress = serverAddressChoice.CurrentChoice;
+        var uriBuilder = new UriBuilder(Extensions.UriCombine(GetServerAddress(), methodName));
 
-        if (selectedAddress >= addresses.Length)
-            return customAddress.text;
+        if (queryParams?.Length > 0)
+        {
+            for (var i = 0; i < queryParams.Length - 1; i++)
+                uriBuilder.Query += $"{queryParams[i].key}={queryParams[i].value}&";
 
-        return addresses[selectedAddress] + "/connect";
+            uriBuilder.Query += $"{queryParams.Last().key}={queryParams.Last().value}&";
+        }
+
+        var request = new HTTPRequest(uriBuilder.Uri);
+
+        request.AddHeader("Content-Type", "application/json");
+        request.AddHeader("Accept", "application/json");
+
+        if (json != null)
+            request.AddField("data", json);
+
+        var response = await request.GetHTTPResponseAsync();
+
+        if (request.Exception is not null)
+            throw request.Exception;
+
+        if (!response.IsSuccess)
+            throw new ServerRequestException(
+                $"request didn't end successfully, " +
+                $"request is {JsonConvert.SerializeObject(request, serializationSettings)[..MAX_DEBUG_LENGTH]} \n" +
+                $"full response is {JsonConvert.SerializeObject(response, serializationSettings)[..MAX_DEBUG_LENGTH]}");
+
+        response.Headers.TryGetValue("Content-Type", out var contentTypes);
+
+        if (contentTypes[0] == "application/json")
+            return JsonConvert.DeserializeObject<T>(response.DataAsText);
+
+        throw new Exception(
+            $"the content type: {contentTypes[0]} for http requests is not supported");
     }
 
-    //I use event functions because awaiting returns hubconn and this is useless
-    public void ConnectToServer(string fbigToken = null, string huaweiAuthCode = null,
-        string facebookAccToken = null, string name = null, string pictureUrl = null,
-        bool demo = false)
+    public string GetServerAddress()
     {
-        Debug.Log("connecting to server");
+        return serverAddressChoice.CurrentChoice >= addresses.Length
+            ? customAddress.text
+            : addresses[serverAddressChoice.CurrentChoice];
+    }
 
+    public NameValueCollection GetAuthQuery()
+    {
         var query = HttpUtility.ParseQueryString(string.Empty);
 
-        if (facebookAccToken != null)
-            query["fb_access_token"] = facebookAccToken;
+        query["access_token"] = CurrentAuth.token;
+        query["provider"] = CurrentAuth.provider;
 
-        if (fbigToken != null)
-            query["access_token"] = fbigToken;
-
-        if (huaweiAuthCode != null)
-            query["huaweiAuthCode"] = huaweiAuthCode;
-
-        if (name != null)
-            query["name"] = name;
-        if (pictureUrl != null)
-            query["pictureUrl"] = pictureUrl;
-
-        if (demo)
-            query["demo"] = "1";
+        return query;
+    }
 
 
-        var uriBuilder = new UriBuilder(getAddress())
+    //I use event functions because awaiting returns hub conn and this is useless
+    public void ConnectToServer(string accessToken, string provider)
+    {
+        CurrentAuth = (accessToken, provider);
+
+        Debug.Log("connecting to server");
+
+        var query = GetAuthQuery();
+
+        var uriBuilder = new UriBuilder(Extensions.UriCombine(GetServerAddress(), "/connect"))
         {
             Query = query.ToString()
         };
 
-        Debug.Log($"connecting with url {uriBuilder.ToString()}");
+        Debug.Log($"connecting with url {uriBuilder}");
 
-        var hubOptions = new HubOptions()
+        var hubOptions = new HubOptions
         {
             SkipNegotiation = true,
             PreferedTransport = TransportTypes.WebSocket,
@@ -181,9 +223,6 @@ public class NetManager : MonoModule<NetManager>
         {
             ReconnectPolicy = myReconnectPolicy,
         };
-
-
-        // AssignGeneralRpcs();
 
         //I don't have this term "authentication" despite I make token authentication
         // HubConnection.AuthenticationProvider = new DefaultAccessTokenAuthenticator(HubConnection);
@@ -350,5 +389,16 @@ public class NetManager : MonoModule<NetManager>
                 await UniTask.Delay(500);
             }
         });
+    }
+}
+
+public class ServerRequestException : Exception
+{
+    public ServerRequestException(string msg) : base(msg)
+    {
+    }
+
+    public ServerRequestException() : base()
+    {
     }
 }

@@ -48,11 +48,16 @@ public class MoneyAidButton : MonoBehaviour
     //visual state is updated, this has nothing to do with visuals
     public void OnClick()
     {
+        HandleAidClick().Forget();
+    }
+
+    private async UniTaskVoid HandleAidClick()
+    {
         var info = Repository.I.PersonalFullInfo;
 
         if (info.MoneyAimTimePassed >= ConstData.MoneyAimTime)
         {
-            NetManager.I.SendAsync("ClaimMoneyAid");
+            await MasterHub.I.ClaimMoneyAid();
 
             info.MoneyAimTimePassed = null;
             info.Money += RoomBase.MinBet;
@@ -73,7 +78,7 @@ public class MoneyAidButton : MonoBehaviour
         } //can't ask, a lot of money
         else
         {
-            NetManager.I.SendAsync("AskForMoneyAid");
+            await MasterHub.I.ClaimMoneyAid();
 
             info.MoneyAimTimePassed = 0;
             info.DecreaseMoneyAimTimeLeft().Forget();

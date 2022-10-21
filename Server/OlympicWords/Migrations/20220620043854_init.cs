@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace OlymbicWords.Migrations
+namespace OlympicWords.Migrations
 {
     public partial class init : Migration
     {

@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using OlympicWords.Common;
+using OlympicWords.Data;
 
 namespace OlympicWords.Services.Helpers
 {
@@ -34,6 +35,8 @@ namespace OlympicWords.Services.Helpers
                 MaxWinStreak = u.MaxWinStreak,
                 MoneyAidRequested = u.RequestedMoneyAidToday,
                 EnableOpenMatches = u.EnableOpenMatches,
+                Followers = u.Followers.Select(UserToMinUserInfoFunc).ToList(),
+                Followings = u.Followings.Select(UserToMinUserInfoFunc).ToList(),
             };
         }
 
@@ -69,10 +72,10 @@ namespace OlympicWords.Services.Helpers
                 Xp = u.Xp,
             };
 
-        public static Func<User, FullUserInfo> UserToFullUserInfoFunc =
+        public static readonly Func<User, FullUserInfo> UserToFullUserInfoFunc =
             UserToFullUserInfoProjection.Compile();
 
-        public static Func<User, MinUserInfo> UserToMinUserInfoFunc =
+        public static readonly Func<User, MinUserInfo> UserToMinUserInfoFunc =
             UserToMinUserInfoProjection.Compile();
     }
 }

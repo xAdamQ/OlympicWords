@@ -54,7 +54,7 @@ public class RoomBase : MonoModule<RoomBase>
     {
         UniTask.Create(async () =>
         {
-            await NetManager.I.SendAsync("Surrender");
+            await MasterHub.I.Surrender();
             SceneManager.LoadScene("Lobby");
         }).Forget(e => throw e);
     }

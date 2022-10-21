@@ -3,16 +3,8 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-public class FriendsView : MonoBehaviour
+public class FriendsView : MonoModule<FriendsView>
 {
-    public static FriendsView I;
-
-    public static async UniTask Create()
-    {
-        I = (await Addressables.InstantiateAsync("friendsView", LobbyController.I.Canvas))
-            .GetComponent<FriendsView>();
-    }
-
     /// <summary>
     /// this is legal because they are the same unit
     /// </summary>

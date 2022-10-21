@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using OlympicWords.Common;
 using Microsoft.EntityFrameworkCore;
+using OlympicWords.Data;
 using OlympicWords.Services.Helpers;
 
 namespace OlympicWords.Services
@@ -18,7 +19,8 @@ namespace OlympicWords.Services
         // bool GetUserActiveState(string id);
         Task<User> GetUserByEIdAsync(string eId, int eIdType);
 
-        Task<User> GetUserByIdAsyc(string id);
+        Task<User> GetUserByIdAsyc(string id, bool track = true,
+            bool withFollowings = false, bool withFollowers = false);
         Task<User> GetCurrentUser();
 
         // void MarkAllUsersNotActive();
@@ -41,24 +43,27 @@ namespace OlympicWords.Services
         Task<FullUserInfo> GetFullUserInfoAsync(string id);
         Task<List<FullUserInfo>> GetFullUserInfoListAsync(IEnumerable<string> ids);
 
-        Task<List<MinUserInfo>> GetFollowingsAsync(string userId);
-        Task<List<MinUserInfo>> GetFollowersAsync(string userId);
-        void ToggleFollow(string userId, string targetId);
-        bool IsFollowing(string userId, string targetId);
-        FriendShip GetFriendship(string userId, string targetId);
+        Task<List<MinUserInfo>> GetFollowingsAsync(User user);
+        Task<List<MinUserInfo>> GetFollowersAsync(User user);
+        Task ToggleFollow(User user, User target);
+        Task<FriendShip> GetFriendship(string userId, string targetId);
         Task CreateExternalId(ExternalId externalId);
 
         string GetRandomRoomWords(int category);
+        Task<byte[]> GetUserPicture(string userId);
+        Task SaveUserPicture(string userId, byte[] picture);
+        Task UpdateUserPicture(string userId, byte[] picture);
+        Task<List<string>> IdsByProviderIds(List<string> providerIds);
     }
 
     /// <summary>
-    /// hide queries
-    /// reause queries
+    /// hide queries, reuse queries
     /// </summary>
-    public partial class OfflineRepo : IOfflineRepo
+    public class OfflineRepo : IOfflineRepo
     {
         private readonly MasterContext context;
         private readonly IScopeRepo scopeRepo;
+        private readonly ILogger<IOfflineRepo> logger;
 
         public async Task<User> GetCurrentUser()
         {
@@ -72,10 +77,37 @@ namespace OlympicWords.Services
 
         private User user;
 
-        public OfflineRepo(MasterContext context, IScopeRepo scopeRepo)
+        public async Task<byte[]> GetUserPicture(string userId)
+        {
+            return (await context.UserPictures.AsNoTracking().FirstAsync(p => p.UserId == userId))
+                .Picture;
+        }
+
+        public async Task SaveUserPicture(string userId, byte[] picture)
+        {
+            await context.UserPictures.AddAsync(new()
+            {
+                UserId = userId,
+                Picture = picture,
+            });
+        }
+
+        public async Task UpdateUserPicture(string userId, byte[] picture)
+        {
+            context.UserPictures.Update(new UserPicture
+            {
+                UserId = userId,
+                Picture = picture,
+            });
+        }
+
+
+        public OfflineRepo(MasterContext context, IScopeRepo scopeRepo,
+            ILogger<IOfflineRepo> logger)
         {
             this.context = context;
             this.scopeRepo = scopeRepo;
+            this.logger = logger;
         }
 
         // private string[] testSentences =
@@ -162,15 +194,35 @@ namespace OlympicWords.Services
 
         public async Task<User> GetUserByEIdAsync(string eId, int eIdType)
         {
+            var externalId = await context.ExternalIds
+                .Include(i => i.User)
+                .ThenInclude(u => u.Followers)
+                .ThenInclude(u => u.Followings)
+                .FirstOrDefaultAsync(id => id.Id == eId);
+
+            return externalId?.User;
+
             return await context.Users.Join(
                 context.ExternalIds.Where(id => id.Type == eIdType && id.Id == eId),
-                u => u.Id, id => id.MainId,
+                u => u.Id, id => id.UserId,
                 (u, _) => u).FirstOrDefaultAsync();
         }
 
-        public async Task<User> GetUserByIdAsyc(string id)
+        public async Task<User> GetUserByIdAsyc(string id, bool track = true,
+            bool withFollowings = false, bool withFollowers = false)
         {
-            return await context.Users.FirstAsync(u => u.Id == id);
+            var userQ = context.Users;
+
+            if (!track)
+                userQ.AsNoTracking();
+
+            if (withFollowings)
+                userQ.Include(u => u.Followings);
+
+            if (withFollowers)
+                userQ.Include(u => u.Followers);
+
+            return await userQ.FirstAsync(u => u.Id == id);
         }
 
         public async Task<List<User>> GetUsersByIdsAsync(List<string> ids)
@@ -199,40 +251,60 @@ namespace OlympicWords.Services
                 .ToListAsync();
         }
 
+        public async Task<List<string>> IdsByProviderIds(List<string> providerIds)
+        {
+            return await context.ExternalIds
+                .Where(i => providerIds.Any(given => given == i.Id))
+                .Select(i => i.UserId)
+                .ToListAsync();
+        }
+
         #endregion
 
         #region user relation
 
-        public void ToggleFollow(string userId, string targetId)
+        public async Task ToggleFollow(User user, User target)
         {
-            if (IsFollower(userId, targetId)) //unfollow
-                context.Remove(new UserRelation { FollowerId = userId, FollowingId = targetId });
-            else //follow
-                context.Add(new UserRelation { FollowerId = userId, FollowingId = targetId });
+            user.Followings ??= new List<User>();
+
+            if (user.Followings.Contains(target))
+                user.Followings.Remove(target);
+            else
+                user.Followings.Add(target);
         }
 
         /// <summary>
         /// Am I follower
         /// </summary>
-        public bool IsFollower(string userId, string targetId)
+        public async Task<bool> IsFollowing(string userId, string targetId)
         {
-            return context.UserRelations.Any(r =>
-                r.FollowerId == userId && r.FollowingId == targetId);
+            return await context.Users
+                .AnyAsync(u => u.Id == userId && u.Followings.Any(f => f.Id == targetId));
+
+            //you have some follower for a, some following for b
+            // var q = context.Users.Where(u =>
+            //     u.Id == userId && u.Followers.Any(f => f.Id == followerId));
+            //
+            // logger.LogInformation(q.ToQueryString());
+            //
+            // return await q.AnyAsync();
+
+            // return context.Users.First(u => u.Id == userId).Followers.Any(u => u.Id == targetId);
         }
 
-        /// <summary>
-        /// Is HE following me
-        /// </summary>
-        public bool IsFollowing(string userId, string targetId)
-        {
-            return context.UserRelations.Any(r =>
-                r.FollowingId == userId && r.FollowerId == targetId);
-        }
+        // /// <summary>
+        // /// Is HE following me
+        // /// </summary>
+        // public bool IsFollowing(string userId, string targetId)
+        // {
+        //     return context.UserRelations.Any(r =>
+        //         r.FollowingId == userId && r.FollowerId == targetId);
+        // }
 
-        public FriendShip GetFriendship(string userId, string targetId)
+        public async Task<FriendShip> GetFriendship(string userId, string targetId)
         {
-            var isFollower = IsFollower(userId, targetId);
-            var isFollowing = IsFollowing(userId, targetId);
+            var isFollowing = await IsFollowing(userId, targetId);
+            var isFollower = await IsFollowing(targetId, userId);
 
             if (isFollower && isFollowing)
                 return FriendShip.Friend;
@@ -244,26 +316,34 @@ namespace OlympicWords.Services
             return FriendShip.None;
         }
 
-        public async Task<List<MinUserInfo>> GetFollowingsAsync(string userId)
+        public async Task<List<MinUserInfo>> GetFollowingsAsync(User user)
         {
-            var relationsWhereIFolllow = context.UserRelations.Where(u => u.FollowerId == userId);
+            return user.Followings
+                .Select(Mapper.UserToMinUserInfoFunc)
+                .ToList();
 
-            var myFollowingInfo = relationsWhereIFolllow.Join(context.Users,
-                relation => relation.FollowingId, u => u.Id,
-                (_, u) => Mapper.UserToMinUserInfoFunc(u));
-
-            return await myFollowingInfo.ToListAsync();
+            // var relationsWhereIFolllow = context.UserRelations.Where(u => u.FollowerId == userId);
+            //
+            // var myFollowingInfo = relationsWhereIFolllow.Join(context.Users,
+            //     relation => relation.FollowingId, u => u.Id,
+            //     (_, u) => Mapper.UserToMinUserInfoFunc(u));
+            //
+            // return await myFollowingInfo.ToListAsync();
         }
 
-        public async Task<List<MinUserInfo>> GetFollowersAsync(string userId)
+        public async Task<List<MinUserInfo>> GetFollowersAsync(User user)
         {
-            var relationsWhereIFolllow = context.UserRelations.Where(u => u.FollowingId == userId);
+            return user.Followers
+                .Select(Mapper.UserToMinUserInfoFunc)
+                .ToList();
 
-            var myFollowingInfo = relationsWhereIFolllow.Join(context.Users,
-                relation => relation.FollowerId, u => u.Id,
-                (_, u) => Mapper.UserToMinUserInfoFunc(u));
-
-            return await myFollowingInfo.ToListAsync();
+            // var relationsWhereIFolllow = context.UserRelations.Where(u => u.FollowingId == userId);
+            //
+            // var myFollowingInfo = relationsWhereIFolllow.Join(context.Users,
+            //     relation => relation.FollowerId, u => u.Id,
+            //     (_, u) => Mapper.UserToMinUserInfoFunc(u));
+            //
+            // return await myFollowingInfo.ToListAsync();
         }
 
         #endregion

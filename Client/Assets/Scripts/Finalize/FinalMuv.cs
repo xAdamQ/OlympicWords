@@ -23,7 +23,8 @@ public class FinalMuv : MonoBehaviour
 
     private FullUserInfo fullUserInfo;
 
-    public static async UniTask<FinalMuv> Create(FullUserInfo fullUserInfo, PlayerBase player, Transform parent)
+    public static async UniTask<FinalMuv> Create(FullUserInfo fullUserInfo, PlayerBase player,
+        Transform parent)
     {
         var asset = await Addressables.InstantiateAsync("finalMuv", parent);
         var finalMuv = asset.GetComponent<FinalMuv>();
@@ -41,9 +42,12 @@ public class FinalMuv : MonoBehaviour
         UpdateFriendshipView();
 
         if (fullUserInfo.IsPictureLoaded)
-            SetPicture(fullUserInfo.Picture);
+            SetPicture(fullUserInfo.PictureSprite);
         else
-            fullUserInfo.PictureLoaded += pic => SetPicture(pic);
+        {
+            fullUserInfo.PictureLoaded += _ => SetPicture(fullUserInfo.PictureSprite);
+            StartCoroutine(fullUserInfo.DownloadPicture());
+        }
     }
 
     public bool Finished;
@@ -71,12 +75,11 @@ public class FinalMuv : MonoBehaviour
         Debug.Log("updating wpm");
     }
 
-    private void SetPicture(Texture2D texture2D)
+    private void SetPicture(Sprite sprite)
     {
-        if (texture2D != null)
-            picture.sprite =
-                Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height),
-                    new Vector2(.5f, .5f));
+        if (sprite is null) return;
+
+        picture.sprite = sprite;
     }
 
     /// <summary>
@@ -95,7 +98,7 @@ public class FinalMuv : MonoBehaviour
     {
         UniTask.Create(async () =>
         {
-            await NetManager.I.SendAsync("ToggleFollow", Id);
+            await MasterHub.I.ToggleFollow(Id);
 
             switch (fullUserInfo.Friendship)
             {

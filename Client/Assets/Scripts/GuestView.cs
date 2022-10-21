@@ -6,10 +6,11 @@ using Random = UnityEngine.Random;
 public class GuestView : MonoBehaviour
 {
     [SerializeField] TMP_Text idInput;
+    [SerializeField] private TMP_InputField accessTokenField;
 
     public void StartWithId()
     {
-        NetManager.I.ConnectToServer(fbigToken: idInput.text, name: "guest", demo: true);
+        NetManager.I.ConnectToServer(idInput.text, "demo");
     }
 
     public void addChar(string chr)
@@ -24,8 +25,13 @@ public class GuestView : MonoBehaviour
         idInput.text = "";
     }
 
+    public void FacebookConnect()
+    {
+        NetManager.I.ConnectToServer(accessTokenField.text, "facebook");
+    }
+
     public void StartWithRandomId()
     {
-        NetManager.I.ConnectToServer(fbigToken: Random.Range(0, int.MaxValue).ToString(), name: "guest", demo: true);
+        NetManager.I.ConnectToServer(Random.Range(0, int.MaxValue).ToString(), "demo");
     }
 }

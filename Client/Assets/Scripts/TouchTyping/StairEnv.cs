@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class StairEnv : EnvBase
@@ -50,7 +51,7 @@ public class StairEnv : EnvBase
         I = this;
     }
 
-    protected override void Start()
+    protected override async UniTaskVoid Start()
     {
         base.Start();
 
@@ -180,7 +181,9 @@ public class StairEnv : EnvBase
                 stairs[j].Add(stair);
             }
 
-            pozPointer.x += words[i].Length / 1f + spacing.x / 1f; //stair.GetComponent<Renderer>().bounds.max.x;
+            pozPointer.x +=
+                words[i].Length / 1f +
+                spacing.x / 1f; //stair.GetComponent<Renderer>().bounds.max.x;
             //I made the size always 1, changes the models accordingly 
             pozPointer.y += spacing.y;
             pozPointer.z = 0;
@@ -201,7 +204,9 @@ public class StairEnv : EnvBase
 
             var fullDiameter = baseDiameter + degree * spacing.x;
 
-            var rotationAngle = i == 0 && useConnected ? +Mathf.Atan(fullStairSize / 2f / fullDiameter) : portionAngle;
+            var rotationAngle = i == 0 && useConnected
+                ? +Mathf.Atan(fullStairSize / 2f / fullDiameter)
+                : portionAngle;
             absoluteAngle += rotationAngle;
 
             if (i == 0 && useConnected)

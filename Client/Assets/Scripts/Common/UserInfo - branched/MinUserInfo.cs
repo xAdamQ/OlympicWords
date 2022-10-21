@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Scripting;
@@ -10,12 +11,17 @@ public class MinUserInfo
     [Preserve]
     public MinUserInfo()
     {
-        UniTask.Create(async () =>
-        {
-            await UniTask.DelayFrame(1); //to get data from object inititalizer >> {abdc = value}
-            // DownloadPicture().Forget();
-        });
+        PictureLoaded += OnPictureLoaded;
     }
+
+    private void OnPictureLoaded(Texture2D texture2D)
+    {
+        IsPictureLoaded = true;
+        if (texture2D != null)
+            PictureSprite = Sprite.Create(texture2D,
+                new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
+    }
+
 
     public int CalcLevel()
     {
@@ -37,55 +43,20 @@ public class MinUserInfo
     public int SelectedTitleId { get; set; }
     private int selectedTitleId;
     public string Name { get; set; }
-    public string PictureUrl { get; set; }
 
-    public Texture2D Picture { get; set; }
+    public Sprite PictureSprite { get; set; }
 
     public event Action<Texture2D> PictureLoaded;
     public bool IsPictureLoaded;
 
-    private async UniTaskVoid DownloadPicture()
+    public IEnumerator DownloadPicture()
     {
-        if (string.IsNullOrEmpty(PictureUrl)) return;
-
-        Picture = await GetRemoteTexture(PictureUrl);
-        PictureLoaded?.Invoke(Picture);
-        IsPictureLoaded = true;
-    }
-
-    public static async UniTask<Texture2D> GetRemoteTexture(string url)
-    {
-        using (var www = UnityWebRequestTexture.GetTexture(url))
-        {
-            // begin request:
-            var asyncOp = www.SendWebRequest();
-
-            // await until it's done: 
-            try
+        var uriBuilder = new UriBuilder
+            (Extensions.UriCombine(NetManager.I.GetServerAddress(), "Picture"))
             {
-                await asyncOp;
-            }
-            catch (Exception)
-            {
-                Debug.Log($"{www.error}, URL:{www.url}");
-            }
+                Query = NetManager.I.GetAuthQuery().ToString(),
+            };
 
-            // read results:
-            if (www.result == UnityWebRequest.Result.ConnectionError ||
-                www.result == UnityWebRequest.Result.ProtocolError)
-            {
-                // log error:
-#if DEBUG
-                Debug.Log($"{www.error}, URL:{www.url}");
-#endif
-
-                // nothing to return on error:
-                return null;
-            }
-
-            // return valid results:
-            Debug.Log($"img from url {url} downloaded");
-            return DownloadHandlerTexture.GetContent(www);
-        }
+        yield return Extensions.GetRemoteTexture(uriBuilder.Uri.ToString(), PictureLoaded);
     }
 }

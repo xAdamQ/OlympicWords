@@ -1,9 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using OlympicWords.Data;
+using OlympicWords.Services;
 
-namespace OlympicWords.Services
+// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+
+
+namespace OlympicWords.Data
 {
     public class User
     {
@@ -16,8 +18,11 @@ namespace OlympicWords.Services
         public int Money { get; set; }
 
         public string Name { get; set; }
+        public string Email { get; set; }
 
         public string PictureUrl { get; set; }
+
+        public DateTime LastLogin { get; set; }
 
         //states
         public int EatenCardsCount { get; set; }
@@ -57,11 +62,34 @@ namespace OlympicWords.Services
         /// if false, people who he follows only can challenge him
         /// </summary>
         public bool EnableOpenMatches { get; set; }
-    }
 
+        public virtual List<ExternalId> ExternalIds { get; set; }
+
+        /// <summary>
+        /// relations were I am the follower
+        /// </summary>
+        public virtual List<UserRelation> FollowingRelations { get; set; }
+        /// <summary>
+        /// relations were I am being followed
+        /// </summary>
+        public virtual List<UserRelation> FollowerRelations { get; set; }
+
+        public virtual List<User> Followings { get; set; }
+        public virtual List<User> Followers { get; set; }
+        //you can't add following somewhere, without follower??
+        
+        public virtual UserPicture Picture { get; set; }
+    }
+}
+
+namespace OlympicWords.Services
+{
     public class UserRelation
     {
-        [ForeignKey("User")] public string FollowerId { get; set; }
-        [ForeignKey("User")] public string FollowingId { get; set; }
+        public string FollowerId { get; set; }
+        public string FollowingId { get; set; }
+
+        public virtual User Follower { get; set; }
+        public virtual User Following { get; set; }
     }
 }

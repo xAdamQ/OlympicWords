@@ -16563,7 +16563,12 @@
     </collation>
     <database id="5510" parent="1" name="OlympicWords">
       <Current>1</Current>
+      <Fingerprint>5.44750/E673CB6A-9A16-4594-BF5E-E8788E1D57EC@LEER</Fingerprint>
+      <Grants>5|database||1|connect|G
+5|database||0|view any column encryption key definition|G
+5|database||0|view any column master key definition|G</Grants>
       <ObjectId>5</ObjectId>
+      <PermissionsCheckSum>3196235284</PermissionsCheckSum>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </database>
     <database id="5511" parent="1" name="StrategyVr">
@@ -16726,45 +16731,376 @@
       <ObjectId>267</ObjectId>
       <Type>certificate-mapped-login</Type>
     </login>
-    <schema id="5542" parent="5510" name="INFORMATION_SCHEMA">
+    <role id="5542" parent="5510" name="public">
+      <AuthType>none</AuthType>
+      <ObjectId>0</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5543" parent="5510" name="dbo">
+      <AuthType>windows</AuthType>
+      <DefaultSchema>dbo</DefaultSchema>
+      <ObjectId>1</ObjectId>
+      <Type>windows-user</Type>
+    </role>
+    <role id="5544" parent="5510" name="guest">
+      <AuthType>none</AuthType>
+      <DefaultSchema>guest</DefaultSchema>
+      <ObjectId>2</ObjectId>
+    </role>
+    <role id="5545" parent="5510" name="INFORMATION_SCHEMA">
+      <AuthType>none</AuthType>
+      <ObjectId>3</ObjectId>
+    </role>
+    <role id="5546" parent="5510" name="sys">
+      <AuthType>none</AuthType>
+      <ObjectId>4</ObjectId>
+    </role>
+    <role id="5547" parent="5510" name="db_owner">
+      <AuthType>none</AuthType>
+      <ObjectId>16384</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5548" parent="5510" name="db_accessadmin">
+      <AuthType>none</AuthType>
+      <ObjectId>16385</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5549" parent="5510" name="db_securityadmin">
+      <AuthType>none</AuthType>
+      <ObjectId>16386</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5550" parent="5510" name="db_ddladmin">
+      <AuthType>none</AuthType>
+      <ObjectId>16387</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5551" parent="5510" name="db_backupoperator">
+      <AuthType>none</AuthType>
+      <ObjectId>16389</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5552" parent="5510" name="db_datareader">
+      <AuthType>none</AuthType>
+      <ObjectId>16390</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5553" parent="5510" name="db_datawriter">
+      <AuthType>none</AuthType>
+      <ObjectId>16391</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5554" parent="5510" name="db_denydatareader">
+      <AuthType>none</AuthType>
+      <ObjectId>16392</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <role id="5555" parent="5510" name="db_denydatawriter">
+      <AuthType>none</AuthType>
+      <ObjectId>16393</ObjectId>
+      <Type>database-role</Type>
+      <OwnerId>1</OwnerId>
+    </role>
+    <schema id="5556" parent="5510" name="INFORMATION_SCHEMA">
       <ObjectId>3</ObjectId>
     </schema>
-    <schema id="5543" parent="5510" name="db_accessadmin">
+    <schema id="5557" parent="5510" name="db_accessadmin">
       <ObjectId>16385</ObjectId>
     </schema>
-    <schema id="5544" parent="5510" name="db_backupoperator">
+    <schema id="5558" parent="5510" name="db_backupoperator">
       <ObjectId>16389</ObjectId>
     </schema>
-    <schema id="5545" parent="5510" name="db_datareader">
+    <schema id="5559" parent="5510" name="db_datareader">
       <ObjectId>16390</ObjectId>
     </schema>
-    <schema id="5546" parent="5510" name="db_datawriter">
+    <schema id="5560" parent="5510" name="db_datawriter">
       <ObjectId>16391</ObjectId>
     </schema>
-    <schema id="5547" parent="5510" name="db_ddladmin">
+    <schema id="5561" parent="5510" name="db_ddladmin">
       <ObjectId>16387</ObjectId>
     </schema>
-    <schema id="5548" parent="5510" name="db_denydatareader">
+    <schema id="5562" parent="5510" name="db_denydatareader">
       <ObjectId>16392</ObjectId>
     </schema>
-    <schema id="5549" parent="5510" name="db_denydatawriter">
+    <schema id="5563" parent="5510" name="db_denydatawriter">
       <ObjectId>16393</ObjectId>
     </schema>
-    <schema id="5550" parent="5510" name="db_owner">
+    <schema id="5564" parent="5510" name="db_owner">
       <ObjectId>16384</ObjectId>
     </schema>
-    <schema id="5551" parent="5510" name="db_securityadmin">
+    <schema id="5565" parent="5510" name="db_securityadmin">
       <ObjectId>16386</ObjectId>
     </schema>
-    <schema id="5552" parent="5510" name="dbo">
+    <schema id="5566" parent="5510" name="dbo">
       <Current>1</Current>
+      <IntrospectionTimestamp>2022-10-03.15:43:45.057</IntrospectionTimestamp>
       <ObjectId>1</ObjectId>
     </schema>
-    <schema id="5553" parent="5510" name="guest">
+    <schema id="5567" parent="5510" name="guest">
       <ObjectId>2</ObjectId>
     </schema>
-    <schema id="5554" parent="5510" name="sys">
+    <schema id="5568" parent="5510" name="sys">
       <ObjectId>4</ObjectId>
     </schema>
+    <table id="5569" parent="5566" name="ExternalIds">
+      <CreatedTimestamp>2022-10-03.15:43:43.713</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.713</ModifiedTimestamp>
+      <ObjectId>1285579618</ObjectId>
+    </table>
+    <table id="5570" parent="5566" name="UserPictures">
+      <CreatedTimestamp>2022-10-03.15:43:43.743</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.743</ModifiedTimestamp>
+      <ObjectId>1397580017</ObjectId>
+    </table>
+    <table id="5571" parent="5566" name="UserRelations">
+      <CreatedTimestamp>2022-10-03.15:43:43.713</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.713</ModifiedTimestamp>
+      <ObjectId>1317579732</ObjectId>
+    </table>
+    <table id="5572" parent="5566" name="Users">
+      <CreatedTimestamp>2022-10-03.15:43:43.713</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.747</ModifiedTimestamp>
+      <ObjectId>1349579846</ObjectId>
+    </table>
+    <table id="5573" parent="5566" name="__EFMigrationsHistory">
+      <CreatedTimestamp>2022-10-03.15:43:43.660</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.660</ModifiedTimestamp>
+      <ObjectId>1253579504</ObjectId>
+    </table>
+    <column id="5574" parent="5569" name="Id">
+      <DataType>nvarchar(256 char)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="5575" parent="5569" name="MainId">
+      <DataType>nvarchar(64 char)|0s</DataType>
+      <Position>2</Position>
+    </column>
+    <column id="5576" parent="5569" name="Type">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <index id="5577" parent="5569" name="PK_ExternalIds">
+      <Clustering>1</Clustering>
+      <ColNames>Id</ColNames>
+      <Position>1</Position>
+      <Unique>1</Unique>
+    </index>
+    <key id="5578" parent="5569" name="PK_ExternalIds">
+      <CreatedTimestamp>2022-10-03.15:43:43.713</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.713</ModifiedTimestamp>
+      <ObjectId>1301579675</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK_ExternalIds</UnderlyingIndexName>
+    </key>
+    <column id="5579" parent="5570" name="Id">
+      <DataType>nvarchar(128 char)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="5580" parent="5570" name="Picture">
+      <DataType>varbinary(max)|0s</DataType>
+      <Position>2</Position>
+    </column>
+    <index id="5581" parent="5570" name="PK_UserPictures">
+      <Clustering>1</Clustering>
+      <ColNames>Id</ColNames>
+      <Position>1</Position>
+      <Unique>1</Unique>
+    </index>
+    <key id="5582" parent="5570" name="PK_UserPictures">
+      <CreatedTimestamp>2022-10-03.15:43:43.747</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.747</ModifiedTimestamp>
+      <ObjectId>1413580074</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK_UserPictures</UnderlyingIndexName>
+    </key>
+    <column id="5583" parent="5571" name="FollowerId">
+      <DataType>nvarchar(128 char)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="5584" parent="5571" name="FollowingId">
+      <DataType>nvarchar(128 char)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <index id="5585" parent="5571" name="PK_UserRelations">
+      <Clustering>1</Clustering>
+      <ColNames>FollowerId
+FollowingId</ColNames>
+      <Position>1</Position>
+      <Unique>1</Unique>
+    </index>
+    <key id="5586" parent="5571" name="PK_UserRelations">
+      <CreatedTimestamp>2022-10-03.15:43:43.713</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.713</ModifiedTimestamp>
+      <ObjectId>1333579789</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK_UserRelations</UnderlyingIndexName>
+    </key>
+    <column id="5587" parent="5572" name="Id">
+      <DataType>nvarchar(64 char)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="5588" parent="5572" name="PlayedRoomsCount">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <column id="5589" parent="5572" name="WonRoomsCount">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="5590" parent="5572" name="Money">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+    </column>
+    <column id="5591" parent="5572" name="Name">
+      <DataType>nvarchar(128 char)|0s</DataType>
+      <Position>5</Position>
+    </column>
+    <column id="5592" parent="5572" name="PictureUrl">
+      <DataType>nvarchar(256 char)|0s</DataType>
+      <Position>6</Position>
+    </column>
+    <column id="5593" parent="5572" name="EatenCardsCount">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+    </column>
+    <column id="5594" parent="5572" name="WinStreak">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+    </column>
+    <column id="5595" parent="5572" name="MaxWinStreak">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+    </column>
+    <column id="5596" parent="5572" name="TotalEarnedMoney">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>10</Position>
+    </column>
+    <column id="5597" parent="5572" name="Level">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>11</Position>
+    </column>
+    <column id="5598" parent="5572" name="Xp">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>12</Position>
+    </column>
+    <column id="5599" parent="5572" name="RequestedMoneyAidToday">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>13</Position>
+    </column>
+    <column id="5600" parent="5572" name="LastMoneyAimRequestTime">
+      <DataType>datetime2|0s</DataType>
+      <Position>14</Position>
+    </column>
+    <column id="5601" parent="5572" name="OwnedBackgroundIds">
+      <DataType>nvarchar(max)|0s</DataType>
+      <Position>15</Position>
+    </column>
+    <column id="5602" parent="5572" name="OwnedCardBackIds">
+      <DataType>nvarchar(max)|0s</DataType>
+      <Position>16</Position>
+    </column>
+    <column id="5603" parent="5572" name="OwnedTitleIds">
+      <DataType>nvarchar(max)|0s</DataType>
+      <Position>17</Position>
+    </column>
+    <column id="5604" parent="5572" name="SelectedTitleId">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>18</Position>
+    </column>
+    <column id="5605" parent="5572" name="SelectedCardback">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>19</Position>
+    </column>
+    <column id="5606" parent="5572" name="SelectedBackground">
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>20</Position>
+    </column>
+    <column id="5607" parent="5572" name="EnableOpenMatches">
+      <DataType>bit|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>21</Position>
+    </column>
+    <column id="5608" parent="5572" name="Email">
+      <DataType>nvarchar(128 char)|0s</DataType>
+      <Position>22</Position>
+    </column>
+    <column id="5609" parent="5572" name="LastLogin">
+      <DataType>datetime2|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>23</Position>
+      <DefaultConstraintId>1381579960</DefaultConstraintId>
+      <DefaultConstraintName>DF__Users__LastLogin__52593CB8</DefaultConstraintName>
+    </column>
+    <default id="5610" parent="5572" name="DF__Users__LastLogin__52593CB8">
+      <ColNames>LastLogin</ColNames>
+      <DefaultExpression>&apos;0001-01-01T00:00:00.0000000&apos;</DefaultExpression>
+      <ModifiedTimestamp>2022-10-03.15:43:43.743</ModifiedTimestamp>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>1381579960</ObjectId>
+    </default>
+    <index id="5611" parent="5572" name="PK_Users">
+      <Clustering>1</Clustering>
+      <ColNames>Id</ColNames>
+      <Position>1</Position>
+      <Unique>1</Unique>
+    </index>
+    <key id="5612" parent="5572" name="PK_Users">
+      <CreatedTimestamp>2022-10-03.15:43:43.717</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.717</ModifiedTimestamp>
+      <ObjectId>1365579903</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK_Users</UnderlyingIndexName>
+    </key>
+    <column id="5613" parent="5573" name="MigrationId">
+      <DataType>nvarchar(150 char)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+    </column>
+    <column id="5614" parent="5573" name="ProductVersion">
+      <DataType>nvarchar(32 char)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+    </column>
+    <index id="5615" parent="5573" name="PK___EFMigrationsHistory">
+      <Clustering>1</Clustering>
+      <ColNames>MigrationId</ColNames>
+      <Position>1</Position>
+      <Unique>1</Unique>
+    </index>
+    <key id="5616" parent="5573" name="PK___EFMigrationsHistory">
+      <CreatedTimestamp>2022-10-03.15:43:43.663</CreatedTimestamp>
+      <ModifiedTimestamp>2022-10-03.15:43:43.663</ModifiedTimestamp>
+      <ObjectId>1269579561</ObjectId>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PK___EFMigrationsHistory</UnderlyingIndexName>
+    </key>
   </database-model>
 </dataSource>

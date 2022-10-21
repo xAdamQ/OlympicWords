@@ -72,7 +72,7 @@ public class Finalizer : MonoModule<Finalizer>
     {
         UniTask.Create(async () =>
         {
-            await NetManager.I.SendAsync("LeaveFinishedRoom");
+            await MasterHub.I.LeaveFinishedRoom();
             SceneManager.LoadScene("Lobby");
         }).Forget(e => throw e);
     }

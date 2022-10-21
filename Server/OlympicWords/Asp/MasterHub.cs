@@ -1,22 +1,56 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Reflection;
-using OlympicWords.Services.Exceptions;
 using OlympicWords.Common;
-using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using Microsoft.VisualBasic;
 using OlympicWords.Services.Helpers;
-using OlympicWords.Services;
 using static System.Threading.Tasks.Task;
 
 namespace OlympicWords.Services
 {
-    public class MasterHub : Hub
+    public interface IMasterHub
+    {
+        Task OnConnectedAsync();
+        Task OnDisconnectedAsync(Exception exception);
+        Task<PersonalFullUserInfo> GetPersonalUserData();
+        /// <summary>
+        /// get public user data by his id
+        /// </summary>
+        Task<FullUserInfo> GetUserData(string id);
+        Task ToggleFollow(string targetId);
+        Task ToggleOpenMatches();
+        Task MakePurchase(string purchaseData, string sign);
+        Task RequestRandomRoom(int betChoice, int capacityChoice);
+        Task<Services.MatchMaker.MatchRequestResult> RequestMatch(string oppoId);
+        void CancelChallengeRequest(string oppoId);
+        Task<Services.MatchMaker.ChallengeResponseResult> RespondChallengeRequest
+            (string senderId, bool response);
+        Task Ready();
+        Task AskForMoneyAid();
+        Task ClaimMoneyAid();
+        Task BuyCardback(int cardbackId);
+        Task BuyBackground(int backgroundId);
+        Task SelectCardback(int cardbackId);
+        Task SelectBackground(int backgroundId);
+        Task ShowMessage(string msgId);
+        Task<string> UpStreamChar(IAsyncEnumerable<char> stream);
+        IAsyncEnumerable<string[]> DownStreamCharBuffer(
+            [EnumeratorCancellation] CancellationToken cancellationToken);
+        IAsyncEnumerable<int> DownStreamTest(
+            [EnumeratorCancellation] CancellationToken cancellationToken);
+        Task Surrender();
+        void LeaveFinishedRoom();
+        void BuieTest();
+        void ThrowExc();
+        Task<MinUserInfo> TestReturnObject();
+        Task TestWaitAlot();
+        Task<string> UpStreamCharTest(IAsyncEnumerable<char> stream);
+        void Dispose();
+        IHubCallerClients Clients { get; set; }
+        HubCallerContext Context { get; set; }
+        IGroupManager Groups { get; set; }
+    }
+
+    public class MasterHub : Hub, IMasterHub
     {
         #region services
 
@@ -31,7 +65,8 @@ namespace OlympicWords.Services
 
 
         public MasterHub(IOfflineRepo offlineRepo, ILobbyManager lobbyManager, IScopeRepo scopeRepo,
-            IGameplay gameplay, IMatchMaker matchMaker, ILogger<MasterHub> logger, IChatManager chatManager,
+            IGameplay gameplay, IMatchMaker matchMaker, ILogger<MasterHub> logger,
+            IChatManager chatManager,
             PersistantData persistantData)
         {
             this.offlineRepo = offlineRepo;
@@ -75,7 +110,9 @@ namespace OlympicWords.Services
 
         private async Task InitClientGame()
         {
-            var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier);
+            var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier,
+                withFollowings: true, withFollowers: true);
+
             var clientPersonalInfo = Mapper.ConvertUserDataToClient(user);
 
             //todo followers code
@@ -85,7 +122,8 @@ namespace OlympicWords.Services
             // clientPersonalInfo.Followings =
             //     await offlineRepo.GetFollowingsAsync(Context.UserIdentifier);
 
-            await Clients.Caller.SendAsync("InitGame", ActiveUser.MessageIndex++, clientPersonalInfo);
+            await Clients.Caller.SendAsync("InitGame", ActiveUser.MessageIndex++,
+                clientPersonalInfo);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -138,14 +176,18 @@ namespace OlympicWords.Services
         public async Task<FullUserInfo> GetUserData(string id)
         {
             var data = await offlineRepo.GetFullUserInfoAsync(id);
-            data.Friendship = (int)offlineRepo.GetFriendship(Context.UserIdentifier, id);
+            data.Friendship = (int)await offlineRepo.GetFriendship(Context.UserIdentifier, id);
             return data;
         }
 
         [RpcDomain(typeof(UserDomain.App))]
         public async Task ToggleFollow(string targetId)
         {
-            offlineRepo.ToggleFollow(Context.UserIdentifier, targetId);
+            var user = await offlineRepo.GetCurrentUser();
+            var target = await offlineRepo.GetUserByIdAsyc(targetId);
+
+            offlineRepo.ToggleFollow(user, target);
+
             await offlineRepo.SaveChangesAsync();
         }
 

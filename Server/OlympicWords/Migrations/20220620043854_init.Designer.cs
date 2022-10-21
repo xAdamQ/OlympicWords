@@ -9,7 +9,7 @@ using OlympicWords.Services;
 
 #nullable disable
 
-namespace OlymbicWords.Migrations
+namespace OlympicWords.Migrations
 {
     [DbContext(typeof(MasterContext))]
     [Migration("20220620043854_init")]
