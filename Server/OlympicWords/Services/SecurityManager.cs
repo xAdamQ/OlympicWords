@@ -145,14 +145,22 @@ namespace OlympicWords.Services
                 UserId = user.Id,
             });
 
-            var imageBytes = await DownloadUserImage(providerUser.Picture);
-            await offlineRepo.SaveUserPicture(user.Id, imageBytes);
+            try
+            {
+                var imageBytes = await DownloadUserImage(providerUser.Picture);
+                await offlineRepo.SaveUserPicture(user.Id, imageBytes);
+            }
+            catch (Exception e)
+            {
+                logger.LogInformation("failed to download player pic due to error: {Exc}", e);
+            }
+
 
             var botA = await offlineRepo.GetUserByIdAsyc("999", withFollowings: true);
             var botB = await offlineRepo.GetUserByIdAsyc("9999", withFollowings: true);
 
-            offlineRepo.ToggleFollow(user, botA);
-            offlineRepo.ToggleFollow(user, botB);
+            await offlineRepo.ToggleFollow(user, botA);
+            await offlineRepo.ToggleFollow(user, botB);
 
             await offlineRepo.SaveChangesAsync();
             return user;
@@ -160,7 +168,7 @@ namespace OlympicWords.Services
 
         #region facebook
 
-        private const string FbBaseAddress = "https://graph.facebook.com/v15.0/";
+        private const string FB_BASE_ADDRESS = "https://graph.facebook.com/v15.0/";
 
         /// <exception cref="FbApiError"></exception>
         /// <exception cref="Exceptions.BadUserInputException"></exception>
@@ -170,7 +178,7 @@ namespace OlympicWords.Services
             queryParams.Add("input_token", token);
             queryParams.Add("access_token", fbAppToken);
 
-            const string address = FbBaseAddress + "debug_token";
+            const string address = FB_BASE_ADDRESS + "debug_token";
 
             var uri = new UriBuilder(address) { Query = queryParams.ToString()! }.ToString();
 
@@ -205,7 +213,7 @@ namespace OlympicWords.Services
             queryParams.Add("fields", "id,name,email");
             queryParams.Add("access_token", token);
 
-            const string address = FbBaseAddress + "me";
+            const string address = FB_BASE_ADDRESS + "me";
 
             var uri = new UriBuilder(address) { Query = queryParams.ToString()! }.ToString();
 
@@ -245,7 +253,7 @@ namespace OlympicWords.Services
 
             queryParams.Add("access_token", token);
 
-            const string address = FbBaseAddress + "me/friends";
+            const string address = FB_BASE_ADDRESS + "me/friends";
 
             var uri = new UriBuilder(address) { Query = queryParams.ToString()! }.ToString();
 
