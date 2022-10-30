@@ -79,8 +79,17 @@ namespace OlympicWords.Services
 
         public async Task<byte[]> GetUserPicture(string userId)
         {
-            return (await context.UserPictures.AsNoTracking().FirstAsync(p => p.UserId == userId))
-                .Picture;
+            var picRecord = await context.UserPictures.AsNoTracking().FirstAsync(p => p.UserId == userId);
+
+            if (picRecord.AvatarId != 0)
+            {
+                var avatarName = picRecord.AvatarId + ".jpg";
+                var absPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatars", avatarName);
+                logger.LogInformation("the abs path of the pic is: {AbsPath}", absPath);
+                return await File.ReadAllBytesAsync(absPath);
+            }
+
+            return picRecord.Picture;
         }
 
         public async Task SaveUserPicture(string userId, byte[] picture)
