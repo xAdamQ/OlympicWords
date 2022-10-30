@@ -22,19 +22,18 @@ public class MinUserInfo
                 new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
     }
 
-
     public int CalcLevel()
     {
         return GetLevelFromXp(Xp);
     }
 
-    private const int MaxLevel = 999;
-    private const float Expo = .55f, Divi = 10;
+    private const int MAX_LEVEL = 999;
+    private const float EXPO = .55f, DIVIDER = 10;
 
     private static int GetLevelFromXp(int xp)
     {
-        var level = (int)(Mathf.Pow(xp, Expo) / Divi);
-        return level < MaxLevel ? level : MaxLevel;
+        var level = (int)(Mathf.Pow(xp, EXPO) / DIVIDER);
+        return level < MAX_LEVEL ? level : MAX_LEVEL;
     }
 
     //transferred model
@@ -49,12 +48,18 @@ public class MinUserInfo
     public event Action<Texture2D> PictureLoaded;
     public bool IsPictureLoaded;
 
+    private string PictureAddress { get; } =
+        Extensions.UriCombine(NetManager.I.GetServerAddress(), "Picture", "GetUserPicture");
+
     public IEnumerator DownloadPicture()
     {
+        var query = NetManager.I.GetAuthQuery();
+        query["userId"] = Id;
+
         var uriBuilder = new UriBuilder
-            (Extensions.UriCombine(NetManager.I.GetServerAddress(), "Picture"))
+            (PictureAddress)
             {
-                Query = NetManager.I.GetAuthQuery().ToString(),
+                Query = query.ToString(),
             };
 
         yield return Extensions.GetRemoteTexture(uriBuilder.Uri.ToString(), PictureLoaded);

@@ -234,7 +234,7 @@ public static partial class Extensions
             Debug.Log($"{request.error}, URL:{request.url}");
 
             // nothing to return on error:
-            yield return null;
+            yield break;
         }
 
         Debug.Log($"img downloaded from: {url}");

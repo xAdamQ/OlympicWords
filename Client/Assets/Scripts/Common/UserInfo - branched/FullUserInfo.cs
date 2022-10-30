@@ -4,7 +4,7 @@ using UnityEngine.Scripting;
 public class FullUserInfo : MinUserInfo
 {
     [Preserve]
-    public FullUserInfo()
+    public FullUserInfo() : base()
     {
     }
 
@@ -16,13 +16,6 @@ public class FullUserInfo : MinUserInfo
 
     public int WinStreak { get; set; }
     public int MaxWinStreak { get; set; }
-
-
-    //client helpers only?
-    // public List<int> OwnedCardBackIds => OwnedItemIds[(int) ItemType.Cardback];
-    // public List<int> OwnedBackgroundsIds => OwnedItemIds[(int) ItemType.Background];
-    // public int SelectedCardback => SelectedItem[(int) ItemType.Cardback];
-    // public int SelectedBackground => SelectedItem[(int) ItemType.Background];
 
     public List<int> OwnedCardBackIds { get; set; }
     public List<int> OwnedBackgroundsIds { get; set; }

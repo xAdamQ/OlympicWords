@@ -186,7 +186,7 @@ namespace OlympicWords.Services
             var user = await offlineRepo.GetCurrentUser();
             var target = await offlineRepo.GetUserByIdAsyc(targetId);
 
-            offlineRepo.ToggleFollow(user, target);
+            await offlineRepo.ToggleFollow(user, target);
 
             await offlineRepo.SaveChangesAsync();
         }

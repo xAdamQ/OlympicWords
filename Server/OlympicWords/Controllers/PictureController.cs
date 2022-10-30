@@ -4,7 +4,7 @@ using OlympicWords.Services.Extensions;
 
 namespace OlympicWords.Controllers;
 
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 [ApiController]
 public class PictureController : ControllerBase
 {
@@ -16,10 +16,20 @@ public class PictureController : ControllerBase
         this.httpContextAccessor = httpContextAccessor;
     }
 
+    //not used by the client
     [HttpGet]
-    public async Task<IActionResult> GetUserPicture()
+    [ActionName(nameof(GetMyPicture))]
+    public async Task<IActionResult> GetMyPicture()
     {
         var userId = httpContextAccessor.HttpContext.User.GetLoggedInUserId<string>();
+        var imageBytes = await offlineRepo.GetUserPicture(userId);
+        return File(imageBytes, "image/jpg");
+    }
+
+    [HttpGet]
+    [ActionName(nameof(GetUserPicture))]
+    public async Task<IActionResult> GetUserPicture(string userId)
+    {
         var imageBytes = await offlineRepo.GetUserPicture(userId);
         return File(imageBytes, "image/jpg");
     }

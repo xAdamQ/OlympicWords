@@ -79,17 +79,15 @@ namespace OlympicWords.Services
                 {
                     try
                     {
-                        var isValid = await securityManager.ValidateFbAccToken(accessToken);
+                        // var isValid = await securityManager.ValidateFbAccToken(accessToken);
 
-                        if (!isValid)
-                            return AuthenticateResult
-                                .Fail("the given facebook token is not valid");
+                        // if (!isValid)
+                        // return AuthenticateResult
+                        // .Fail("the given facebook token is not valid");
 
                         var fbProfile = await SecurityManager.GetFbProfile(accessToken);
 
                         user = await securityManager.SignInAsync(fbProfile);
-                        
-                        
                     }
                     //you should send bad input exc only to him not fb api error also
                     catch (Exception e)

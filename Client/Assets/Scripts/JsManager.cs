@@ -40,7 +40,7 @@ public class JsManager : MonoBehaviour
     public static extern string BackendAddress();
 
     [DllImport("__Internal")]
-    public static extern string GetFacebookAccessToken();
+    public static extern string GetFbResponse();
 
 
     private void Start()

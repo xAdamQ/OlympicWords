@@ -153,7 +153,7 @@ MonoBehaviour:
     Type: 0
   - Position: {x: 21.861458, y: 0.00000047683716, z: 31.882366}
     Normal: {x: 0, y: 1, z: 0}
-    Type: 0
+    Type: 1
   - Position: {x: 7.963044, y: 0, z: 31.879375}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
@@ -583,11 +583,6 @@ MonoBehaviour:
   - Type: 0
     Direction: 1
     Group: 0
-    Start: 45
-    End: 46
-  - Type: 0
-    Direction: 1
-    Group: 0
     Start: 46
     End: 47
   - Type: 0
@@ -602,7 +597,7 @@ MonoBehaviour:
     End: 39
   - Type: 0
     Direction: 0
-    Group: 0
+    Group: 1
     Start: 49
     End: 46
   - Type: 0
@@ -785,3 +780,8 @@ MonoBehaviour:
     Group: 0
     Start: 86
     End: 71
+  - Type: 0
+    Direction: 1
+    Group: 1
+    Start: 45
+    End: 46

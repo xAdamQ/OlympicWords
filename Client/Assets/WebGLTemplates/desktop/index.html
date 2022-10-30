@@ -12,45 +12,15 @@
 
 <body style="text-align: left; padding: 0; border: 0; margin: 0;">
 
-  <!-- facebook sdk -->
-  <script>
-    var fbConfig = {
-      appId: '468588098648394',
-      cookie: true,
-      xfbml: true,
-      version: 'v15.0'
-    };
-
-    window.fbAsyncInit = function () {
-      FB.init(fbConfig);
-      FB.AppEvents.logPageView();
-    };
-
-    (function (d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) { return; }
-      js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
-      fjs.parentNode.insertBefore(js, fjs);
-      console.log("init fb called");
-    }
-      (document, 'script', 'facebook-jssdk'));
-    //define and call the function
-
-    function checkLoginState() { FB.getLoginStatus(statusChangeCallback); }
-
-    function statusChangeCallback(response) {
-      console.log("the fb callback is: " + JSON.stringify(response));
-    }
-  </script>
+<script src="/fb.js"></script>
 
   <!-- canvas -->
   <canvas id="unity-canvas" style="width: 100%; height:100%; position: fixed;"></canvas>
 
   <!-- facebook button -->
-  <div style="position: absolute;" class="fb-login-button" data-max-rows="1" data-size="large"
+  <div id="fbLoginButton" style="position: absolute; display: none" class="fb-login-button" data-max-rows="1" data-size="large"
     data-button-type="continue_with" data-use-continue-as="true" scope="public_profile,email,user_friends"
-    onlogin="checkLoginState();"></div>
+    onlogin="OnFbLogin();"></div>
 
   <!-- unity loader -->
   <script src="Build/{{{ LOADER_FILENAME }}}"></script>
@@ -58,25 +28,42 @@
   <!-- create instance -->
   <script>
 
-    createUnityInstance(document.querySelector("#unity-canvas"), {
+    let config = {
       dataUrl: "Build/{{{ DATA_FILENAME }}}",
       frameworkUrl: "Build/{{{ FRAMEWORK_FILENAME }}}",
       #if USE_WASM
-        codeUrl: "Build/{{{ CODE_FILENAME }}}",
+      codeUrl: "Build/{{{ CODE_FILENAME }}}",
       #endif
-#if MEMORY_FILENAME
-        memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
+      #if MEMORY_FILENAME
+      memoryUrl: "Build/{{{ MEMORY_FILENAME }}}",
       #endif
-#if SYMBOLS_FILENAME
-        symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
+      #if SYMBOLS_FILENAME
+      symbolsUrl: "Build/{{{ SYMBOLS_FILENAME }}}",
       #endif
-        streamingAssetsUrl: "StreamingAssets",
+      streamingAssetsUrl: "StreamingAssets",
       companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
       productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
       productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      });
+      // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+      // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+    }
+
+    function onProgress(progress) {
+    }
+
+    function onSuccess(unityInstance) {
+      console.log("unity loaded successfully");
+      let fbButton = document.getElementsByClassName("fb-login-button")[0];
+      fbButton.style.display = "block";
+      loadedUnityInstance = unityInstance;
+    }
+
+    function onError(message) {
+      console.log("failed to load the unity game from the loader, message is: ", message);
+    }
+    
+    createUnityInstance(document.querySelector("#unity-canvas"), config, onProgress()).then(onSuccess).catch(onError);
+    
   </script>
 
 </body>

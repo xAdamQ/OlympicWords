@@ -15,8 +15,35 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
+
+/*
+ "authResponse": {
+    "accessToken": "EAAGqLasqeUoBAKyHSnT82cRMZCGZBdlu0uV2lt3UtHaX1VBlAivuZAUOHtontRzY6HGpLjyGdLHPLBPaBdlKl4cqu7ZC1r5ZCxL5Bh7xJhyVXbIrRczVq0ZAnI7lYiVyGact9GLKjaJLuq6V9b8DZCUoEGrmYFmQqrsMGljD6nGqp6A7I4nZBZAw697ZBuCZAm2hak8vdmDhbnKU1JamZB7prxWm",
+    "userID": "1954944418032338",
+    "expiresIn": 4625,
+    "signedRequest": "mr7aC6G9v0NXkkQKEHRxy65Uz6d5K9k5p2AhOQy1cR4.eyJ1c2VyX2lkIjoiMTk1NDk0NDQxODAzMjMzOCIsImNvZGUiOiJBUUQ0ZC1LMUlIaTVZeE5EcDRDUGcteGxGZDdQbjV5VnVWcHJIckJqNktiY0d0NGVpaTMyUkU3WGVKclFsSmFZYXQ5SGFONWMyNVgtcjMtYjBoV1J6bHN0em1oVTFTNl92aWtzT1dxSndJX2FrRFFvbG9La1JrNkpYSFBUcjl0bFV6UUZ6R2xfSVRnUHhiek5xS21WLU9CaXpybEJkQ2ZoM1k1MGtOUGNiaXV1M3phU3BxTkJVdjF0VkxtUE1KOUpubTR1alliRV81RUtybzJKMEpDdkhMaXgzWkx6VTlfNzFCWWNFZWVRcm1adDhGcnRQNGd0SDAwczVCU0lyeGpvSUZkV3RvT2l4WWNvMUl6VmdLckpMblkwaGlpZDhiY1U3MTd3dTM3S3cybGRMVDdTMUJDbl9XckFWSWZtb3FKN0xTQzdZOG1xY1NGbWdNVjVpano5Sm1aWiIsImFsZ29yaXRobSI6IkhNQUMtU0hBMjU2IiwiaXNzdWVkX2F0IjoxNjY3MDY4OTc1fQ",
+    "graphDomain": "facebook",
+    "data_access_expiration_time": 1674844975
+  },
+  "status": "connected"
+ 
+ * 
+ */
+
+public class FbAuthResponse
+{
+    public string AccessToken { get; set; }
+    public string ExpiresIn { get; set; }
+    public string SignedRequest { get; set; }
+    public string UserID { get; set; }
+}
+
+public class FbLoginStatus
+{
+    public FbAuthResponse AuthResponse { get; set; }
+    public string Status { get; set; }
+}
 
 public class NetManager : MonoModule<NetManager>
 {
@@ -25,6 +52,7 @@ public class NetManager : MonoModule<NetManager>
     private HubConnection hubConnection;
     private UpStreamItemController<string> upStreamItemController;
     private const int MAX_DEBUG_LENGTH = 200;
+    public bool Connected;
 
     private readonly JsonSerializerSettings serializationSettings = new()
     {
@@ -40,6 +68,24 @@ public class NetManager : MonoModule<NetManager>
         FetchRpcInfos();
 
         serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = GetServerAddress();
+    }
+
+    // private IEnumerator TryLogin()
+    // {
+    //     while (!TryFbLogin() && !Connected)
+    //         yield return new WaitForSeconds(1f);
+    // }
+
+    public void FbLogin(string responseStr)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        Debug.Log("fb login in unity called with data: " + responseStr);
+
+        var response = JsonConvert.DeserializeObject<FbLoginStatus>(responseStr);
+        if (response == null) throw new NullReferenceException("rb response is null");
+
+        ConnectToServer(response.AuthResponse.AccessToken, "facebook");
+#endif
     }
 
     private void DownStream()
@@ -135,7 +181,7 @@ public class NetManager : MonoModule<NetManager>
     [SerializeField] private TMP_InputField customAddress;
     [SerializeField] private TMP_Text chosenAddressText;
 
-    private (string token, string provider) CurrentAuth;
+    private (string token, string provider) currentAuth;
 
     public async UniTask<T> GetAsync<T>(string methodName,
         (string key, string value)[] queryParams = null,
@@ -190,8 +236,8 @@ public class NetManager : MonoModule<NetManager>
     {
         var query = HttpUtility.ParseQueryString(string.Empty);
 
-        query["access_token"] = CurrentAuth.token;
-        query["provider"] = CurrentAuth.provider;
+        query["access_token"] = currentAuth.token;
+        query["provider"] = currentAuth.provider;
 
         return query;
     }
@@ -200,7 +246,7 @@ public class NetManager : MonoModule<NetManager>
     //I use event functions because awaiting returns hub conn and this is useless
     public void ConnectToServer(string accessToken, string provider)
     {
-        CurrentAuth = (accessToken, provider);
+        currentAuth = (accessToken, provider);
 
         Debug.Log("connecting to server");
 
@@ -252,9 +298,10 @@ public class NetManager : MonoModule<NetManager>
 
         return true;
     }
-
     private void OnConnected(HubConnection obj)
     {
+        Connected = true;
+
         Debug.Log("connected to server");
 
         SignInPanel.DestroyModule();
@@ -262,22 +309,23 @@ public class NetManager : MonoModule<NetManager>
 
         Destroy(FindObjectOfType<GuestView>()?.gameObject);
     }
-
     private void OnClosed(HubConnection obj)
     {
         //don't restart game here because this is called only when the connection
         //is gracefully closed
         Debug.Log("OnClosed");
     }
-
     private void OnError(HubConnection arg1, string arg2)
     {
         RestartGame();
         Debug.Log($"OnError: {arg2}");
     }
-
     private void OnReconnecting(HubConnection arg1, string arg2)
     {
+        //todo
+        //if the client can recover from reconnection, we are okay
+        //if it can't and we on error is not called when reconnecting is called, then we have to restart the game here
+        //if on error is called when this is called, we can remove this callback
         Debug.Log("reconnecting");
     }
 

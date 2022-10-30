@@ -46,20 +46,20 @@ public class BlockingPanel : MonoBehaviour
         }
 
         i.waitImage.gameObject.SetActive(true);
-            i.fillBar.gameObject.SetActive(false);
+        i.fillBar.gameObject.SetActive(false);
 
         animTween = i.waitImage.transform.DORotate(Vector3.forward * 180, 2f)
             .SetLoops(9999, LoopType.Yoyo);
     }
 
-    private static async UniTask ShowBase(string message = null)
+    private static async UniTask ShowBase(string message = "")
     {
         if (i) Destroy(i.gameObject);
 
         i = (await Addressables.InstantiateAsync("blockingPanel", Controller.I.canvas))
             .GetComponent<BlockingPanel>();
 
-        i.messageText.text = message ?? "";
+        i.messageText.text = message;
     }
 
     public static void HideDismiss()

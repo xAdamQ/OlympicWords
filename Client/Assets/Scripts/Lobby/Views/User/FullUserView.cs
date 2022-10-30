@@ -68,15 +68,12 @@ public class FullUserView : MinUserView
     {
         followingBackText.gameObject.SetActive(false);
 
-        if (FullUserInfo.Friendship == (int)FriendShip.Following ||
-            FullUserInfo.Friendship == (int)FriendShip.Friend)
+        if (FullUserInfo.Friendship is (int)FriendShip.Follower or (int)FriendShip.Friend)
             followingBackText.gameObject.SetActive(true);
 
-        followButtonText.text =
-            (FullUserInfo.Friendship == (int)FriendShip.Following ||
-             FullUserInfo.Friendship == (int)FriendShip.None)
-                ? "Follow"
-                : "Unfollow";
+        followButtonText.text = FullUserInfo.Friendship is (int)FriendShip.Follower or (int)FriendShip.None
+            ? "Follow"
+            : "Unfollow";
     }
 
     private void Init(FullUserInfo fullUserInfo)
@@ -131,6 +128,9 @@ public class FullUserView : MinUserView
         {
             await MasterHub.I.ToggleFollow(Id);
 
+            Debug.Log("was:");
+            Debug.Log(FullUserInfo.Friendship.ToString());
+
             switch (FullUserInfo.Friendship)
             {
                 case (int)FriendShip.Friend:
@@ -138,21 +138,22 @@ public class FullUserView : MinUserView
                     Repository.I.PersonalFullInfo.Followings
                         .RemoveAll(i => i.Id == Id);
                     break;
-                case (int)FriendShip.Follower:
+                case (int)FriendShip.Following:
                     FullUserInfo.Friendship = (int)FriendShip.None;
                     Repository.I.PersonalFullInfo.Followings
                         .RemoveAll(i => i.Id == Id);
                     break;
-                case (int)FriendShip.Following:
+                case (int)FriendShip.Follower:
                     FullUserInfo.Friendship = (int)FriendShip.Friend;
                     Repository.I.PersonalFullInfo.Followings.Add(FullUserInfo);
                     break;
                 case (int)FriendShip.None:
-                    FullUserInfo.Friendship = (int)FriendShip.Follower;
+                    FullUserInfo.Friendship = (int)FriendShip.Following;
                     Repository.I.PersonalFullInfo.Followings.Add(FullUserInfo);
                     break;
             }
 
+            Debug.Log(FullUserInfo.Friendship.ToString());
 
             UpdateFriendShipView();
         });

@@ -33,8 +33,8 @@ public class RoomRequester : MonoBehaviour
             return;
         }
 
-        var operation = MasterHub.I
-            .RequestRandomRoom(betChoice, capacityChoiceButton.CurrentChoice);
+        var operation = MasterHub.I.RequestRandomRoom
+            (betChoice, capacityChoiceButton.CurrentChoice);
         await BlockingOperationManager.I.Start(operation);
 
         LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);

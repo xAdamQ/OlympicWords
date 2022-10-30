@@ -14,11 +14,13 @@ using UnityEngine.Scripting;
 // [Preserve]
 public class PersonalFullUserInfo : FullUserInfo, INotifyPropertyChanged
 {
-    
     [Preserve]
-    public PersonalFullUserInfo()
+    public PersonalFullUserInfo() : base()
     {
     }
+
+    // protected override string PictureAddress { get; } =
+    // Extensions.UriCombine(NetManager.I.GetServerAddress(), "Picture", "GetMyPicture");
 
     public override int Money
     {
