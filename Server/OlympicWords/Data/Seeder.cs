@@ -85,6 +85,27 @@ public static class Seeder
             new() { FollowerId = user0.Id, FollowingId = bot99999.Id },
         };
 
+        var pictureData = new UserPicture[]
+        {
+            new()
+            {
+                UserId = "999",
+                AvatarId = 1,
+            },
+            new()
+            {
+                UserId = "9999",
+                AvatarId = 2,
+            },
+            new()
+            {
+                UserId = "99999",
+                AvatarId = 3,
+            },
+        };
+
+        modelBuilder.Entity<UserPicture>().HasData(pictureData);
+
         modelBuilder.Entity<UserRelation>().HasData(relations);
 
         modelBuilder.Entity<User>().HasData(
