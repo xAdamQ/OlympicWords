@@ -31,7 +31,7 @@ namespace OlympicWords.Services
         }
 
         private Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
-        private const int PENDING_ROOM_TIMEOUT = 1 * 1000;
+        private const int PENDING_ROOM_TIMEOUT = 6 * 1000;
 
         public void SetupPendingRoomTimeoutIfNotExist(Room room)
         {
