@@ -2,10 +2,7 @@ let loadedUnityInstance = null;
 
 //app config
 const fbConfig = {
-    appId: '468588098648394',
-    cookie: true,
-    xfbml: true,
-    version: 'v15.0'
+    appId: '468588098648394', cookie: true, xfbml: true, version: 'v15.0'
 };
 
 // load sdk
@@ -37,10 +34,11 @@ function OnFbLogin() {
         loadedUnityInstance.SendMessage("NetManager", "FbLogin", JSON.stringify(response));
 
         if (response.status === "connected") {
-            let fbButton = document.getElementsByClassName("fb-login-button")[0];
-            // fbButton.parentNode.removeChild(fbButton);
-            fbButton.style.display = "none";
-            console.log("should remove button")
+            document.getElementById("fbLoginButton").hidden = true;
         }
     });
+}
+
+function showFbButton() {
+    document.getElementById("fbLoginButton").hidden = false;
 }

@@ -12,6 +12,7 @@ using UnityEngine;
 using BestHTTP.SignalRCore.Encoders;
 using BestHTTP.SignalRCore.Messages;
 using Cysharp.Threading.Tasks;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine.SceneManagement;
@@ -31,18 +32,91 @@ using Random = UnityEngine.Random;
  * 
  */
 
-public class FbAuthResponse
+public class FbManager
 {
-    public string AccessToken { get; set; }
-    public string ExpiresIn { get; set; }
-    public string SignedRequest { get; set; }
-    public string UserID { get; set; }
-}
+    private class FbLoginStatus
+    {
+        public FbAuthResponse AuthResponse { get; set; }
+        public string Status { get; set; }
 
-public class FbLoginStatus
-{
-    public FbAuthResponse AuthResponse { get; set; }
-    public string Status { get; set; }
+        [UsedImplicitly]
+        public class FbAuthResponse
+        {
+            public string AccessToken { get; set; }
+            public string ExpiresIn { get; set; }
+            public string SignedRequest { get; set; }
+            public string UserID { get; set; }
+        }
+    }
+
+    [UsedImplicitly]
+    private class FbValidationResponse
+    {
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        public ValidationData data { get; set; }
+
+        [UsedImplicitly]
+        public class ValidationData
+        {
+            // ReSharper disable once InconsistentNaming
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            public bool is_valid { get; set; }
+        }
+    }
+
+    private async UniTask<bool> ValidateFbAccToken(string token)
+    {
+        const string clientToken = "468588098648394|CwbC4U-0WDoPAaeP79TTG7ELfD4";
+        const string fbBaseAddress = "https://graph.facebook.com/v15.0/";
+
+        var queryParams = HttpUtility.ParseQueryString(string.Empty);
+        queryParams.Add("input_token", token);
+        queryParams.Add("access_token", clientToken);
+
+        const string address = fbBaseAddress + "debug_token";
+
+        var uri = new UriBuilder(address) { Query = queryParams.ToString()! }.ToString();
+
+        try
+        {
+            var response = await NetManager.I.GetAsync<FbValidationResponse>(uri);
+            return response.data.is_valid;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("couldn't validate the cached token due to the error: " + e);
+            return false;
+        }
+    }
+
+    public async UniTask FbLoginWorks()
+    {
+        var cachedToken = PlayerPrefs.GetString("fbToken");
+
+        if (string.IsNullOrEmpty(cachedToken) || !await ValidateFbAccToken(cachedToken))
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            JsManager.ShowFbButton();
+#endif
+            return;
+        }
+
+        NetManager.I.ConnectToServer(cachedToken, "facebook");
+    }
+
+
+    public void FbLogin(string responseStr)
+    {
+        Debug.Log("fb login in unity called with data: " + responseStr);
+
+        var response = JsonConvert.DeserializeObject<FbLoginStatus>(responseStr);
+        if (response == null) throw new NullReferenceException("rb response is null");
+
+        PlayerPrefs.SetString("fbToken", response.AuthResponse.AccessToken);
+
+        NetManager.I.ConnectToServer(response.AuthResponse.AccessToken, "facebook");
+    }
 }
 
 public class NetManager : MonoModule<NetManager>
@@ -53,11 +127,19 @@ public class NetManager : MonoModule<NetManager>
     private UpStreamItemController<string> upStreamItemController;
     private const int MAX_DEBUG_LENGTH = 200;
     public bool Connected;
+    public readonly FbManager FbManager = new();
 
     private readonly JsonSerializerSettings serializationSettings = new()
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
     };
+
+    [ContextMenu("tst")]
+    public void tst()
+    {
+        var res = PlayerPrefs.GetString("sfhjjksdfsd");
+        Debug.Log(string.IsNullOrEmpty(res));
+    }
 
     protected override void Awake()
     {
@@ -70,22 +152,26 @@ public class NetManager : MonoModule<NetManager>
         serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = GetServerAddress();
     }
 
-    // private IEnumerator TryLogin()
-    // {
-    //     while (!TryFbLogin() && !Connected)
-    //         yield return new WaitForSeconds(1f);
-    // }
+    // ReSharper disable once Unity.IncorrectMethodSignature
+    private async UniTaskVoid Start()
+    {
+        try
+        {
+            await FbManager.FbLoginWorks();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("failed to auto login fb due to: " + e);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            JsManager.ShowFbButton();
+#endif
+        }
+    }
 
+    [UsedImplicitly]
     public void FbLogin(string responseStr)
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
-        Debug.Log("fb login in unity called with data: " + responseStr);
-
-        var response = JsonConvert.DeserializeObject<FbLoginStatus>(responseStr);
-        if (response == null) throw new NullReferenceException("rb response is null");
-
-        ConnectToServer(response.AuthResponse.AccessToken, "facebook");
-#endif
+        FbManager.FbLogin(responseStr);
     }
 
     private void DownStream()
@@ -183,11 +269,11 @@ public class NetManager : MonoModule<NetManager>
 
     private (string token, string provider) currentAuth;
 
-    public async UniTask<T> GetAsync<T>(string methodName,
+    public async UniTask<T> GetAsync<T>(string uri,
         (string key, string value)[] queryParams = null,
         string json = null)
     {
-        var uriBuilder = new UriBuilder(Extensions.UriCombine(GetServerAddress(), methodName));
+        var uriBuilder = new UriBuilder(uri);
 
         if (queryParams?.Length > 0)
         {
@@ -199,7 +285,7 @@ public class NetManager : MonoModule<NetManager>
 
         var request = new HTTPRequest(uriBuilder.Uri);
 
-        request.AddHeader("Content-Type", "application/json");
+        // request.AddHeader("Content-Type", "application/json");
         request.AddHeader("Accept", "application/json");
 
         if (json != null)
@@ -217,12 +303,17 @@ public class NetManager : MonoModule<NetManager>
                 $"full response is {JsonConvert.SerializeObject(response, serializationSettings)[..MAX_DEBUG_LENGTH]}");
 
         response.Headers.TryGetValue("Content-Type", out var contentTypes);
+        if (contentTypes == null)
+            response.Headers.TryGetValue("content-type", out contentTypes);
 
-        if (contentTypes[0] == "application/json")
-            return JsonConvert.DeserializeObject<T>(response.DataAsText);
+        if (contentTypes == null)
+            throw new Exception("the response doesn't have a content type header");
 
-        throw new Exception(
-            $"the content type: {contentTypes[0]} for http requests is not supported");
+        if (!contentTypes.Contains("application/json"))
+            throw new Exception(
+                $"the content types: {string.Join(", ", contentTypes)} for http requests is not supported");
+
+        return JsonConvert.DeserializeObject<T>(response.DataAsText);
     }
 
     public string GetServerAddress()

@@ -42,6 +42,9 @@ public class JsManager : MonoBehaviour
     [DllImport("__Internal")]
     public static extern string GetFbResponse();
 
+    [DllImport("__Internal")]
+    public static extern void ShowFbButton();
+
 
     private void Start()
     {

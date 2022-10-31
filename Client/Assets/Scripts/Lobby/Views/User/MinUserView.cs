@@ -7,14 +7,24 @@ using UnityEngine.UI;
 
 public class MinUserView : MonoBehaviour
 {
-    [SerializeField] private TMP_Text
+    [SerializeField] protected TMP_Text
         displayName,
         level,
         title;
 
-    [SerializeField] private Image picture;
+    [SerializeField] protected Image picture;
 
     public MinUserInfo MinUserInfo { get; set; }
+
+    public static async UniTask<MinUserView> Create(MinUserInfo info, Transform parent)
+    {
+        var muv = (await Addressables.InstantiateAsync("minUserView", parent))
+            .GetComponent<MinUserView>();
+
+        muv.Init(info);
+
+        return muv;
+    }
 
     public void Init(MinUserInfo minUserInfo)
     {
@@ -49,11 +59,16 @@ public class MinUserView : MonoBehaviour
     }
 
     /// <summary>
-    /// personal and room view overrides this 
+    /// personal, room and final overrides this 
     /// </summary>
     public virtual void ShowFullInfo()
     {
-        BlockingOperationManager.I.Forget(MasterHub.I.GetUserData(Id), FullUserView.Show);
+        UniTask.Create(async () =>
+        {
+            var fullInfo = await BlockingOperationManager.I.Start(MasterHub.I.GetUserData(Id));
+            fullInfo.PictureSprite = MinUserInfo.PictureSprite;
+            FullUserView.Show(fullInfo);
+        });
     }
 
     protected string Id;
@@ -83,15 +98,5 @@ public class MinUserView : MonoBehaviour
             if (title)
                 title.text = value;
         }
-    }
-
-    public static async UniTask<MinUserView> Create(MinUserInfo info, Transform parent)
-    {
-        var muv = (await Addressables.InstantiateAsync("minUserView", parent))
-            .GetComponent<MinUserView>();
-
-        muv.Init(info);
-
-        return muv;
     }
 }

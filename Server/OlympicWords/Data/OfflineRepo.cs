@@ -77,17 +77,23 @@ namespace OlympicWords.Services
 
         private User user;
 
+        private async Task<byte[]> GetAvatar(int id)
+        {
+            var absPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatars", id + ".jpg");
+            return await File.ReadAllBytesAsync(absPath);
+        }
+
         public async Task<byte[]> GetUserPicture(string userId)
         {
-            var picRecord = await context.UserPictures.AsNoTracking().FirstAsync(p => p.UserId == userId);
+            var picRecord = await context.UserPictures.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId);
+            //it is possible that some users have no pics, no using facebook provider for sure
+
+            if (picRecord == null)
+                return await GetAvatar(1);
+            //you can have some keyboard related default avatar
 
             if (picRecord.AvatarId != 0)
-            {
-                var avatarName = picRecord.AvatarId + ".jpg";
-                var absPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatars", avatarName);
-                logger.LogInformation("the abs path of the pic is: {AbsPath}", absPath);
-                return await File.ReadAllBytesAsync(absPath);
-            }
+                return await GetAvatar(picRecord.AvatarId);
 
             return picRecord.Picture;
         }

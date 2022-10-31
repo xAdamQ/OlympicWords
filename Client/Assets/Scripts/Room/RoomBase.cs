@@ -45,6 +45,8 @@ public class RoomBase : MonoModule<RoomBase>
             Controller.I.TakeTransitionData("roomArgs");
         //take room args from other lobby scene
 
+        UserInfos.ForEach(info => StartCoroutine(info.DownloadPicture()));
+
         Words = Text.Split(' ').Select(w => " " + w).ToArray(); //each word has space before it
 
         Repository.I.PersonalFullInfo.Money -= Bet;

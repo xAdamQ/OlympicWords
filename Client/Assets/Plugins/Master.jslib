@@ -72,4 +72,9 @@ mergeInto(LibraryManager.library, {
         return fbResponse;
     },
 
+    ShowFbButton: function () {
+        showFbButton();
+    },
+
+
 });

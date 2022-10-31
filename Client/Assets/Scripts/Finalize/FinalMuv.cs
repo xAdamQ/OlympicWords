@@ -5,15 +5,11 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
-public class FinalMuv : MonoBehaviour
+public class FinalMuv : MinUserView
 {
-    private string Id;
-
     private PlayerBase player;
 
-    [SerializeField] private Image picture;
-
-    [SerializeField] private TMP_Text
+    [SerializeField] protected TMP_Text
         earnedMoneyText,
         WpmText,
         scoreText,
@@ -23,12 +19,12 @@ public class FinalMuv : MonoBehaviour
 
     private FullUserInfo fullUserInfo;
 
-    public static async UniTask<FinalMuv> Create(FullUserInfo fullUserInfo, PlayerBase player,
-        Transform parent)
+    public static async UniTask<FinalMuv> Create(FullUserInfo fullUserInfo, PlayerBase player, Transform parent)
     {
         var asset = await Addressables.InstantiateAsync("finalMuv", parent);
         var finalMuv = asset.GetComponent<FinalMuv>();
         finalMuv.player = player;
+        finalMuv.Init((MinUserInfo)fullUserInfo);
         finalMuv.Init(fullUserInfo);
         return finalMuv;
     }
@@ -36,18 +32,7 @@ public class FinalMuv : MonoBehaviour
     private void Init(FullUserInfo fullUserInfo)
     {
         this.fullUserInfo = fullUserInfo;
-
-        Id = fullUserInfo.Id;
-
         UpdateFriendshipView();
-
-        if (fullUserInfo.IsPictureLoaded)
-            SetPicture(fullUserInfo.PictureSprite);
-        else
-        {
-            fullUserInfo.PictureLoaded += _ => SetPicture(fullUserInfo.PictureSprite);
-            StartCoroutine(fullUserInfo.DownloadPicture());
-        }
     }
 
     public bool Finished;
@@ -75,23 +60,15 @@ public class FinalMuv : MonoBehaviour
         Debug.Log("updating wpm");
     }
 
-    private void SetPicture(Sprite sprite)
-    {
-        if (sprite is null) return;
-
-        picture.sprite = sprite;
-    }
-
-    /// <summary>
-    /// uses BlockingOperationManager, Controller, FullUserView
-    /// </summary>
-    public void ShowFullInfo()
+    public override void ShowFullInfo()
     {
         followButton.interactable = false;
 
-        FullUserView.Show(Id == Repository.I.PersonalFullInfo.Id
+        var fullInfo = Id == Repository.I.PersonalFullInfo.Id
             ? Repository.I.PersonalFullInfo
-            : fullUserInfo);
+            : fullUserInfo;
+
+        FullUserView.Show(fullInfo);
     }
 
     public void ToggleFollow()
@@ -139,7 +116,6 @@ public class FinalMuv : MonoBehaviour
     private void UpdateFriendshipView()
     {
         //follower and not friend means you're not following back
-        followButton.interactable = fullUserInfo.Friendship == (int)FriendShip.Following ||
-                                    fullUserInfo.Friendship == (int)FriendShip.None;
+        followButton.interactable = fullUserInfo.Friendship is (int)FriendShip.Follower or (int)FriendShip.None;
     }
 }

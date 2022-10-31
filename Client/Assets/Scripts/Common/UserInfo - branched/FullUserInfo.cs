@@ -4,7 +4,7 @@ using UnityEngine.Scripting;
 public class FullUserInfo : MinUserInfo
 {
     [Preserve]
-    public FullUserInfo() : base()
+    public FullUserInfo() 
     {
     }
 

@@ -97,9 +97,18 @@ namespace OlympicWords.Services
             else
                 CreateActiveUser();
 
+            await TestSetUserMoney();
+
             await InitClientGame();
 
             await base.OnConnectedAsync();
+        }
+
+        private async Task TestSetUserMoney()
+        {
+            var u = await offlineRepo.GetCurrentUser();
+            u.Money = 99999999;
+            await offlineRepo.SaveChangesAsync();
         }
 
         private void CreateActiveUser()

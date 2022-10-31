@@ -2732,6 +2732,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: soundButton
       objectReference: {fileID: 0}
+    - target: {fileID: 8902529031533978992, guid: feb1582f02f3cfd83838e2d01ecf07b7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8902529031533978999, guid: feb1582f02f3cfd83838e2d01ecf07b7, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
