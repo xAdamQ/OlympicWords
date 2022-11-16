@@ -15,7 +15,7 @@ namespace OlympicWords.Services
         public bool InRoom { get; set; }
 
 
-        public RoomUser(string id, Room room, int index, ActiveUser activeUser) : base(id, room, index)
+        public RoomUser(string id, Room room, ActiveUser activeUser) : base(id, room)
         {
             ActiveUser = activeUser;
 

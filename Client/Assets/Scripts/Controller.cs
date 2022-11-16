@@ -16,7 +16,8 @@ public class Controller : MonoModule<Controller>
     public class ScopeReferences
     {
         public MonoModule<LevelUpPanel> LevelUpView;
-
+        public GameObject BlockingPanelPrefab;
+        
         public void SetSources()
         {
             LevelUpPanel.SetSource(LevelUpView.gameObject, I.canvas);
@@ -31,13 +32,14 @@ public class Controller : MonoModule<Controller>
 
     protected override void Awake()
     {
+        if (I) Destroy(I.gameObject);
+        DontDestroyOnLoad(this);
+
         base.Awake();
 
 #if UNITY_EDITOR
         Application.targetFrameRate = targetFps;
 #endif
-
-        DontDestroyOnLoad(this);
 
         new BlockingOperationManager();
 
@@ -51,47 +53,39 @@ public class Controller : MonoModule<Controller>
         NetManager.I.AddRpcContainer(this);
 
         References.SetSources();
+
+        NetManager.I.Connected += OnConnected;
     }
 
-    [Rpc]
-    public void InitGame(PersonalFullUserInfo myFullUserInfo)
+    private void OnConnected()
     {
-        Debug.Log("InitGame is being called");
+        UniTask.Create(async () =>
+        {
+            var myFullUserInfo = await MasterHub.I.GetPersonalUserData();
+            //I ask for the data manually rather than let the server send it after connection, because sometimes
+            //the server init with this data before I even get connected
 
-        new Repository(myFullUserInfo, null, null);
+            Debug.Log("personal info fetched");
 
-        Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
+            new Repository(myFullUserInfo, null, null);
 
-        SceneManager.LoadScene("Lobby");
+            Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
+
+            SceneManager.LoadScene("Lobby");
+        });
     }
 
-    public string InitGameName => nameof(InitGame);
-
-    private Dictionary<string, object> TransitionData = new();
+    private readonly Dictionary<string, object> transitionData = new();
 
     public void AddTransitionData(string name, object obj)
     {
-        TransitionData.Add(name, obj);
+        transitionData.Add(name, obj);
     }
 
     public object TakeTransitionData(string name)
     {
-        var data = TransitionData[name];
-        TransitionData.Remove(name);
+        var data = transitionData[name];
+        transitionData.Remove(name);
         return data;
     }
-
-    #region out rpcs
-
-    // public void ToggleFollow(string targetId)
-    // {
-    //     SendAsync("ToggleFollow", targetId).Forget();
-    // }
-    //
-    // public async UniTask<bool> IsFollowing(string targetId)
-    // {
-    //     return await InvokeAsync<bool>("IsFollowing", targetId);
-    // }
-
-    #endregion
 }

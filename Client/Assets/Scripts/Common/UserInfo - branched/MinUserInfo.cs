@@ -51,6 +51,8 @@ public class MinUserInfo
 
     public IEnumerator DownloadPicture()
     {
+        if (string.IsNullOrEmpty(PictureAddress)) yield break;
+
         var query = NetManager.I.GetAuthQuery();
         query["userId"] = Id;
 

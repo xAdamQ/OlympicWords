@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 
 public class RoomRequester : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class RoomRequester : MonoBehaviour
 
     private void Awake()
     {
-        var bet = RoomBase.Bets[transform.GetSiblingIndex()];
+        var bet = EnvBase.Bets[transform.GetSiblingIndex()];
 
         betText.text = bet.ToString();
         ticketText.text = (bet / 11f).ToString();
@@ -27,7 +28,7 @@ public class RoomRequester : MonoBehaviour
             await BlockingOperationManager.I.Start(handle, "the level is downloading");
         }
 
-        if (Repository.I.PersonalFullInfo.Money < RoomBase.Bets[betChoice])
+        if (Repository.I.PersonalFullInfo.Money < EnvBase.Bets[betChoice])
         {
             Toast.I.Show(Translatable.GetText("no_money"));
             return;
@@ -39,9 +40,22 @@ public class RoomRequester : MonoBehaviour
 
         LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
 
-        BlockingPanel.Show("finding players")
-            .Forget(e => throw e);
+        await SwitchScene(betChoice);
+
+        // BlockingPanel.Show("finding players")
+        //     .Forget(e => throw e);
         //this is shown even if the room is started, it's removed before game start directly
+    }
+
+    private async UniTask SwitchScene(int betChoice)
+    {
+        LobbyController.DestroyModule();
+
+        BlockingPanel.Show("loading");
+        await SceneManager.LoadSceneAsync("RoomBase");
+        var envName = "Env" + betChoice;
+        await SceneManager.LoadSceneAsync(envName, LoadSceneMode.Additive);
+        BlockingPanel.Hide();
     }
 
     public static (int capacityChoice, int betChoice) LastRequest;

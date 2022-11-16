@@ -31,7 +31,7 @@ function OnFbLogin() {
 
         console.log("the fb callback is: " + JSON.stringify(response));
 
-        loadedUnityInstance.SendMessage("NetManager", "FbLogin", JSON.stringify(response));
+        loadedUnityInstance.SendMessage("SignInPanel", "FbLogin", JSON.stringify(response));
 
         if (response.status === "connected") {
             document.getElementById("fbLoginButton").hidden = true;

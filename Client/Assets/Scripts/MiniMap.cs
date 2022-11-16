@@ -19,6 +19,6 @@ public class MiniMap : MonoBehaviour
 
     public void Init(PlayerBase playerBase)
     {
-        playerName.text = RoomBase.I.UserInfos[playerBase.Index].Name;
+        playerName.text = EnvBase.I.UserInfos[playerBase.Index].Name;
     }
 }

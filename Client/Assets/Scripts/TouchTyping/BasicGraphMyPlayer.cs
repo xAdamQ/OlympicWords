@@ -22,10 +22,9 @@ public class BasicGraphMyPlayer : MyPlayerBase
 
     private void OnMyDigitMoved()
     {
-        ColorCurrentDigit(WordIndex, DigitIndex);
+        ColorCurrentDigit(WordIndex, CharIndex);
 
-        var digit = Env.GetWordObjects(WordIndex)[DigitIndex];
-        MinimizeDigit(digit);
+        MinimizeDigit(WordIndex, CharIndex);
     }
 
 
@@ -35,7 +34,7 @@ public class BasicGraphMyPlayer : MyPlayerBase
             .GetComponent<Renderer>().material = wordHighlightMat;
 
         var isLastLetter = letterIndex == Env.GetWordLengthAt(wordIndex) - 1;
-        var isLastWord = wordIndex == RoomBase.I.Words.Length - 1;
+        var isLastWord = wordIndex == EnvBase.I.WordsCount - 1;
         if (isLastLetter && isLastWord) return;
         var targetWord = isLastLetter ? wordIndex + 1 : wordIndex;
         var targetLetter = isLastLetter ? 0 : letterIndex + 1;
@@ -53,17 +52,42 @@ public class BasicGraphMyPlayer : MyPlayerBase
         }
     }
 
-    private void MinimizeDigit(GameObject digit)
+    //jumping visuals are for my player only
+    protected override void JetJump(int count)
     {
+        BasicGraphEnv.I.WordState(WordIndex, false);
+        for (var i = CharIndex; i < EnvBase.I.GetWordLengthAt(WordIndex); i++)
+            MinimizeDigit(WordIndex, i);
+
+        var lastWordIndex = WordIndex;
+
+        base.JetJump(count);
+
+        BasicGraphEnv.I.WordState(WordIndex, true);
+        if (WordIndex + 1 < EnvBase.I.WordsCount)
+            BasicGraphEnv.I.WordState(WordIndex + 1, true);
+
+        for (var i = lastWordIndex + 1; i <= WordIndex - 1; i++)
+        {
+            BasicGraphEnv.I.WordState(i, false);
+            //     for (var j = 0; j < EnvBase.I.GetWordLengthAt(i); j++)
+            //         MinimizeDigit(i, j);
+        }
+    }
+
+    private void MinimizeDigit(int wordIndex, int digitIndex)
+    {
+        var digit = Env.GetWordObjects(wordIndex)[digitIndex];
+
         var digitRenderer = digit.GetComponent<Renderer>();
 
         digitRenderer.material = fadeMaterial;
-        digitRenderer.material.DOFade(.1f, .3f).SetEase(Ease.OutCirc)
+        digitRenderer.material.DOFade(.3f, .3f)
+            .SetEase(Ease.OutCirc)
             .OnComplete(() => fadeMaterial.color = Color.white);
 
-        digit.transform.DOScale(.3f, .3f);
+        digit.transform.DOScale(.5f, .3f);
     }
-
 
     protected override void JumpWord()
     {

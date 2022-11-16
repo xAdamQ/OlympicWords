@@ -44,10 +44,11 @@ namespace OlympicWords.Services
         Task<MinUserInfo> TestReturnObject();
         Task TestWaitAlot();
         Task<string> UpStreamCharTest(IAsyncEnumerable<char> stream);
-        void Dispose();
-        IHubCallerClients Clients { get; set; }
-        HubCallerContext Context { get; set; }
-        IGroupManager Groups { get; set; }
+
+        void SetPowerUp(int powerUp);
+
+        // Task SmallJetJump();
+        // Task MegaJetJump();
     }
 
     public class MasterHub : Hub, IMasterHub
@@ -61,13 +62,13 @@ namespace OlympicWords.Services
         private readonly ILogger<MasterHub> logger;
         private readonly IChatManager chatManager;
         private readonly PersistantData persistantData;
+        private readonly IFinalizer finalizer;
         private readonly ILobbyManager lobbyManager;
 
 
         public MasterHub(IOfflineRepo offlineRepo, ILobbyManager lobbyManager, IScopeRepo scopeRepo,
-            IGameplay gameplay, IMatchMaker matchMaker, ILogger<MasterHub> logger,
-            IChatManager chatManager,
-            PersistantData persistantData)
+            IGameplay gameplay, IMatchMaker matchMaker, ILogger<MasterHub> logger, IChatManager chatManager,
+            PersistantData persistantData, IFinalizer finalizer)
         {
             this.offlineRepo = offlineRepo;
             this.lobbyManager = lobbyManager;
@@ -77,6 +78,7 @@ namespace OlympicWords.Services
             this.logger = logger;
             this.chatManager = chatManager;
             this.persistantData = persistantData;
+            this.finalizer = finalizer;
         }
 
         #endregion
@@ -99,7 +101,7 @@ namespace OlympicWords.Services
 
             await TestSetUserMoney();
 
-            await InitClientGame();
+            // await InitClientGame();
 
             await base.OnConnectedAsync();
         }
@@ -117,23 +119,16 @@ namespace OlympicWords.Services
                 typeof(UserDomain.App.Lobby.Idle)));
         }
 
-        private async Task InitClientGame()
-        {
-            var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier,
-                withFollowings: true, withFollowers: true);
-
-            var clientPersonalInfo = Mapper.ConvertUserDataToClient(user);
-
-            //todo followers code
-            // //you travel to db 2 more times
-            // clientPersonalInfo.Followers =
-            //     await offlineRepo.GetFollowersAsync(Context.UserIdentifier);
-            // clientPersonalInfo.Followings =
-            //     await offlineRepo.GetFollowingsAsync(Context.UserIdentifier);
-
-            await Clients.Caller.SendAsync("InitGame", ActiveUser.MessageIndex++,
-                clientPersonalInfo);
-        }
+        // private async Task InitClientGame()
+        // {
+        //     var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier,
+        //         withFollowings: true, withFollowers: true);
+        //
+        //     var clientPersonalInfo = Mapper.ConvertUserDataToClient(user);
+        //
+        //     await Clients.Caller.SendAsync("InitGame", ActiveUser.MessageIndex++,
+        //         clientPersonalInfo);
+        // }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
@@ -147,7 +142,7 @@ namespace OlympicWords.Services
             var roomUser = scopeRepo.RoomUser;
             if (roomUser != null)
             {
-                await gameplay.Surrender();
+                await finalizer.Surrender();
                 //doesn't matter if you disconnected or got out by net issue
 
                 //remove pending room user
@@ -174,8 +169,10 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App))]
         public async Task<PersonalFullUserInfo> GetPersonalUserData()
         {
-            return Mapper.ConvertUserDataToClient(
-                await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier));
+            var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier,
+                withFollowings: true, withFollowers: true);
+
+            return Mapper.ConvertUserDataToClient(user);
         }
 
         /// <summary>
@@ -225,7 +222,7 @@ namespace OlympicWords.Services
         }
 
         [RpcDomain(typeof(UserDomain.App.Lobby.Idle))]
-        public async Task<Services.MatchMaker.MatchRequestResult> RequestMatch(string oppoId)
+        public async Task<MatchMaker.MatchRequestResult> RequestMatch(string oppoId)
         {
             return await matchMaker.RequestMatch(ActiveUser, oppoId);
         }
@@ -285,6 +282,12 @@ namespace OlympicWords.Services
             await lobbyManager.SelectBackground(backgroundId, ActiveUser.Id);
         }
 
+        [RpcDomain(typeof(UserDomain.App.Lobby.Pending))]
+        public void SetPowerUp(int powerUp)
+        {
+            scopeRepo.RoomActor.ChosenPowerUp = powerUp;
+        }
+
         #endregion
 
         #region room
@@ -330,8 +333,19 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
         public async Task Surrender()
         {
-            await gameplay.Surrender();
+            await finalizer.Surrender();
         }
+        //
+        // [RpcDomain(typeof(UserDomain.App.Room.Active))]
+        // public async Task SmallJetJump()
+        // {
+        //     await scopeRepo.RoomActor.SmallJetJump(finalizer);
+        // }
+        // [RpcDomain(typeof(UserDomain.App.Room.Active))]
+        // public async Task MegaJetJump()
+        // {
+        //     await scopeRepo.RoomActor.MegaJetJump(finalizer);
+        // }
 
         #endregion
 

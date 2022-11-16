@@ -13,7 +13,6 @@ public abstract class Singleton<T> where T : Singleton<T>
         //since I restart the game on some occasions, I may rewrite the singleton
 
         I = (T)this;
-        Debug.Log("base constructor is called");
     }
 }
 

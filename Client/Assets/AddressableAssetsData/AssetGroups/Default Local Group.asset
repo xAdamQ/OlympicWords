@@ -77,11 +77,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3dff5a4b4601f8050a20442466454b02
-    m_Address: blockingPanel
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c9d5b889e4f409ef0848ebd8cd2c097d
     m_Address: cardbackShop
     m_ReadOnly: 0

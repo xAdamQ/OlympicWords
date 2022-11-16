@@ -18,107 +18,6 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-/*
- "authResponse": {
-    "accessToken": "EAAGqLasqeUoBAKyHSnT82cRMZCGZBdlu0uV2lt3UtHaX1VBlAivuZAUOHtontRzY6HGpLjyGdLHPLBPaBdlKl4cqu7ZC1r5ZCxL5Bh7xJhyVXbIrRczVq0ZAnI7lYiVyGact9GLKjaJLuq6V9b8DZCUoEGrmYFmQqrsMGljD6nGqp6A7I4nZBZAw697ZBuCZAm2hak8vdmDhbnKU1JamZB7prxWm",
-    "userID": "1954944418032338",
-    "expiresIn": 4625,
-    "signedRequest": "mr7aC6G9v0NXkkQKEHRxy65Uz6d5K9k5p2AhOQy1cR4.eyJ1c2VyX2lkIjoiMTk1NDk0NDQxODAzMjMzOCIsImNvZGUiOiJBUUQ0ZC1LMUlIaTVZeE5EcDRDUGcteGxGZDdQbjV5VnVWcHJIckJqNktiY0d0NGVpaTMyUkU3WGVKclFsSmFZYXQ5SGFONWMyNVgtcjMtYjBoV1J6bHN0em1oVTFTNl92aWtzT1dxSndJX2FrRFFvbG9La1JrNkpYSFBUcjl0bFV6UUZ6R2xfSVRnUHhiek5xS21WLU9CaXpybEJkQ2ZoM1k1MGtOUGNiaXV1M3phU3BxTkJVdjF0VkxtUE1KOUpubTR1alliRV81RUtybzJKMEpDdkhMaXgzWkx6VTlfNzFCWWNFZWVRcm1adDhGcnRQNGd0SDAwczVCU0lyeGpvSUZkV3RvT2l4WWNvMUl6VmdLckpMblkwaGlpZDhiY1U3MTd3dTM3S3cybGRMVDdTMUJDbl9XckFWSWZtb3FKN0xTQzdZOG1xY1NGbWdNVjVpano5Sm1aWiIsImFsZ29yaXRobSI6IkhNQUMtU0hBMjU2IiwiaXNzdWVkX2F0IjoxNjY3MDY4OTc1fQ",
-    "graphDomain": "facebook",
-    "data_access_expiration_time": 1674844975
-  },
-  "status": "connected"
- 
- * 
- */
-
-public class FbManager
-{
-    private class FbLoginStatus
-    {
-        public FbAuthResponse AuthResponse { get; set; }
-        public string Status { get; set; }
-
-        [UsedImplicitly]
-        public class FbAuthResponse
-        {
-            public string AccessToken { get; set; }
-            public string ExpiresIn { get; set; }
-            public string SignedRequest { get; set; }
-            public string UserID { get; set; }
-        }
-    }
-
-    [UsedImplicitly]
-    private class FbValidationResponse
-    {
-        // ReSharper disable once InconsistentNaming
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
-        public ValidationData data { get; set; }
-
-        [UsedImplicitly]
-        public class ValidationData
-        {
-            // ReSharper disable once InconsistentNaming
-            // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public bool is_valid { get; set; }
-        }
-    }
-
-    private async UniTask<bool> ValidateFbAccToken(string token)
-    {
-        const string clientToken = "468588098648394|CwbC4U-0WDoPAaeP79TTG7ELfD4";
-        const string fbBaseAddress = "https://graph.facebook.com/v15.0/";
-
-        var queryParams = HttpUtility.ParseQueryString(string.Empty);
-        queryParams.Add("input_token", token);
-        queryParams.Add("access_token", clientToken);
-
-        const string address = fbBaseAddress + "debug_token";
-
-        var uri = new UriBuilder(address) { Query = queryParams.ToString()! }.ToString();
-
-        try
-        {
-            var response = await NetManager.I.GetAsync<FbValidationResponse>(uri);
-            return response.data.is_valid;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("couldn't validate the cached token due to the error: " + e);
-            return false;
-        }
-    }
-
-    public async UniTask FbLoginWorks()
-    {
-        var cachedToken = PlayerPrefs.GetString("fbToken");
-
-        if (string.IsNullOrEmpty(cachedToken) || !await ValidateFbAccToken(cachedToken))
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            JsManager.ShowFbButton();
-#endif
-            return;
-        }
-
-        NetManager.I.ConnectToServer(cachedToken, "facebook");
-    }
-
-
-    public void FbLogin(string responseStr)
-    {
-        Debug.Log("fb login in unity called with data: " + responseStr);
-
-        var response = JsonConvert.DeserializeObject<FbLoginStatus>(responseStr);
-        if (response == null) throw new NullReferenceException("rb response is null");
-
-        PlayerPrefs.SetString("fbToken", response.AuthResponse.AccessToken);
-
-        NetManager.I.ConnectToServer(response.AuthResponse.AccessToken, "facebook");
-    }
-}
-
 public class NetManager : MonoModule<NetManager>
 {
     private readonly IProtocol protocol = new JsonProtocol(new LitJsonEncoder());
@@ -126,8 +25,7 @@ public class NetManager : MonoModule<NetManager>
     private HubConnection hubConnection;
     private UpStreamItemController<string> upStreamItemController;
     private const int MAX_DEBUG_LENGTH = 200;
-    public bool Connected;
-    public readonly FbManager FbManager = new();
+    public bool IsConnected;
 
     private readonly JsonSerializerSettings serializationSettings = new()
     {
@@ -143,36 +41,16 @@ public class NetManager : MonoModule<NetManager>
 
     protected override void Awake()
     {
-        base.Awake();
-
+        if (I) Destroy(I.gameObject);
         DontDestroyOnLoad(this);
+
+        base.Awake();
 
         FetchRpcInfos();
 
         serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = GetServerAddress();
     }
 
-    // ReSharper disable once Unity.IncorrectMethodSignature
-    private async UniTaskVoid Start()
-    {
-        try
-        {
-            await FbManager.FbLoginWorks();
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("failed to auto login fb due to: " + e);
-#if UNITY_WEBGL && !UNITY_EDITOR
-            JsManager.ShowFbButton();
-#endif
-        }
-    }
-
-    [UsedImplicitly]
-    public void FbLogin(string responseStr)
-    {
-        FbManager.FbLogin(responseStr);
-    }
 
     private void DownStream()
     {
@@ -202,28 +80,28 @@ public class NetManager : MonoModule<NetManager>
 
     private void DigitsReceived(string[] playerBuffers)
     {
-        try
-        {
-            Debug.Log($"received: {JsonConvert.SerializeObject(playerBuffers)}");
-            for (var p = 0; p < playerBuffers.Length; p++)
-                if (p != RoomBase.I.MyTurn)
-                    foreach (var digit in playerBuffers[p])
-                        EnvBase.I.Players[p].TakeInput(digit);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("exception caught in my downstream code"
-                           + "\n--------------\n buffer lengths: " +
-                           playerBuffers.Length
-                           + "\n--------------\n players count: " +
-                           EnvBase.I.Players.Count
-                           + "\n--------------\n exce message: " +
-                           e.Message
-                           + "\n--------------\n" +
-                           e.InnerException
-                           + "\n--------------\n" +
-                           JsonUtility.ToJson(e));
-        }
+        // try
+        // {
+        Debug.Log($"received: {JsonConvert.SerializeObject(playerBuffers)}");
+        for (var p = 0; p < playerBuffers.Length; p++)
+            if (p != EnvBase.I.MyTurn)
+                foreach (var digit in playerBuffers[p])
+                    EnvBase.I.Players[p].TakeInput(digit);
+        // }
+        // catch (Exception e)
+        // {
+        //     Debug.LogError("exception caught in my downstream code"
+        //                    + "\n--------------\n buffer lengths: " +
+        //                    playerBuffers.Length
+        //                    + "\n--------------\n players count: " +
+        //                    EnvBase.I.Players.Count
+        //                    + "\n--------------\n exce message: " +
+        //                    e.Message
+        //                    + "\n--------------\n" +
+        //                    e.InnerException
+        //                    + "\n--------------\n" +
+        //                    JsonUtility.ToJson(e));
+        // }
     }
 
     private void UpStream()
@@ -333,7 +211,6 @@ public class NetManager : MonoModule<NetManager>
         return query;
     }
 
-
     //I use event functions because awaiting returns hub conn and this is useless
     public void ConnectToServer(string accessToken, string provider)
     {
@@ -389,9 +266,11 @@ public class NetManager : MonoModule<NetManager>
 
         return true;
     }
+
+    public Action Connected;
     private void OnConnected(HubConnection obj)
     {
-        Connected = true;
+        IsConnected = true;
 
         Debug.Log("connected to server");
 
@@ -399,6 +278,8 @@ public class NetManager : MonoModule<NetManager>
         LangSelector.DestroyModule();
 
         Destroy(FindObjectOfType<GuestView>()?.gameObject);
+
+        Connected?.Invoke();
     }
     private void OnClosed(HubConnection obj)
     {
@@ -434,7 +315,7 @@ public class NetManager : MonoModule<NetManager>
                 Debug.Log(e);
             }
 
-            await SceneManager.LoadSceneAsync(0);
+            await SceneManager.LoadSceneAsync("Startup");
         }).Forget(e => throw e);
     }
 
@@ -456,7 +337,11 @@ public class NetManager : MonoModule<NetManager>
             foreach (var method in type.GetMethods())
             {
                 var attr = method.GetCustomAttribute<RpcAttribute>();
+
                 if (attr == null) continue;
+                if (method.GetBaseDefinition() != method) continue;
+                //ignore overriden methods, to use base only
+
                 rpcInfos.Add(attr.RpcName ?? method.Name, (method, method.GetParameterTypes()));
             }
         }
@@ -466,12 +351,20 @@ public class NetManager : MonoModule<NetManager>
 
     public void AddRpcContainer(object container)
     {
-        var t = container.GetType();
+        var type = container.GetType();
 
-        if (rpcContainers.ContainsKey(t))
-            rpcContainers[t] = container;
+        if (rpcContainers.ContainsKey(type))
+            rpcContainers[type] = container;
         else
-            rpcContainers.Add(t, container);
+            rpcContainers.Add(type, container);
+    }
+
+    public void AddRpcContainer(object container, Type type)
+    {
+        if (rpcContainers.ContainsKey(type))
+            rpcContainers[type] = container;
+        else
+            rpcContainers.Add(type, container);
     }
 
     private readonly List<Message> pendingInvocations = new();
@@ -482,8 +375,7 @@ public class NetManager : MonoModule<NetManager>
 
     private async UniTaskVoid HandleInvocationMessage(Message message)
     {
-        if (message.target != Controller.I.InitGameName
-            && (int)message.arguments[0] != messageIndex)
+        if ((int)message.arguments[0] != messageIndex)
         {
             pendingInvocations.Add(message);
             return;

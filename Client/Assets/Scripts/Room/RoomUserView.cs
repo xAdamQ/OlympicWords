@@ -33,7 +33,7 @@ public class RoomUserView : MinUserView
             FullUserView.Show(Repository.I.PersonalFullInfo);
         else
         {
-            var oppoFullInfo = RoomBase.I.UserInfos.FirstOrDefault(_ => _.Id == Id);
+            var oppoFullInfo = EnvBase.I.UserInfos.FirstOrDefault(_ => _.Id == Id);
             FullUserView.Show(oppoFullInfo);
         }
     }
@@ -44,7 +44,7 @@ public class RoomUserView : MinUserView
         {
             var view =
                 (await Addressables.InstantiateAsync($"roomUserView{place}",
-                    RoomBase.I.Canvas)).GetComponent<RoomUserView>();
+                    EnvBase.I.Canvas)).GetComponent<RoomUserView>();
 
             view.Init(minUserInfo);
 
@@ -59,11 +59,11 @@ public class RoomUserView : MinUserView
 
             var oppoPlaceCounter = 1;
 
-            for (var i = 0; i < RoomBase.I.UserInfos.Count; i++)
+            for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
             {
-                var placeIndex = i == RoomBase.I.MyTurn ? 0 : oppoPlaceCounter++;
+                var placeIndex = i == EnvBase.I.MyTurn ? 0 : oppoPlaceCounter++;
 
-                RoomUserViews.Add(await Create(placeIndex, RoomBase.I.UserInfos[i]));
+                RoomUserViews.Add(await Create(placeIndex, EnvBase.I.UserInfos[i]));
             }
         }
     }

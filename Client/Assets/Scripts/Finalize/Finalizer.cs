@@ -15,6 +15,7 @@ public class Finalizer : MonoModule<Finalizer>
     private bool finalized;
 
     [SerializeField] private GameObject view;
+    [SerializeField] private Transform muvParent;
 
     protected override void Awake()
     {
@@ -26,6 +27,7 @@ public class Finalizer : MonoModule<Finalizer>
     public void FinalizeRoom(UserRoomStatus myUserRoomStatus)
     {
         finalized = true;
+        view.SetActive(true);
 
         // RoomUserView.Manager.I.RoomUserViews.ForEach(ruv => Destroy(ruv.gameObject));
         //todo destroy additional UI
@@ -38,20 +40,18 @@ public class Finalizer : MonoModule<Finalizer>
 
         Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
 
-        FinalMuvs = new FinalMuv[RoomBase.I.Capacity];
+        FinalMuvs = new FinalMuv[EnvBase.I.Capacity];
 
         UniTask.Create(async () =>
         {
-            for (var i = 0; i < RoomBase.I.UserInfos.Count; i++)
-                FinalMuvs[i] = await FinalMuv.Create(RoomBase.I.UserInfos[i], EnvBase.I.Players[i], transform);
+            for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
+                FinalMuvs[i] = await FinalMuv.Create(EnvBase.I.UserInfos[i], EnvBase.I.Players[i], muvParent);
 
-            FinalMuvs[RoomBase.I.MyTurn].SetFinal(myUserRoomStatus);
+            FinalMuvs[EnvBase.I.MyTurn].SetFinal(myUserRoomStatus);
             FinishedUsersStatus.ForEach(rs => FinalMuvs[rs.index].SetFinal(rs.status));
 
             foreach (var finalMuv in FinalMuvs.Where(fm => !fm.Finished))
                 finalMuv.SetTemporalStatus();
-
-            view.SetActive(true);
         });
     }
 

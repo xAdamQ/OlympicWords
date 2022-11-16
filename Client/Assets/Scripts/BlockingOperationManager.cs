@@ -35,7 +35,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// </summary>
     public async UniTask Start(Task operation)
     {
-        await BlockingPanel.Show();
+        BlockingPanel.Show();
         try
         {
             await operation;
@@ -59,7 +59,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// </summary>
     public async UniTask Start(UniTask operation)
     {
-        await BlockingPanel.Show();
+        BlockingPanel.Show();
         try
         {
             await operation;
@@ -83,7 +83,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// </summary>
     public async UniTask Start(AsyncOperationHandle operation, string message = null)
     {
-        BlockingPanel.Show(operation, message).Forget();
+        BlockingPanel.Show(operation, message);
         try
         {
             await operation;
@@ -107,7 +107,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// </summary>
     public async UniTask<T> Start<T>(UniTask<T> operation)
     {
-        await BlockingPanel.Show();
+        BlockingPanel.Show();
         try
         {
             var result = await operation;
@@ -132,7 +132,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// </summary>
     public async UniTask<T> Start<T>(Task<T> operation)
     {
-        await BlockingPanel.Show();
+        BlockingPanel.Show();
         try
         {
             var result = await operation;

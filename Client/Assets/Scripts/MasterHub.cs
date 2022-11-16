@@ -34,6 +34,7 @@ public interface IMasterHub
         [EnumeratorCancellation] CancellationToken cancellationToken);
     Task Surrender();
     Task LeaveFinishedRoom();
+    Task SetPowerUp(int powerUp);
 }
 
 
@@ -118,6 +119,10 @@ public class MasterHub : MonoModule<MasterHub>, IMasterHub
     public Task LeaveFinishedRoom()
     {
         return NetManager.I.SendAsync(nameof(LeaveFinishedRoom));
+    }
+    public Task SetPowerUp(int powerUp)
+    {
+        return NetManager.I.SendAsync(nameof(SetPowerUp), powerUp);
     }
 
     public Task<string> UpStreamChar(IAsyncEnumerable<char> stream)

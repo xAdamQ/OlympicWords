@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -52,6 +54,53 @@ public class UnitTest1
         var bb3 = u3.FollowerRelations;
 
         u.Followings.Remove(bot999);
-        repo.SaveChangesAsync();
+        await repo.SaveChangesAsync();
+    }
+
+    [Fact]
+    public async Task TestCreateFillers()
+    {
+        var room = new Room(0, 0);
+        room.Text =
+            "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes";
+
+        room.Words = room.Text.Split(" ").ToList();
+        room.RoomActors.Add(new RoomUser("00", room, null)
+        {
+            ChosenPowerUp = (int)PowerUp.Filler,
+        });
+        room.RoomActors.Add(new RoomUser("11", room, null)
+        {
+            ChosenPowerUp = (int)PowerUp.Filler,
+        });
+        room.RoomActors.Add(new RoomUser("11", room, null)
+        {
+            ChosenPowerUp = (int)PowerUp.Filler,
+        });
+
+        var sr = new Mock<IScopeRepo>();
+        sr.SetupGet(r => r.Room).Returns(room);
+
+        var or = new Mock<IOfflineRepo>();
+        or.SetupGet(r => r.SmallFillers).Returns(new[]
+        {
+            "actually", "just", "really", "totally", "simply", "somehow",
+        });
+        or.SetupGet(r => r.MediumFillers).Returns(new[]
+        {
+            "kind of", "by the way", "basically"
+        });
+        or.SetupGet(r => r.LargeFillers).Returns(new[]
+        {
+            "at the end of the day", "you know what I mean", "you know, like I said",
+            "something like that",
+        });
+
+
+        var mm = new MatchMaker(new Mock<IHubContext<MasterHub>>().Object, or.Object,
+            sr.Object, new Mock<IGameplay>().Object, new Mock<IServerLoop>().Object,
+            new Mock<ILogger<MatchMaker>>().Object);
+
+        mm.SetFillers(room);
     }
 }

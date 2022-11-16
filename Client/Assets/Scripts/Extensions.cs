@@ -224,6 +224,10 @@ public static partial class Extensions
     {
         using var request = UnityWebRequestTexture.GetTexture(url);
 
+#if UNITY_EDITOR
+        request.certificateHandler = new CertificateWhore();
+#endif
+
         //if there wer an exception here, just throw it
         yield return request.SendWebRequest();
 
@@ -237,8 +241,15 @@ public static partial class Extensions
             yield break;
         }
 
-        Debug.Log($"img downloaded from: {url}");
         var texture = DownloadHandlerTexture.GetContent(request);
         callback?.Invoke(texture);
+    }
+}
+
+public class CertificateWhore : CertificateHandler
+{
+    protected override bool ValidateCertificate(byte[] certificateData)
+    {
+        return true;
     }
 }

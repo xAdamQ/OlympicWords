@@ -5,13 +5,32 @@ using System.Linq;
 using MoreLinq.Extensions;
 using UnityEngine;
 
+//minimap manager resides in room base
+//so it appear before envbase, so it can't be dependent on env base
+//
+
 public class MiniMapManager : MonoBehaviour
 {
     [SerializeField] private GameObject miniMapPrefab;
     public Sprite firstIcon, normalIcon, lastIcon;
     private readonly List<MiniMap> miniMaps = new();
 
-    private IEnumerator Start()
+    private void Start()
+    {
+        EnvBase.Initiated += OnEnvInitiated;
+    }
+
+    private void OnDestroy()
+    {
+        EnvBase.Initiated -= OnEnvInitiated;
+    }
+
+    private void OnEnvInitiated()
+    {
+        EnvBase.I.GamePrepared += () => StartCoroutine(Begin());
+    }
+
+    private IEnumerator Begin()
     {
         yield return new WaitForFixedUpdate();
 
@@ -29,7 +48,7 @@ public class MiniMapManager : MonoBehaviour
 
     private void OnMovedADigit(MiniMap miniMap, PlayerBase playerBase)
     {
-        SetFill(miniMap, playerBase.globalCharIndex / (float)RoomBase.I.Text.Length);
+        SetFill(miniMap, (float)playerBase.textPointer / (EnvBase.I.Text.Length - 1));
     }
 
     private void SetFill(MiniMap miniMap, float percent)

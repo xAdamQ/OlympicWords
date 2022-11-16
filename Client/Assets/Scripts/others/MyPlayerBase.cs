@@ -6,9 +6,15 @@ using UnityEngine.InputSystem;
 
 public abstract class MyPlayerBase : PlayerBase
 {
+    public static MyPlayerBase I;
+
     protected override void Awake()
     {
         base.Awake();
+
+        RoomBaseAdapter.I.PowerUpPanel.SetActive(true);
+
+        I = this;
 
         if (TestController.I.UseTest)
             cameraOffset = TestController.I.cameraPlayerOffset;
@@ -18,15 +24,50 @@ public abstract class MyPlayerBase : PlayerBase
 
     protected virtual void Start()
     {
-        EnvBase.I.OnGameFinished += OnGameFinished;
-        Keyboard.current.onTextInput += OnTextInput;
+        EnvBase.I.GameFinished += OnGameFinished;
+        EnvBase.I.GameStarted += OnGameStarted;
 
         MovePozWithLinearY = transform.position;
     }
 
+    protected override void OnGameStarted()
+    {
+        Keyboard.current.onTextInput += OnTextInput;
+
+        switch (ChosenPowerUp)
+        {
+            case PowerUp.SmallJet:
+                RemainingJets.I.ValueText.text = EnvBase.SMALL_JETS_COUNT.ToString();
+                break;
+            case PowerUp.MegaJet:
+                RemainingJets.I.ValueText.text = EnvBase.MEGA_JETS_COUNT.ToString();
+                break;
+            default:
+                RemainingJets.DestroyModule();
+                break;
+        }
+    }
+    protected override void OnGameFinished()
+    {
+        Keyboard.current.onTextInput -= OnTextInput;
+    }
+
+    // private void Update()
+    // {
+    //     if (Keyboard.current.enterKey.wasPressedThisFrame)
+    //     {
+    //         if (ChosenPowerUp == PowerUp.MegaJet && usedJets < 1)
+    //             MegaJetJump();
+    //         else if (ChosenPowerUp == PowerUp.SmallJet && usedJets < 2)
+    //             SmallJetJump();
+    //     }
+    // }
+
     private void OnTextInput(char c)
     {
         NetManager.I.StreamChar(c);
+
+        Debug.Log("written: " + c);
 
         TakeInput(c);
 
@@ -34,17 +75,10 @@ public abstract class MyPlayerBase : PlayerBase
             EnvBase.I.FinishGame();
     }
 
-
     private void OnDestroy()
     {
-        Keyboard.current.onTextInput -= OnTextInput;
+        OnGameFinished();
     }
-
-    private void OnGameFinished()
-    {
-        Keyboard.current.onTextInput -= OnTextInput;
-    }
-
 
     #region camera follow
 

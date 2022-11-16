@@ -88,7 +88,7 @@ public class FullUserView : MinUserView
         {
             UpdateFriendShipView();
             challengeButton.GetComponent<Button>().interactable = fullUserInfo
-                .EnableOpenMatches && RoomBase.I == null;
+                .EnableOpenMatches && EnvBase.I == null;
         }
 
         base.Init(fullUserInfo);
@@ -106,7 +106,7 @@ public class FullUserView : MinUserView
 
     public void Challenge()
     {
-        if (Repository.I.PersonalFullInfo.Money < RoomBase.MinBet)
+        if (Repository.I.PersonalFullInfo.Money < EnvBase.MinBet)
             Toast.I.Show(Translatable.GetText("no_money"));
 
         UniTask.Create(async () =>
@@ -115,8 +115,7 @@ public class FullUserView : MinUserView
 
             if (res == MatchRequestResult.Available)
                 BlockingPanel.Show("a challenge request is sent to the player",
-                        () => NetManager.I.Send("CancelChallengeRequest"))
-                    .Forget(e => throw e);
+                    () => NetManager.I.Send("CancelChallengeRequest"));
             else
                 Toast.I.Show(res.ToString());
         });

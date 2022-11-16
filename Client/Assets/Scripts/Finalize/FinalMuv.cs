@@ -42,7 +42,7 @@ public class FinalMuv : MinUserView
         Finished = true;
 
         earnedMoneyText.text = userRoomStatus.EarnedMoney.ToString();
-        WpmText.text = userRoomStatus.Wpm.ToString();
+        WpmText.text = userRoomStatus.Wpm.ToString("f2");
         scoreText.text = userRoomStatus.Score.ToString();
         finalPositionText.text = userRoomStatus.FinalPosition.ToString();
     }

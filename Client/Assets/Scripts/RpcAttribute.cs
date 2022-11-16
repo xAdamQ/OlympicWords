@@ -1,6 +1,7 @@
 using System;
+using JetBrains.Annotations;
 
-[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false)]
 sealed class RpcAttribute : Attribute
 {
     // // See the attribute guidelines at
@@ -12,6 +13,7 @@ sealed class RpcAttribute : Attribute
     {
         RpcName = rpcName;
     }
+
 
     // public string PositionalString
     // {

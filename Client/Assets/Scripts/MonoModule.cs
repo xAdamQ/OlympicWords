@@ -45,6 +45,15 @@ public abstract class MonoModule<T> : MonoBehaviour where T : MonoBehaviour
     }
 }
 
+// public abstract class SoloMonoModule<T> : MonoModule<T> where T : MonoBehaviour
+// {
+//     protected override void Awake()
+//     {
+//         if (I) Destroy(this);
+//         base.Awake();
+//     }
+// }
+
 
 public interface IGameObject
 {

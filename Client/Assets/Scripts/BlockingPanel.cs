@@ -21,18 +21,18 @@ public class BlockingPanel : MonoBehaviour
 
     private static TweenerCore<Quaternion, Vector3, QuaternionOptions> animTween;
 
-    public static async UniTaskVoid Show(AsyncOperationHandle handle, string message = null)
+    public static void Show(AsyncOperationHandle handle, string message = null)
     {
-        await ShowBase(message);
+        ShowBase(message);
         i.fillBar.SetHandle(handle);
 
         i.waitImage.gameObject.SetActive(false);
         i.fillBar.gameObject.SetActive(true);
     }
 
-    public static async UniTask Show(string message = null, Action dismissButtonAction = null)
+    public static void Show(string message = null, Action dismissButtonAction = null)
     {
-        await ShowBase(message);
+        ShowBase(message);
 
         if (dismissButtonAction != null)
         {
@@ -52,11 +52,11 @@ public class BlockingPanel : MonoBehaviour
             .SetLoops(9999, LoopType.Yoyo);
     }
 
-    private static async UniTask ShowBase(string message = "")
+    private static void ShowBase(string message = "")
     {
         if (i) Destroy(i.gameObject);
 
-        i = (await Addressables.InstantiateAsync("blockingPanel", Controller.I.canvas))
+        i = Instantiate(Controller.I.References.BlockingPanelPrefab, Controller.I.canvas)
             .GetComponent<BlockingPanel>();
 
         i.messageText.text = message;

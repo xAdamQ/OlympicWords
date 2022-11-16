@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using OlympicWords.Services.Helpers;
 
@@ -94,8 +95,7 @@ namespace OlympicWords.Services
             for (var i = 0; i < botsCount; i++)
             {
                 var botId = botIds.Cut(StaticRandom.GetRandom(botIds.Count));
-                var botIndex = room.Capacity - i - 1; //todo I think I change this later
-                room.Bots.Add(new RoomBot(botId, room, botIndex));
+                room.Bots.Add(new RoomBot(botId, room));
             }
 
             room.RoomActors.AddRange(room.Bots);
@@ -207,8 +207,7 @@ namespace OlympicWords.Services
 
         private Room MakeRoom(int capacityChoice, int category)
         {
-            return scopeRepo.AddRoom(new Room(capacityChoice, category,
-                offlineRepo.GetRandomRoomWords(category)));
+            return scopeRepo.AddRoom(new Room(capacityChoice, category));
         }
 
         public async Task MakeRoomUserReadyRpc()
@@ -222,14 +221,20 @@ namespace OlympicWords.Services
         private async Task PrepareRoom(Room room)
         {
             room.SetUsersDomains(typeof(UserDomain.App.Lobby.GettingReady));
-            serverLoop.SetForceStartRoomTimeout(room);
+
+            room.RoomActors.Shuffle();
+            for (var i = 0; i < room.RoomActors.Count; i++) room.RoomActors[i].TurnId = i;
+
+            room.Text = offlineRepo.ChooseText(room.Category);
+            room.Words = room.Text.Split(" ").ToList();
+
+            SetFillers(room);
 
             var userIds = room.RoomActors.Select(ru => ru.Id).ToList();
             var users = await offlineRepo.GetUsersByIdsAsync(userIds);
 
             users.ForEach(u => u.Money -= room.Bet);
 
-            for (var i = 0; i < room.RoomActors.Count; i++) room.RoomActors[i].TurnId = i;
 
             var fullUsersInfos = users.Select(Mapper.UserToFullUserInfoFunc).ToList();
 
@@ -237,8 +242,73 @@ namespace OlympicWords.Services
                 info => info.Id, (_, info) => info).ToList();
 
             await offlineRepo.SaveChangesAsync();
-
+            serverLoop.SetForceStartRoomTimeout(room);
             await SendPrepareRoom(room, turnSortedUsersInfo);
+        }
+
+        private IEnumerable<string> ChooseFillers()
+        {
+            var combinationType = StaticRandom.GetRandom(4);
+            // var res = new List<string>(3); //max cap is 3
+
+            switch (combinationType)
+            {
+                case 0: //3s
+                    for (var i = 0; i < 3; i++)
+                        yield return offlineRepo.SmallFillers.GetRandom();
+                    break;
+                case 1: //1s1m
+                    yield return offlineRepo.SmallFillers.GetRandom();
+                    yield return offlineRepo.MediumFillers.GetRandom();
+                    break;
+                case 2: //1l
+                    yield return offlineRepo.LargeFillers.GetRandom();
+                    break;
+            }
+        }
+
+        public void SetFillers(Room room)
+        {
+            const int filler = (int)PowerUp.Filler;
+
+            var allFillers = new List<(int player, string fillerText)>();
+            var fillerPlayers = room.RoomActors.Where(a => a.ChosenPowerUp == filler).ToList();
+            foreach (var fillerPLayer in fillerPlayers)
+                allFillers.AddRange(ChooseFillers().Select(f => (fillerPLayer.TurnId, f)));
+
+            for (var i = 0; i < allFillers.Count; i++)
+            {
+                var words = allFillers[i].fillerText.Split(" ");
+                var index = StaticRandom.GetRandom(room.Words.Count - 1);
+
+                room.Words.InsertRange(index + 1, words);
+
+                //push others, if we already filled the new, to avoid affecting the new
+                for (var j = 0; j < room.FillerWords.Count; j++)
+                {
+                    var fillerWord = room.FillerWords[j];
+                    if (fillerWord.index > index)
+                        room.FillerWords[j] = (fillerWord.index + words.Length, fillerWord.player);
+                }
+
+                //mark them as fillers
+                for (var wordIndex = index + 1; wordIndex <= index + words.Length; wordIndex++)
+                    room.FillerWords.Add((wordIndex, allFillers[i].player));
+            }
+
+            //we wait for the final index of each filler
+            foreach (var fillerPLayer in fillerPlayers)
+            {
+                fillerPLayer.FillersWords = room.FillerWords.Where(f => f.player == fillerPLayer.TurnId)
+                    .Select(f => f.index).ToList();
+
+                fillerPLayer.FillersWords.Sort();
+            }
+
+            room.Text = string.Join(" ", room.Words);
+
+            room.FillerWords.Sort();
+            //will sort based on the index, then on the player, the index must be unique anyway
         }
 
         private async Task SendPrepareRoom(Room room, List<FullUserInfo> turnSortedUsersInfo)
@@ -254,9 +324,14 @@ namespace OlympicWords.Services
 
                 if (room.RoomActors[i] is not RoomUser ru) continue;
 
-                var task = masterHub.SendOrderedAsync(ru.ActiveUser,
-                    "PrepareRequestedRoomRpc", turnSortedUsersInfo, i, room.Text);
+                //actor id = index
+                var chosenPowerUps = room.RoomActors.Select(a => a.ChosenPowerUp);
+
+                var task = masterHub.SendOrderedAsync(ru.ActiveUser, "PrepareRequestedRoomRpc",
+                    turnSortedUsersInfo, i, room.Text, room.FillerWords, chosenPowerUps);
+
                 //changes in the same room when he disconnect
+                logger.LogInformation("prepare sent");
 
                 tasks.Add(task);
             }
@@ -272,7 +347,7 @@ namespace OlympicWords.Services
 
         private RoomUser CreateRoomUser(ActiveUser activeUser, Room room)
         {
-            var roomUser = new RoomUser(activeUser.Id, room, -1, activeUser);
+            var roomUser = new RoomUser(activeUser.Id, room, activeUser);
             scopeRepo.AddRoomUser(roomUser);
             return roomUser;
         }
@@ -280,7 +355,7 @@ namespace OlympicWords.Services
         private async Task StartRoomIfAllReady(Room room)
         {
             var readyUsersCount = room.RoomUsers.Count(u => u.IsReady);
-            if (readyUsersCount == room.RoomUsers.Count) //bots don't ready
+            if (readyUsersCount == room.RoomUsers.Count) //bots don't get ready
             {
                 serverLoop.CancelForceStart(room);
                 await gameplay.StartRoom();
@@ -289,7 +364,7 @@ namespace OlympicWords.Services
 
         public void RemovePendingDisconnectedUser(RoomUser roomUser)
         {
-            logger.LogInformation($"removing pending room user {roomUser.Id}");
+            logger.LogInformation("removing pending room user {RoomUserId}", roomUser.Id);
 
             roomUser.Room.RoomActors.Remove(roomUser);
             roomUser.Room.RoomUsers.Remove(roomUser);

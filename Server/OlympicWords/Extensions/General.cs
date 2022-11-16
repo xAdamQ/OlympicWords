@@ -184,5 +184,11 @@ namespace OlympicWords.Services.Extensions
 
             throw new Exception("Invalid type provided");
         }
+
+        public static T GetRandom<T>(this IList<T> list)
+        {
+            var randomIndex = StaticRandom.GetRandom(list.Count);
+            return list[randomIndex];
+        }
     }
 }

@@ -30,6 +30,13 @@ public class BasicGraphEnv : EnvBase
         chosenGraphIndex = Random.Range(0, graphs.Length);
     }
 
+    public override void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text,
+        List<(int index, int player)> fillerWords, List<int> chosenPowerUps)
+    {
+        base.PrepareRequestedRoomRpc(userInfos, myTurn, text, fillerWords, chosenPowerUps);
+        Debug.Log("prepare child called");
+    }
+
     public static (Vector3 poz, Vector3 normal) GetProjectedPoz(Vector3 at, Vector3 normal)
     {
         var rayHit = Physics.Raycast(at + normal * 2, Vector3.down, out var hitInfo, 3, ~6);
@@ -136,7 +143,7 @@ public class BasicGraphEnv : EnvBase
     /// </summary>
     protected override void GenerateDigits()
     {
-        wordObjects = new GameObject[words.Count][];
+        wordObjects = new GameObject[Words.Count][];
 
         var path = GraphManager.GetRandomPath(graph);
         var nodes = path.Select(n => (node: graph.Nodes[n.node], n.isWalkable)).ToList();
@@ -160,7 +167,7 @@ public class BasicGraphEnv : EnvBase
 
         //there would be at least 2 nodes in the path
 
-        for (var w = 0; w < words.Count; w++)
+        for (var w = 0; w < Words.Count; w++)
         {
             var lastWalkable = nodeCounter;
             while (!nodes[nodeCounter].isWalkable)
@@ -186,18 +193,18 @@ public class BasicGraphEnv : EnvBase
             // (subPath, subPathNormals) = SmoothenAngles(subPath, subPathNormals);
 
             var fillableWords = 1;
-            var totalDigits = words[w].Length;
-            var usedDistance = fullWordLength(words[w]);
+            var totalDigits = Words[w].Length;
+            var usedDistance = fullWordLength(Words[w]);
             //there at least the current word in the edge
 
             var edgesLength = GetEdgeLengths(connectedBranch);
             // var edgesLength = GetEdgeLengths(start, end, arcs);
 
-            while (w + 1 < words.Count && usedDistance + fullWordLength(words[w + 1]) <= edgesLength)
+            while (w + 1 < Words.Count && usedDistance + fullWordLength(Words[w + 1]) <= edgesLength)
             {
                 w++;
-                usedDistance += fullWordLength(words[w]);
-                totalDigits += words[w].Length;
+                usedDistance += fullWordLength(Words[w]);
+                totalDigits += Words[w].Length;
                 fillableWords++;
             }
             //try add more words if possible
@@ -214,7 +221,7 @@ public class BasicGraphEnv : EnvBase
             {
                 var globalWordIndex = w - (fillableWords - 1) + lw;
 
-                var currentWord = words[globalWordIndex];
+                var currentWord = Words[globalWordIndex];
                 var wordObject = new GameObject[currentWord.Length];
                 wordObjects[globalWordIndex] = new GameObject[currentWord.Length];
 
