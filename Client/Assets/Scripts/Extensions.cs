@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -9,6 +10,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using Wintellect.PowerCollections;
 using Random = UnityEngine.Random;
 
@@ -24,7 +26,7 @@ public static partial class Extensions
     public static T GetRandom<T>(this List<T> list)
     {
         if (list.Count == 0)
-            throw new System.Exception("you are trying to get a random element from an empty list");
+            throw new Exception("you are trying to get a random element from an empty list");
 
         var randIndex = Random.Range(0, list.Count);
         return list[randIndex];
@@ -60,8 +62,8 @@ public static partial class Extensions
         var res = new StringBuilder();
         foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
         {
-            string name = descriptor.Name;
-            object value = descriptor.GetValue(obj);
+            var name = descriptor.Name;
+            var value = descriptor.GetValue(obj);
             res.Append(name + " <> " + value);
         }
 
@@ -141,7 +143,8 @@ public static partial class Extensions
             yield return (T)tuple[i];
     }
 
-    public static TValue GetAdjacent<TKey, TValue>(this SortedList<TKey, TValue> sortedList, TKey element, int offset)
+    public static TValue GetAdjacent<TKey, TValue>(this SortedList<TKey, TValue> sortedList,
+        TKey element, int offset)
     {
         var currIndex = sortedList.IndexOfKey(element);
 
@@ -169,7 +172,7 @@ public static partial class Extensions
     {
         return new Vector2(vector3.x, vector3.z);
     }
-    
+
     public static Vector3 XYInXZ(this Vector2 vector)
     {
         return new Vector3(vector.x, 0, vector.y);
@@ -178,5 +181,75 @@ public static partial class Extensions
     public static int Sign(this float number)
     {
         return number >= 0 ? 1 : -1;
+    }
+
+    public static string UriCombine(params string[] uriParts)
+    {
+        var uri = string.Empty;
+        if (uriParts != null && uriParts.Any())
+        {
+            var trims = new[] { '\\', '/' };
+            uri = (uriParts[0] ?? string.Empty).TrimEnd(trims);
+
+            for (var i = 1; i < uriParts.Length; i++)
+                uri = $"{uri.TrimEnd(trims)}/{(uriParts[i] ?? string.Empty).TrimStart(trims)}";
+        }
+
+        return uri;
+    }
+
+
+    public static async UniTask<Texture2D> GetRemoteTexture(string url)
+    {
+        using var request = UnityWebRequestTexture.GetTexture(url);
+
+        //if there wer an exception here, just throw it
+        await request.SendWebRequest();
+
+        if (request.result is UnityWebRequest.Result.ConnectionError
+            or UnityWebRequest.Result.ProtocolError)
+        {
+            // log error:
+            Debug.Log($"{request.error}, URL:{request.url}");
+
+            // nothing to return on error:
+            return null;
+        }
+
+        Debug.Log($"img downloaded from: {url}");
+        return DownloadHandlerTexture.GetContent(request);
+    }
+
+    public static IEnumerator GetRemoteTexture(string url, Action<Texture2D> callback)
+    {
+        using var request = UnityWebRequestTexture.GetTexture(url);
+
+#if UNITY_EDITOR
+        request.certificateHandler = new CertificateWhore();
+#endif
+
+        //if there wer an exception here, just throw it
+        yield return request.SendWebRequest();
+
+        if (request.result is UnityWebRequest.Result.ConnectionError
+            or UnityWebRequest.Result.ProtocolError)
+        {
+            // log error:
+            Debug.Log($"{request.error}, URL:{request.url}");
+
+            // nothing to return on error:
+            yield break;
+        }
+
+        var texture = DownloadHandlerTexture.GetContent(request);
+        callback?.Invoke(texture);
+    }
+}
+
+public class CertificateWhore : CertificateHandler
+{
+    protected override bool ValidateCertificate(byte[] certificateData)
+    {
+        return true;
     }
 }

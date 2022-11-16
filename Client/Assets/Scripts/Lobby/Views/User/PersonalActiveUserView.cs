@@ -84,10 +84,4 @@ public class PersonalActiveUserView : MinUserView
     {
         set => money.text = value.ToString();
     }
-
-    public void testwaitalot()
-    {
-        BlockingOperationManager.I.Forget(NetManager.I.SendAsync("TestWaitAlot"));
-        // _blockingOperationManager.Forget<MinUserInfo>(_controller.TestWaitWithReturn(), info => Debug.Log("info is" + info.Name));
-    }
 }

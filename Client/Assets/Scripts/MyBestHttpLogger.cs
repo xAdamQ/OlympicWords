@@ -109,15 +109,15 @@ public class MyBestHttpLogger : ILogger
         {
             try
             {
-                string exceptionMessage = string.Empty;
+                var exceptionMessage = string.Empty;
                 if (ex == null)
                     exceptionMessage = "null";
                 else
                 {
-                    StringBuilder sb = new StringBuilder();
+                    var sb = new StringBuilder();
 
-                    Exception exception = ex;
-                    int counter = 1;
+                    var exception = ex;
+                    var counter = 1;
                     while (exception != null)
                     {
                         sb.AppendFormat("\n{0}: \n{1} \n{2}", counter++.ToString(), exception.Message,

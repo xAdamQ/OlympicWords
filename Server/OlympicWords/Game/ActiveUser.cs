@@ -70,6 +70,10 @@ namespace OlympicWords.Services
                 internal class Active : Room
                 {
                 }
+
+                public class ReadyGo : Room
+                {
+                }
             }
         }
     }

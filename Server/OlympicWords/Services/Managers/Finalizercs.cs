@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using OlympicWords.Data;
 using OlympicWords.Services.Helpers;
 
 namespace OlympicWords.Services
 {
     public interface IFinalizer
     {
-        Task SurrenderFinalization();
+        Task Surrender();
         Task FinalizeUser();
     }
 
@@ -33,14 +34,14 @@ namespace OlympicWords.Services
             this.logger = logger;
         }
 
-        public async Task SurrenderFinalization()
+        public async Task Surrender()
         {
+            scopeRepo.RemoveRoomUser();
             scopeRepo.ActiveUser.Domain = typeof(UserDomain.App.Lobby.Idle);
 
             var room = scopeRepo.Room;
             var roomUser = scopeRepo.RoomUser;
             var dataUser = await offlineRepo.GetUserByIdAsyc(roomUser.Id);
-
 
             //dataUser.Money -= room.SurrenderPenalty;
             //bet money is enough penalty for preventing enter and leave misuse
@@ -54,6 +55,7 @@ namespace OlympicWords.Services
 
         public async Task FinalizeUser()
         {
+            logger.LogInformation("finalize room");
             var room = scopeRepo.Room;
             var roomActor = scopeRepo.RoomActor;
             var realUser = roomActor is RoomUser;
@@ -69,7 +71,7 @@ namespace OlympicWords.Services
             userRoomStatus.FinalPosition = room.FinishedPLayers++;
             userRoomStatus.EarnedMoney = (int)GetEarnedMoney(userRoomStatus.FinalPosition);
             var finishInterval = (float)(roomActor.EndTime - roomActor.StartTime).TotalMinutes;
-            userRoomStatus.Wpm = room.Words.Length / finishInterval;
+            userRoomStatus.Wpm = room.Words.Count / finishInterval;
             userRoomStatus.Score = (int)(room.CategoryScoreMultiplier * userRoomStatus.Wpm);
 
             dataUser.Money += userRoomStatus.EarnedMoney;
@@ -83,10 +85,12 @@ namespace OlympicWords.Services
             await offlineRepo.SaveChangesAsync();
 
             if (realUser)
-                await masterHub.SendOrderedAsync(scopeRepo.ActiveUser, "FinalizeRoom", userRoomStatus);
+                await masterHub.SendOrderedAsync(scopeRepo.ActiveUser, "FinalizeRoom",
+                    userRoomStatus);
 
             foreach (var oppo in room.InRoomUsers.Where(ru => ru != roomActor))
-                await masterHub.SendOrderedAsync(oppo.ActiveUser, "TakeOppoUserRoomStatus", roomActor.Index,
+                await masterHub.SendOrderedAsync(oppo.ActiveUser, "TakeOppoUserRoomStatus",
+                    roomActor.TurnId,
                     userRoomStatus);
 
             if (room.RoomUsers.All(ru => ru.Cancellation.IsCancellationRequested))
@@ -131,7 +135,8 @@ namespace OlympicWords.Services
                 roomDataUser.Money += totalMoneyReward;
 
                 if (activeUser != null)
-                    await masterHub.SendOrderedAsync(activeUser, "LevelUp", calcedLevel, totalMoneyReward);
+                    await masterHub.SendOrderedAsync(activeUser, "LevelUp", calcedLevel,
+                        totalMoneyReward);
             }
         } //separate this to be called on every XP change 
     }

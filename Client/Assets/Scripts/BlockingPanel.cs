@@ -7,6 +7,7 @@ using DG.Tweening.Plugins.Options;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 public class BlockingPanel : MonoBehaviour
@@ -14,19 +15,24 @@ public class BlockingPanel : MonoBehaviour
     [SerializeField] private TMP_Text messageText;
     [SerializeField] private Button dismissButton; //for both cancellation and dismiss
     [SerializeField] private Image waitImage;
+    [SerializeField] private FillBar fillBar;
 
     private static BlockingPanel i;
 
     private static TweenerCore<Quaternion, Vector3, QuaternionOptions> animTween;
 
-    public static async UniTask Show(string message = null, Action dismissButtonAction = null)
+    public static void Show(AsyncOperationHandle handle, string message = null)
     {
-        if (i) Destroy(i.gameObject);
-        //you can remove this to support multiple panels
-        //but the new should draw over the old  
+        ShowBase(message);
+        i.fillBar.SetHandle(handle);
 
-        i = (await Addressables.InstantiateAsync("blockingPanel", Controller.I.canvas))
-            .GetComponent<BlockingPanel>();
+        i.waitImage.gameObject.SetActive(false);
+        i.fillBar.gameObject.SetActive(true);
+    }
+
+    public static void Show(string message = null, Action dismissButtonAction = null)
+    {
+        ShowBase(message);
 
         if (dismissButtonAction != null)
         {
@@ -39,10 +45,21 @@ public class BlockingPanel : MonoBehaviour
             i.dismissButton.gameObject.SetActive(false);
         }
 
-        i.messageText.text = message ?? "";
+        i.waitImage.gameObject.SetActive(true);
+        i.fillBar.gameObject.SetActive(false);
 
         animTween = i.waitImage.transform.DORotate(Vector3.forward * 180, 2f)
             .SetLoops(9999, LoopType.Yoyo);
+    }
+
+    private static void ShowBase(string message = "")
+    {
+        if (i) Destroy(i.gameObject);
+
+        i = Instantiate(Controller.I.References.BlockingPanelPrefab, Controller.I.canvas)
+            .GetComponent<BlockingPanel>();
+
+        i.messageText.text = message;
     }
 
     public static void HideDismiss()

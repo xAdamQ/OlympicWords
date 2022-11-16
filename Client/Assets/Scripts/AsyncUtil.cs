@@ -9,8 +9,7 @@ namespace AC.Components.Util
     /// </summary>
     public static class AsyncUtil
     {
-        private static readonly TaskFactory _taskFactory = new
-            TaskFactory(CancellationToken.None,
+        private static readonly TaskFactory _taskFactory = new(CancellationToken.None,
                 TaskCreationOptions.None,
                 TaskContinuationOptions.None,
                 TaskScheduler.Default);

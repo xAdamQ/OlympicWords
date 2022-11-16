@@ -1,33 +1,59 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.EditorCoroutines.Editor;
 using UnityEngine;
-using Wintellect.PowerCollections;
 using Random = UnityEngine.Random;
 
-public class GraphManager
+// ReSharper disable AccessToModifiedClosure
+
+public static class GraphManager
 {
     public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData)
     {
+        return GetRandomPath(graphData, (-1, -1));
+    }
+
+    public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData,
+        (int start, int end) linkerEdge)
+    {
         var nodesEdges = GetNodeEdges(graphData);
         var remainingEdges = graphData.Edges.ToList();
-        var path = new List<(int, bool)>();
 
-        var startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom();
-        var finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
+        Edge startEdge;
+        int startNode, finishNode;
 
-        var startNode = startEdge.Start == finishNode ? startEdge.End : startEdge.Start;
+        if (linkerEdge == (-1, -1))
+        {
+            startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom();
+            //get random walkable edge
+            finishNode = startEdge.RealFinish;
+            if (finishNode == -1) //this means the edge is bidirectional 
+                finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
+            //if not directed choose random dir, otherwise stick with the dir
+            startNode = startEdge.Start == finishNode ? startEdge.End : startEdge.Start;
+            //choose the other node as start
+        }
+        else
+        {
+            startEdge = nodesEdges[linkerEdge.end]
+                .Where(e => e.Start != linkerEdge.start && e.End != linkerEdge.start)
+                .ToList().GetRandom();
+            startNode = linkerEdge.end;
+            finishNode = startEdge.OtherEnd(startNode);
+        }
 
-        path.Add((startNode, startEdge.Type == 0));
-        path.Add((finishNode, startEdge.Type == 0));
+        var path = new List<(int, bool)>
+        {
+            (startNode, startEdge.Type == 0),
+            (finishNode, startEdge.Type == 0)
+        };
 
         //removing start edge will disjoint the graph, and prevent removing the finish branch
-        if (getBranches(finishNode).Count == 2)
-            removeEdge(startEdge);
+        if (getBranches(finishNode).Count == 2) removeEdge(startEdge);
 
         //remove all branches from start node
         getBranches(startNode).ForEach(b => b.edges.ForEach(removeEdge));
+
+        var lastEdge = startEdge;
 
         while (true)
         {
@@ -38,20 +64,43 @@ public class GraphManager
             }
 
             var branches = getBranches(finishNode);
-            if (branches.Count == 0)
+
+            branches.Where(b => b.looping && !b.edges[0].CanMoveOut(finishNode)).ForEach(b =>
+            {
+                if (!b.edges.Last().CanMoveOut(finishNode))
+                    Debug.Log(
+                        $"path with start {b.edges.First()} and end {b.edges.Last()} is a strange loop, full path is" +
+                        $" {string.Join(", ", path)}");
+
+                b.edges.Reverse();
+                b.sequence.Reverse();
+            });
+            //reverse looping branches that has reversed order
+
+            var eligibleBranches = branches
+                .Where(b => b.edges[0].CanMoveOut(finishNode) &&
+                            (graphData.Nodes[finishNode].Type != 1 ||
+                             b.edges[0].Group != lastEdge.Group))
+                .ToList();
+
+            if (eligibleBranches.Count == 0)
             {
                 Debug.Log($"node has no branches, remaining edges count: {remainingEdges.Count}");
                 break;
             }
 
-            var chosenBranch = branches.GetRandom();
+            var chosenBranch = eligibleBranches.GetRandom();
+            //choose eligible branch in terms of grouping and direction
 
-            //delete all branches
+            lastEdge = chosenBranch.edges.Last();
+
             branches.ForEach(b => b.edges.ForEach(removeEdge));
+            //delete all branches
 
-            path.AddRange(chosenBranch.sequence.Select((n, i) => (n, chosenBranch.edges[i].Type == 0)));
-            
-            
+            path.AddRange(
+                chosenBranch.sequence.Select((n, i) => (n, chosenBranch.edges[i].Type == 0)));
+            //add chosen sequence to the path
+
             if (chosenBranch.looping)
             {
                 // Debug.Log("ended with loop");
@@ -67,31 +116,37 @@ public class GraphManager
         List<(List<Edge> edges, List<int> sequence, bool looping)> getBranches(int node)
         {
             var branches = new List<(List<Edge> edges, List<int> sequence, bool looping)>();
-            var branchStarts = nodesEdges[node].ToList();
+            //branch is single thread sequence
+            var branchStarts = new List<Edge>(nodesEdges[node]);
+            //edges out of the start node
 
             while (branchStarts.Count > 0)
             {
-                var branchStart = branchStarts[0];
+                var lastExtend = branchStarts[0];
                 branchStarts.RemoveAt(0);
 
-                var branchFinishNode = GetOtherEnd(branchStart, node);
+                var branchFinishNode = GetOtherEnd(lastExtend, node);
 
-                branches.Add((edges: new List<Edge> { branchStart }, new List<int> { branchFinishNode }, looping: false));
+                branches.Add((new List<Edge> { lastExtend }, new List<int> { branchFinishNode },
+                    false));
 
-                while (nodesEdges[branchFinishNode].Count == 2)
+
+                while (nodesEdges[branchFinishNode].Count(e => e != lastExtend) == 1)
+                    //we don't delete edges as we go because this alter the graph and makes issues
                 {
-                    var newExtend = nodesEdges[branchFinishNode].First(e => e != branches.Last().edges.Last());
-                    //previously first was olay because we delete, now we have to get the other edge
+                    lastExtend = nodesEdges[branchFinishNode].First(e => e != lastExtend);
+                    if (!lastExtend.CanMoveOut(branchFinishNode))
+                        break;
 
-                    branchFinishNode = GetOtherEnd(newExtend, branchFinishNode);
+                    branchFinishNode = GetOtherEnd(lastExtend, branchFinishNode);
 
-                    branches[^1].edges.Add(newExtend);
+                    branches[^1].edges.Add(lastExtend);
                     branches[^1].sequence.Add(branchFinishNode);
 
                     if (branchFinishNode != node) continue;
 
+                    //looping, caller should handles loops
                     branches[^1] = (branches[^1].edges, branches[^1].sequence, true);
-                    branchStarts.Remove(newExtend);
                     break;
                 }
             }
@@ -107,11 +162,13 @@ public class GraphManager
         }
     }
 
-    private static int GetOtherEnd(Edge edge, int otherEnd) => edge.Start == otherEnd ? edge.End : edge.Start;
+    public static int GetOtherEnd(Edge edge, int otherEnd) =>
+        edge.Start == otherEnd ? edge.End : edge.Start;
 
-    private static Dictionary<int, List<Edge>> GetNodeEdges(GraphData graphData)
+    public static Dictionary<int, List<Edge>> GetNodeEdges(GraphData graphData)
     {
-          var  nodeEdges = Enumerable.Range(0, graphData.Nodes.Count).ToDictionary(i => i, _ => new List<Edge>());
+        var nodeEdges = Enumerable.Range(0, graphData.Nodes.Count)
+            .ToDictionary(i => i, _ => new List<Edge>());
 
         foreach (var edge in graphData.Edges)
         {

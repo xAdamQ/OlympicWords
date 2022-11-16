@@ -1,21 +1,57 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Reflection;
-using OlympicWords.Services.Exceptions;
 using OlympicWords.Common;
-using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using OlympicWords.Services.Helpers;
-using OlympicWords.Services;
 using static System.Threading.Tasks.Task;
 
 namespace OlympicWords.Services
 {
-    public class MasterHub : Hub
+    public interface IMasterHub
+    {
+        Task OnConnectedAsync();
+        Task OnDisconnectedAsync(Exception exception);
+        Task<PersonalFullUserInfo> GetPersonalUserData();
+        /// <summary>
+        /// get public user data by his id
+        /// </summary>
+        Task<FullUserInfo> GetUserData(string id);
+        Task ToggleFollow(string targetId);
+        Task ToggleOpenMatches();
+        Task MakePurchase(string purchaseData, string sign);
+        Task RequestRandomRoom(int betChoice, int capacityChoice);
+        Task<Services.MatchMaker.MatchRequestResult> RequestMatch(string oppoId);
+        void CancelChallengeRequest(string oppoId);
+        Task<Services.MatchMaker.ChallengeResponseResult> RespondChallengeRequest
+            (string senderId, bool response);
+        Task Ready();
+        Task AskForMoneyAid();
+        Task ClaimMoneyAid();
+        Task BuyCardback(int cardbackId);
+        Task BuyBackground(int backgroundId);
+        Task SelectCardback(int cardbackId);
+        Task SelectBackground(int backgroundId);
+        Task ShowMessage(string msgId);
+        Task<string> UpStreamChar(IAsyncEnumerable<char> stream);
+        IAsyncEnumerable<string[]> DownStreamCharBuffer(
+            [EnumeratorCancellation] CancellationToken cancellationToken);
+        IAsyncEnumerable<int> DownStreamTest(
+            [EnumeratorCancellation] CancellationToken cancellationToken);
+        Task Surrender();
+        void LeaveFinishedRoom();
+        void BuieTest();
+        void ThrowExc();
+        Task<MinUserInfo> TestReturnObject();
+        Task TestWaitAlot();
+        Task<string> UpStreamCharTest(IAsyncEnumerable<char> stream);
+
+        void SetPowerUp(int powerUp);
+
+        // Task SmallJetJump();
+        // Task MegaJetJump();
+    }
+
+    public class MasterHub : Hub, IMasterHub
     {
         #region services
 
@@ -26,12 +62,13 @@ namespace OlympicWords.Services
         private readonly ILogger<MasterHub> logger;
         private readonly IChatManager chatManager;
         private readonly PersistantData persistantData;
+        private readonly IFinalizer finalizer;
         private readonly ILobbyManager lobbyManager;
 
 
         public MasterHub(IOfflineRepo offlineRepo, ILobbyManager lobbyManager, IScopeRepo scopeRepo,
             IGameplay gameplay, IMatchMaker matchMaker, ILogger<MasterHub> logger, IChatManager chatManager,
-            PersistantData persistantData)
+            PersistantData persistantData, IFinalizer finalizer)
         {
             this.offlineRepo = offlineRepo;
             this.lobbyManager = lobbyManager;
@@ -41,6 +78,7 @@ namespace OlympicWords.Services
             this.logger = logger;
             this.chatManager = chatManager;
             this.persistantData = persistantData;
+            this.finalizer = finalizer;
         }
 
         #endregion
@@ -61,9 +99,18 @@ namespace OlympicWords.Services
             else
                 CreateActiveUser();
 
-            await InitClientGame();
+            await TestSetUserMoney();
+
+            // await InitClientGame();
 
             await base.OnConnectedAsync();
+        }
+
+        private async Task TestSetUserMoney()
+        {
+            var u = await offlineRepo.GetCurrentUser();
+            u.Money = 99999999;
+            await offlineRepo.SaveChangesAsync();
         }
 
         private void CreateActiveUser()
@@ -72,35 +119,30 @@ namespace OlympicWords.Services
                 typeof(UserDomain.App.Lobby.Idle)));
         }
 
-        private async Task InitClientGame()
-        {
-            var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier);
-            var clientPersonalInfo = Mapper.ConvertUserDataToClient(user);
-
-            //todo followers code
-            // //you travel to db 2 more times
-            // clientPersonalInfo.Followers =
-            //     await offlineRepo.GetFollowersAsync(Context.UserIdentifier);
-            // clientPersonalInfo.Followings =
-            //     await offlineRepo.GetFollowingsAsync(Context.UserIdentifier);
-
-            await Clients.Caller.SendAsync("InitGame", ActiveUser.MessageIndex++, clientPersonalInfo);
-        }
+        // private async Task InitClientGame()
+        // {
+        //     var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier,
+        //         withFollowings: true, withFollowers: true);
+        //
+        //     var clientPersonalInfo = Mapper.ConvertUserDataToClient(user);
+        //
+        //     await Clients.Caller.SendAsync("InitGame", ActiveUser.MessageIndex++,
+        //         clientPersonalInfo);
+        // }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            logger.LogInformation($"{Context.UserIdentifier} Disconnected");
+            logger.LogInformation("{ContextUserIdentifier} Disconnected", Context.UserIdentifier);
 
             persistantData.FeedScope(scopeRepo);
             scopeRepo.SetOwner(userId: Context.UserIdentifier);
 
             ActiveUser.Disconnect();
-            scopeRepo.RemoveActiveUser(Context.UserIdentifier);
 
             var roomUser = scopeRepo.RoomUser;
             if (roomUser != null)
             {
-                gameplay.Surrender();
+                await finalizer.Surrender();
                 //doesn't matter if you disconnected or got out by net issue
 
                 //remove pending room user
@@ -108,6 +150,8 @@ namespace OlympicWords.Services
                     matchMaker.RemovePendingDisconnectedUser(roomUser);
                 //RoomUser.Room is null when he was the last player in pending room and disconnected
             }
+
+            scopeRepo.RemoveActiveUser(Context.UserIdentifier);
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -125,8 +169,10 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App))]
         public async Task<PersonalFullUserInfo> GetPersonalUserData()
         {
-            return Mapper.ConvertUserDataToClient(
-                await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier));
+            var user = await offlineRepo.GetUserByIdAsyc(Context.UserIdentifier,
+                withFollowings: true, withFollowers: true);
+
+            return Mapper.ConvertUserDataToClient(user);
         }
 
         /// <summary>
@@ -136,14 +182,18 @@ namespace OlympicWords.Services
         public async Task<FullUserInfo> GetUserData(string id)
         {
             var data = await offlineRepo.GetFullUserInfoAsync(id);
-            data.Friendship = (int)offlineRepo.GetFriendship(Context.UserIdentifier, id);
+            data.Friendship = (int)await offlineRepo.GetFriendship(Context.UserIdentifier, id);
             return data;
         }
 
         [RpcDomain(typeof(UserDomain.App))]
         public async Task ToggleFollow(string targetId)
         {
-            offlineRepo.ToggleFollow(Context.UserIdentifier, targetId);
+            var user = await offlineRepo.GetCurrentUser();
+            var target = await offlineRepo.GetUserByIdAsyc(targetId);
+
+            await offlineRepo.ToggleFollow(user, target);
+
             await offlineRepo.SaveChangesAsync();
         }
 
@@ -172,7 +222,7 @@ namespace OlympicWords.Services
         }
 
         [RpcDomain(typeof(UserDomain.App.Lobby.Idle))]
-        public async Task<Services.MatchMaker.MatchRequestResult> RequestMatch(string oppoId)
+        public async Task<MatchMaker.MatchRequestResult> RequestMatch(string oppoId)
         {
             return await matchMaker.RequestMatch(ActiveUser, oppoId);
         }
@@ -232,6 +282,12 @@ namespace OlympicWords.Services
             await lobbyManager.SelectBackground(backgroundId, ActiveUser.Id);
         }
 
+        [RpcDomain(typeof(UserDomain.App.Lobby.Pending))]
+        public void SetPowerUp(int powerUp)
+        {
+            scopeRepo.RoomActor.ChosenPowerUp = powerUp;
+        }
+
         #endregion
 
         #region room
@@ -245,21 +301,20 @@ namespace OlympicWords.Services
         }
 
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
-        public async Task UpStreamChar(IAsyncEnumerable<char> stream)
+        public async Task<string> UpStreamChar(IAsyncEnumerable<char> stream)
         {
-            await gameplay.UpStreamChar(stream);
+            return await gameplay.UpStreamChar(stream);
         }
 
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
-        public async IAsyncEnumerable<List<char>[]> DownStreamCharBuffer(
+        public async IAsyncEnumerable<string[]> DownStreamCharBuffer(
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var asyncCoroutine = gameplay.DownStreamCharBuffer(cancellationToken);
             await foreach (var item in asyncCoroutine.WithCancellation(cancellationToken))
-            {
                 yield return item;
-            }
         }
+
 
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
         public async IAsyncEnumerable<int> DownStreamTest(
@@ -278,8 +333,19 @@ namespace OlympicWords.Services
         [RpcDomain(typeof(UserDomain.App.Room.Active))]
         public async Task Surrender()
         {
-            await gameplay.Surrender();
+            await finalizer.Surrender();
         }
+        //
+        // [RpcDomain(typeof(UserDomain.App.Room.Active))]
+        // public async Task SmallJetJump()
+        // {
+        //     await scopeRepo.RoomActor.SmallJetJump(finalizer);
+        // }
+        // [RpcDomain(typeof(UserDomain.App.Room.Active))]
+        // public async Task MegaJetJump()
+        // {
+        //     await scopeRepo.RoomActor.MegaJetJump(finalizer);
+        // }
 
         #endregion
 
@@ -293,6 +359,8 @@ namespace OlympicWords.Services
         }
 
         #endregion
+
+        #region tests
 
         [RpcDomain(typeof(UserDomain.App))]
         public void BuieTest()
@@ -318,6 +386,18 @@ namespace OlympicWords.Services
         {
             await Delay(5000);
         }
+
+        [RpcDomain(typeof(UserDomain.App))]
+        public async Task<string> UpStreamCharTest(IAsyncEnumerable<char> stream)
+        {
+            // await foreach (var chr in stream)
+            // logger.LogInformation("received {Chr}", chr);
+
+            logger.LogInformation("test stream done");
+            return "done";
+        }
+
+        #endregion
 
         public class MethodDomains
         {

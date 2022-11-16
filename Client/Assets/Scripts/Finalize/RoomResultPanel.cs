@@ -46,7 +46,7 @@
 //             competitionStateText.text = "خسرت";
 //             competitionStateText.color = Color.red;
 //         }
-//         else if (userRoomStatus.EarnedMoney < RoomController.I.Bet) //because the ticket is taken
+//         else if (userRoomStatus.EarnedMoney < EnvBase.I.Bet) //because the ticket is taken
 //         {
 //             competitionStateText.text = "تعادل";
 //             competitionStateText.color = Color.grey;

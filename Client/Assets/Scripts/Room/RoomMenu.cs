@@ -20,7 +20,7 @@
 //         await BlockingOperationManager.I.Start(Controller.I.Surrender());
 //
 //         //-----this is not called because finalize panel is shown
-//         // _roomController.DestroyModuleGroup();
+//         // _EnvBase.DestroyModuleGroup();
 //         // _lobbyFactory.Create();
 //     }
 // }

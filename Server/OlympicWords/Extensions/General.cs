@@ -1,14 +1,26 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json.Serialization;
 
 namespace OlympicWords.Services.Extensions
 {
+    public class SnakeCaseNamingPolicy : JsonNamingPolicy
+    {
+        private readonly SnakeCaseNamingStrategy _newtonsoftSnakeCaseNamingStrategy = new();
+
+        public static SnakeCaseNamingPolicy Instance { get; } = new();
+
+        public override string ConvertName(string name)
+        {
+            /* A conversion to snake case implementation goes here. */
+
+            return _newtonsoftSnakeCaseNamingStrategy.GetPropertyName(name, false);
+        }
+    }
+
     public static class General
     {
         public static void Remove<T>(this List<T> list, Predicate<T> predicate)
@@ -73,12 +85,14 @@ namespace OlympicWords.Services.Extensions
             return value < max && value >= min;
         }
 
-        public static void Append<T>(this ConcurrentDictionary<int, T> concurrentDictionary, ref int lastId, T value)
+        public static void Append<T>(this ConcurrentDictionary<int, T> concurrentDictionary,
+            ref int lastId, T value)
         {
             concurrentDictionary.TryAdd(Interlocked.Increment(ref lastId), value);
         }
 
-        public static async Task<object> InvokeAsync(this MethodInfo mi, object obj, params object[] parameters)
+        public static async Task<object> InvokeAsync(this MethodInfo mi, object obj,
+            params object[] parameters)
         {
             dynamic awaitable = mi.Invoke(obj, parameters);
 
@@ -87,7 +101,8 @@ namespace OlympicWords.Services.Extensions
             return awaitable.GetAwaiter().GetResult();
         }
 
-        public static async Task InvokeActionAsync(this MethodInfo mi, object obj, params object[] parameters)
+        public static async Task InvokeActionAsync(this MethodInfo mi, object obj,
+            params object[] parameters)
         {
             dynamic awaitable = mi.Invoke(obj, parameters);
 
@@ -126,25 +141,54 @@ namespace OlympicWords.Services.Extensions
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3) where T : Hub
+            ActiveUser activeUser, string method, object arg1, object arg2, object arg3)
+            where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
                 new[] { activeUser.MessageIndex++, arg1, arg2, arg3 });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3, object arg4) where T : Hub
+            ActiveUser activeUser, string method, object arg1, object arg2, object arg3,
+            object arg4) where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
                 new[] { activeUser.MessageIndex++, arg1, arg2, arg3, arg4 });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3, object arg4, object arg5)
+            ActiveUser activeUser, string method, object arg1, object arg2, object arg3,
+            object arg4, object arg5)
             where T : Hub
         {
             await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
                 new[] { activeUser.MessageIndex++, arg1, arg2, arg3, arg4, arg5 });
+        }
+
+        public static T GetLoggedInUserId<T>(this ClaimsPrincipal principal)
+        {
+            if (principal == null)
+                throw new ArgumentNullException(nameof(principal));
+
+            var loggedInUserId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (typeof(T) == typeof(string))
+                return (T)Convert.ChangeType(loggedInUserId, typeof(T));
+
+            if (typeof(T) == typeof(int) || typeof(T) == typeof(long))
+            {
+                return loggedInUserId != null
+                    ? (T)Convert.ChangeType(loggedInUserId, typeof(T))
+                    : (T)Convert.ChangeType(0, typeof(T));
+            }
+
+            throw new Exception("Invalid type provided");
+        }
+
+        public static T GetRandom<T>(this IList<T> list)
+        {
+            var randomIndex = StaticRandom.GetRandom(list.Count);
+            return list[randomIndex];
         }
     }
 }

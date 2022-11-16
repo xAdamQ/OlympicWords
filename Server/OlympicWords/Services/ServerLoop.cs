@@ -19,20 +19,22 @@ namespace OlympicWords.Services
         void SetupPendingRoomTimeoutIfNotExist(Room room);
         void CancelPendingRoomTimeout(Room room);
         void BotLoop(RoomBot roomBot, CancellationToken cancellationToken);
+        void StartGame(Room room);
     }
 
     public class ServerLoop : IServerLoop
     {
         private readonly IServiceScopeFactory serviceScopeFactory;
+        private readonly ILogger<ServerLoop> logger;
 
-        public ServerLoop(IServiceScopeFactory serviceScopeFactory)
+        public ServerLoop(IServiceScopeFactory serviceScopeFactory, ILogger<ServerLoop> logger)
         {
             this.serviceScopeFactory = serviceScopeFactory;
+            this.logger = logger;
         }
 
         private Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
-        private const int PendingRoomTimeout = 1 * 1000;
-
+        private const int PENDING_ROOM_TIMEOUT = 4 * 1000;
         public void SetupPendingRoomTimeoutIfNotExist(Room room)
         {
             if (PendingRoomCancellations.ContainsKey(room)) return;
@@ -40,23 +42,19 @@ namespace OlympicWords.Services
             var cSource = new CancellationTokenSource();
             PendingRoomCancellations.Add(room, cSource);
 
-            Task.Delay(PendingRoomTimeout, cSource.Token).ContinueWith(task =>
+            Task.Delay(PENDING_ROOM_TIMEOUT, cSource.Token).ContinueWith(async task =>
             {
-                if (!task.IsCanceled) Task.Run(() => OnPendingRoomTimeout(room));
+                await Task.Run(() => OnPendingRoomTimeout(room), cSource.Token);
             });
         }
-
         private async Task OnPendingRoomTimeout(Room room)
         {
             PendingRoomCancellations.Remove(room);
 
-            using (var scope = serviceScopeFactory.CreateScope())
-            {
-                var roomRequester = scope.ServiceProvider.GetService<IMatchMaker>();
-                await roomRequester!.FillPendingRoomWithBots(room);
-            }
+            using var scope = serviceScopeFactory.CreateScope();
+            var roomRequester = scope.ServiceProvider.GetService<IMatchMaker>();
+            await roomRequester!.FillPendingRoomWithBots(room);
         }
-
         public void CancelPendingRoomTimeout(Room room)
         {
             PendingRoomCancellations[room].Cancel();
@@ -64,38 +62,41 @@ namespace OlympicWords.Services
         }
 
         private Dictionary<Room, CancellationTokenSource> ForceStartCancellations { get; } = new();
-        private const int ReadyTimeout = 8 * 1000;
-
+        private const int READY_TIMEOUT = 8 * 1000;
         public void SetForceStartRoomTimeout(Room room)
         {
             var cSource = new CancellationTokenSource();
             ForceStartCancellations.Add(room, cSource);
 
-            Task.Delay(ReadyTimeout, cSource.Token)
-                .ContinueWith(task =>
-                {
-                    if (!task.IsCanceled) Task.Run(() => OnForceStartTimeout(room));
-                });
+            Task.Delay(READY_TIMEOUT, cSource.Token)
+                .ContinueWith(async t => await OnForceStartTimeout(room), cSource.Token);
         }
-
         private async Task OnForceStartTimeout(Room room)
         {
             ForceStartCancellations.Remove(room);
 
-            using (var scope = serviceScopeFactory.CreateScope())
-            {
-                //this will fail because you don't have scope
-                var roomManager = scope.ServiceProvider.GetService<IGameplay>();
-                await roomManager!.StartRoom();
-            }
+            using var scope = serviceScopeFactory.CreateScope();
+            //this will fail because you don't have scope
+            var roomManager = scope.ServiceProvider.GetService<IGameplay>();
+            await roomManager!.StartRoom();
         }
-
         public void CancelForceStart(Room room)
         {
             ForceStartCancellations[room].Cancel();
             ForceStartCancellations.Remove(room);
         }
 
+        public void StartGame(Room room)
+        {
+            foreach (var roomBot in room.Bots)
+                BotLoop(roomBot, room.CancellationTokenSource.Token);
+
+            room.SetUsersDomain<UserDomain.App.Room.Active>();
+            logger.LogInformation("all users are active");
+
+            room.Started = true;
+            room.RoomActors.ForEach(ru => ru.StartTime = DateTime.Now);
+        }
 
         const string ALL_CHARS = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
 
@@ -110,18 +111,26 @@ namespace OlympicWords.Services
                 scope.ServiceProvider.GetService<IScopeRepo>()!.SetOwner(roomBot: roomBot);
                 var gameplay = scope.ServiceProvider.GetService<IGameplay>()!;
 
-                while (roomBot.StreamPointer < room.Text.Length)
+                while (roomBot.TextPointer < room.Text.Length)
                 {
                     if (cancellationToken.IsCancellationRequested)
                         break;
 
-                    var chr = StaticRandom.GetRandom(100) > room.wrongDigitProb
-                        ? room.Text[roomBot.StreamPointer]
-                        : ALL_CHARS[StaticRandom.GetRandom(ALL_CHARS.Length)];
+                    char chr;
 
-                    await gameplay.ProcessDigit(chr, roomBot);
+                    var canJump = (roomBot.ChosenPowerUp == 0 && roomBot.UsedJets < 2) ||
+                                  (roomBot.ChosenPowerUp == 1 && roomBot.UsedJets < 1);
 
-                    await Task.Delay(StaticRandom.GetRandom(room.botTimeMin, room.botTimeMax), cancellationToken);
+                    if (canJump && StaticRandom.GetRandom(5) == 3)
+                        chr = '\r';
+                    else
+                        chr = StaticRandom.GetRandom(100) > Room.WRONG_CHAR_PROB
+                            ? room.Text[roomBot.TextPointer]
+                            : ALL_CHARS[StaticRandom.GetRandom(ALL_CHARS.Length)];
+
+                    await gameplay.ProcessChar(chr);
+
+                    await Task.Delay(StaticRandom.GetRandom(Room.BOT_TIME_MIN, Room.BOT_TIME_MAX), cancellationToken);
                 }
             });
         }

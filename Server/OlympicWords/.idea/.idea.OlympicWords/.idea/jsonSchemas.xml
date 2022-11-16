@@ -3,11 +3,12 @@
   <component name="JsonSchemaMappingsProjectConfiguration">
     <state>
       <map>
-        <entry key="appsettings.json">
+        <entry key="JSON Schema version 7">
           <value>
             <SchemaInfo>
-              <option name="name" value="appsettings.json" />
-              <option name="relativePathToSchema" value="https://json.schemastore.org/appsettings.json" />
+              <option name="name" value="JSON Schema version 7" />
+              <option name="relativePathToSchema" value="http://json-schema.org/draft-07/schema" />
+              <option name="schemaVersion" value="JSON Schema version 7" />
               <option name="applicationDefined" value="true" />
               <option name="patterns">
                 <list>

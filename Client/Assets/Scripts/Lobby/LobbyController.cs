@@ -1,8 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 
 [Rpc]
@@ -23,18 +26,33 @@ public class LobbyController : MonoModule<LobbyController>
             .Forget(e => throw e);
     }
 
-    [Rpc]
-    public void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text)
+   
+
+    // [Rpc]
+    // public void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text,
+    //     List<(int player, int index)> fillerWords)
+    // {
+    //     DestroyLobby();
+    //
+    //     var roomArgs = (RoomRequester.LastRequest.betChoice,
+    //         RoomRequester.LastRequest.capacityChoice, userInfos,
+    //         myTurn, text);
+    //
+    //     Controller.I.AddTransitionData(nameof(roomArgs), roomArgs);
+    //
+    //     SceneManager.LoadScene("RoomBase");
+    //
+    //     var envName = "Env" + RoomRequester.LastRequest.betChoice;
+    //     SceneManager.LoadScene(envName, LoadSceneMode.Additive);
+    //     //blocking panel already exists
+    //
+    //     // var handle = Addressables.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+    //     // handle.Completed += SceneLoadComplete;
+    // }
+
+    private void SceneLoadComplete(AsyncOperationHandle<SceneInstance> handle)
     {
-        DestroyLobby();
-
-        var roomArgs = (RoomRequester.LastRequest.betChoice, RoomRequester.LastRequest.capacityChoice, userInfos,
-            myTurn, text);
-
-        Controller.I.AddTransitionData(nameof(roomArgs), roomArgs);
-
-        SceneManager.LoadScene("RoomBase");
-        SceneManager.LoadScene("Env" + RoomRequester.LastRequest.betChoice, LoadSceneMode.Additive);
+        Debug.Log($"scene: {handle.Result.Scene.name} load status: {handle.Status}");
     }
 
     [Rpc]
@@ -59,14 +77,24 @@ public class LobbyController : MonoModule<LobbyController>
         }
     }
 
-    public event Action Destroyed;
+    // public event Action Destroyed;
 
-    private void DestroyLobby()
+    // private void DestroyLobby()
+    // {
+    //     I = null;
+    //
+    //     Destroyed?.Invoke();
+    //
+    //     Destroy(gameObject);
+    // }
+
+    public void Logout()
     {
-        I = null;
+        if (!FbManager.Logout())
+            if (PlayerPrefs.HasKey("GuestGuid"))
+                PlayerPrefs.DeleteKey("GuestGuid");
+        //if not logged in with fb, logout from guest
 
-        Destroyed?.Invoke();
-
-        Destroy(gameObject);
+        NetManager.I.RestartGame();
     }
 }

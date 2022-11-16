@@ -30,7 +30,7 @@ public class Room
     //the list will be handled differently
     public List<RoomUser> RoomUsers { get; } = new();
     public List<RoomActor> RoomActors { get; } = new();
-    public List<RoomBot> Bots { set; get; } //left null on purpose
+    public List<RoomBot> Bots { get; } = new(); //left null on purpose
 
     public List<string> RoomActorIds => RoomActors.Select(ra => ra.Id).ToList();
 
@@ -62,15 +62,23 @@ public class Room
         foreach (var ru in RoomUsers) ru.ActiveUser.Domain = domain;
     }
 
+    public void SetUsersDomain<T>() where T : UserDomain.App.Room
+    {
+        var domain = typeof(T);
+        foreach (var ru in RoomUsers)
+            ru.ActiveUser.Domain = domain;
+    }
 
-    //variable based on the room type, keep it simple
-    public int wrongDigitProb = -1, botTimeMin = 200, botTimeMax = 500;
+
+    //will be decided at run time, based on player average speed
+    public const int WRONG_CHAR_PROB = -1, BOT_TIME_MIN = 200, BOT_TIME_MAX = 700;
 
     //I may leave this prop public because some feature like nitro may use it
-    public string[] Words { get; }
-    public string Text { get; }
+    public List<string> Words { get; set; }
+    public string Text { get; set; }
+    public List<(int index, int player)> FillerWords { get; } = new();
 
-    public CancellationTokenSource cancellationTokenSource { get; }
+    public CancellationTokenSource CancellationTokenSource { get; }
 
     public int FinishedPLayers { get; set; }
     //public int SurrenderPenalty => (int)(.25 * Bet);
@@ -80,13 +88,11 @@ public class Room
     /// can be useful if we care about syncing the buffer with its wrong digits
     /// </summary>
     // public int[] StreamSyncPointer { get; }
-    public Room(int category, int capacityChoice, string text)
+    public Room(int category, int capacityChoice)
     {
         CapacityChoice = capacityChoice;
-        Text = text;
         Category = category;
 
-        Words = text.Split(' ');
-        cancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource = new CancellationTokenSource();
     }
 }

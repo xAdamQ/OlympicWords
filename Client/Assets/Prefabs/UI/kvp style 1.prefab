@@ -26,11 +26,12 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 636677508501337742}
   - {fileID: 636677508804931620}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -42,6 +43,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 1661124610227095098}
     m_Modifications:
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
@@ -50,7 +52,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_fontSize
-      value: 40
+      value: 39.5
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: originalText
@@ -73,7 +75,15 @@ PrefabInstance:
       value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
+      propertyPath: m_overflowMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_isRightToLeft
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
+      propertyPath: m_enableAutoSizing
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
@@ -82,7 +92,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_VerticalAlignment
-      value: 512
+      value: 256
       objectReference: {fileID: 0}
     - target: {fileID: 2294705893260247268, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_Pivot.x
@@ -118,7 +128,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2294705893260247268, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 2294705893260247268, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -173,6 +183,7 @@ PrefabInstance:
       value: Text
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
 --- !u!224 &636677508501337742 stripped
 RectTransform:
@@ -184,6 +195,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 1661124610227095098}
     m_Modifications:
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
@@ -192,7 +204,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_fontSize
-      value: 49.4
+      value: 39.5
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: originalText
@@ -224,7 +236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_VerticalAlignment
-      value: 512
+      value: 1024
       objectReference: {fileID: 0}
     - target: {fileID: 2294705893260247268, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_Pivot.x
@@ -260,7 +272,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2294705893260247268, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 2294705893260247268, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -316,6 +328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 767293361998067829, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
 --- !u!224 &636677508804931620 stripped
 RectTransform:

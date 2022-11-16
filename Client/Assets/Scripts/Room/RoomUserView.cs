@@ -13,8 +13,8 @@ public class RoomUserView : MinUserView
     [SerializeField] private Image turnFillImage, turnFocusOutline;
 
     private static Color
-        TurnFillStartColor = new Color(1, .815f, 0),
-        TurnFillEndColor = new Color(1, 0, 0);
+        TurnFillStartColor = new(1, .815f, 0),
+        TurnFillEndColor = new(1, 0, 0);
 
     public void TurnFocus(bool getFocus)
     {
@@ -33,7 +33,7 @@ public class RoomUserView : MinUserView
             FullUserView.Show(Repository.I.PersonalFullInfo);
         else
         {
-            var oppoFullInfo = RoomController.I.UserInfos.FirstOrDefault(_ => _.Id == Id);
+            var oppoFullInfo = EnvBase.I.UserInfos.FirstOrDefault(_ => _.Id == Id);
             FullUserView.Show(oppoFullInfo);
         }
     }
@@ -44,7 +44,7 @@ public class RoomUserView : MinUserView
         {
             var view =
                 (await Addressables.InstantiateAsync($"roomUserView{place}",
-                    RoomController.I.Canvas)).GetComponent<RoomUserView>();
+                    EnvBase.I.Canvas)).GetComponent<RoomUserView>();
 
             view.Init(minUserInfo);
 
@@ -59,11 +59,11 @@ public class RoomUserView : MinUserView
 
             var oppoPlaceCounter = 1;
 
-            for (int i = 0; i < RoomController.I.UserInfos.Count; i++)
+            for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
             {
-                var placeIndex = i == RoomController.I.MyTurn ? 0 : oppoPlaceCounter++;
+                var placeIndex = i == EnvBase.I.MyTurn ? 0 : oppoPlaceCounter++;
 
-                RoomUserViews.Add(await Create(placeIndex, RoomController.I.UserInfos[i]));
+                RoomUserViews.Add(await Create(placeIndex, EnvBase.I.UserInfos[i]));
             }
         }
     }

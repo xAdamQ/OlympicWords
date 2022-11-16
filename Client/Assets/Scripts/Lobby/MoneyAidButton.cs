@@ -21,7 +21,7 @@ public class MoneyAidButton : MonoBehaviour
         if (info.MoneyAimTimePassed >= ConstData.MoneyAimTime)
         {
             GetComponent<Image>().color = new Color(0, 1, 0, 1f);
-            buttonText.text = $"${RoomController.MinBet} خد";
+            buttonText.text = $"${EnvBase.MinBet} خد";
         } //claimable
         else if (info.MoneyAimTimePassed != null)
         {
@@ -31,9 +31,9 @@ public class MoneyAidButton : MonoBehaviour
             var remainingTime2 = (int)(ConstData.MoneyAimTime - info.MoneyAimTimePassed).Value;
             // buttonText.text = $"{RoomController.MinBet} in {remainingTime:mm\\:ss}";
             buttonText.text =
-                $"{RoomController.MinBet} in {remainingTime2 / 60:00}:{remainingTime2 % 60:00}";
+                $"{EnvBase.MinBet} in {remainingTime2 / 60:00}:{remainingTime2 % 60:00}";
         } //pending
-        else if (info.Money >= RoomController.MinBet || info.MoneyAidRequested >= 4)
+        else if (info.Money >= EnvBase.MinBet || info.MoneyAidRequested >= 4)
         {
             GetComponent<Image>().color = new Color(0, 0, 0, .5f);
             buttonText.text = "خلاص";
@@ -41,21 +41,26 @@ public class MoneyAidButton : MonoBehaviour
         else
         {
             GetComponent<Image>().color = new Color(1, 1, 0, 1f);
-            buttonText.text = $"${RoomController.MinBet} اطلب";
+            buttonText.text = $"${EnvBase.MinBet} اطلب";
         } //ask
     }
 
     //visual state is updated, this has nothing to do with visuals
     public void OnClick()
     {
+        HandleAidClick().Forget();
+    }
+
+    private async UniTaskVoid HandleAidClick()
+    {
         var info = Repository.I.PersonalFullInfo;
 
         if (info.MoneyAimTimePassed >= ConstData.MoneyAimTime)
         {
-            NetManager.I.SendAsync("ClaimMoneyAid");
+            await MasterHub.I.ClaimMoneyAid();
 
             info.MoneyAimTimePassed = null;
-            info.Money += RoomController.MinBet;
+            info.Money += EnvBase.MinBet;
 
             UpdateState();
         } //claimable
@@ -67,13 +72,13 @@ public class MoneyAidButton : MonoBehaviour
         {
             Toast.I.Show(Translatable.GetText("daily_limit"));
         } //max requests reached
-        else if (info.Money >= RoomController.MinBet) //from here MoneyAimTimeLeft = null for sure
+        else if (info.Money >= EnvBase.MinBet) //from here MoneyAimTimeLeft = null for sure
         {
             Toast.I.Show(Translatable.GetText("already_money"));
         } //can't ask, a lot of money
         else
         {
-            NetManager.I.SendAsync("AskForMoneyAid");
+            await MasterHub.I.ClaimMoneyAid();
 
             info.MoneyAimTimePassed = 0;
             info.DecreaseMoneyAimTimeLeft().Forget();

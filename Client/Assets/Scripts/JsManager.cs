@@ -39,17 +39,23 @@ public class JsManager : MonoBehaviour
     [DllImport("__Internal")]
     public static extern string BackendAddress();
 
-    [System.Obsolete]
-    void Start()
+    [DllImport("__Internal")]
+    public static extern string GetFbResponse();
+
+    [DllImport("__Internal")]
+    public static extern void ShowFbButton();
+
+
+    private void Start()
     {
         Hello();
 
         HelloString("This is a string.");
 
-        float[] myArray = new float[10];
+        var myArray = new float[10];
         PrintFloatArray(myArray, myArray.Length);
 
-        int result = AddNumbers(5, 7);
+        var result = AddNumbers(5, 7);
         Debug.Log(result);
 
         Debug.Log(StringReturnValueFunction());
@@ -58,5 +64,4 @@ public class JsManager : MonoBehaviour
         BindWebGLTexture(texture.GetNativeTextureID());
     }
 #endif
-
 }

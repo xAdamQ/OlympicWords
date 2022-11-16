@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using DG.Tweening.Core.Easing;
 using UnityEngine;
 
 
@@ -155,12 +151,45 @@ public class Edge
         Type = type;
     }
 
-    public int Type;
+    public int Type, Direction, Group;
     public int Start, End;
+
+    public int RealFinish => Direction switch
+    {
+        0 => -1,
+        1 => End,
+        -1 => Start,
+        _ => throw new ArgumentOutOfRangeException()
+    };
+
+    public int RealStart => Direction switch
+    {
+        0 => -1,
+        1 => Start,
+        -1 => End,
+        _ => throw new ArgumentOutOfRangeException()
+    };
+
+    public bool CanMoveOut(int node)
+    {
+        var realStart = RealStart;
+        return realStart == -1 || realStart == node;
+    }
+
+    public bool CanMoveIn(int node)
+    {
+        var realFinish = RealFinish;
+        return realFinish == -1 || realFinish == node;
+    }
 
     public override string ToString()
     {
         return $"edge>> start: {Start} end: {End} type: {Type}";
+    }
+
+    public int OtherEnd(int node)
+    {
+        return Start == node ? End : Start;
     }
 }
 
@@ -184,7 +213,7 @@ public class Node
         return HashCode.Combine(Position, Type);
     }
 
-    public Vector3 Position;
+    public Vector3 Position, Normal;
 
     public int Type;
 
@@ -218,8 +247,3 @@ because references are broken when I make undo, but this won't solve the update 
 no It will solve the issue because their will be always a single node => Nodes[i]
 
  */
-
-public struct tstStruct
-{
-    public int prop;
-}

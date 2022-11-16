@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e6ca90faad4746a4e86da52a2495cf, type: 3}
+  m_Name: TestDirs2
+  m_EditorClassIdentifier: 
+  Nodes:
+  - Position: {x: 153.47073, y: 0, z: -70.74559}
+    Type: 0
+  - Position: {x: 167.13165, y: 0, z: -84.49966}
+    Type: 0
+  - Position: {x: 159.34084, y: 0, z: -86.8833}
+    Type: 0
+  - Position: {x: 153.69672, y: 0, z: -86.74813}
+    Type: 0
+  - Position: {x: 164.7672, y: 0, z: -72.065865}
+    Type: 0
+  - Position: {x: 161.87064, y: 0, z: -80.72141}
+    Type: 1
+  - Position: {x: 148.42334, y: 0, z: -84.07855}
+    Type: 0
+  - Position: {x: 148.46506, y: 0, z: -78.88485}
+    Type: 0
+  - Position: {x: 150.1281, y: 0, z: -74.95086}
+    Type: 0
+  Edges:
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 0
+    End: 2
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 2
+    End: 1
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 3
+    End: 2
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 4
+    End: 0
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 4
+    End: 1
+  - Type: 0
+    Direction: 0
+    Group: 1
+    Start: 5
+    End: 0
+  - Type: 0
+    Direction: 0
+    Group: 1
+    Start: 5
+    End: 4
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 5
+    End: 2
+  - Type: 0
+    Direction: 0
+    Group: 2
+    Start: 5
+    End: 1
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 6
+    End: 3
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 7
+    End: 8
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 0
+    End: 8
+  - Type: 1
+    Direction: 1
+    Group: 0
+    Start: 7
+    End: 6

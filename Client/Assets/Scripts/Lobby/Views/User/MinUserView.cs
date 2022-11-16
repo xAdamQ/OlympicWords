@@ -7,14 +7,24 @@ using UnityEngine.UI;
 
 public class MinUserView : MonoBehaviour
 {
-    [SerializeField] private TMP_Text
+    [SerializeField] protected TMP_Text
         displayName,
         level,
         title;
 
-    [SerializeField] private Image picture;
+    [SerializeField] protected Image picture;
 
     public MinUserInfo MinUserInfo { get; set; }
+
+    public static async UniTask<MinUserView> Create(MinUserInfo info, Transform parent)
+    {
+        var muv = (await Addressables.InstantiateAsync("minUserView", parent))
+            .GetComponent<MinUserView>();
+
+        muv.Init(info);
+
+        return muv;
+    }
 
     public void Init(MinUserInfo minUserInfo)
     {
@@ -26,19 +36,19 @@ public class MinUserView : MonoBehaviour
         Title = PlayerBase.Titles[minUserInfo.SelectedTitleId];
 
         if (minUserInfo.IsPictureLoaded)
-            SetPicture(minUserInfo.Picture);
+            SetPicture(minUserInfo.PictureSprite);
         else
-            minUserInfo.PictureLoaded += pic => SetPicture(pic);
+        {
+            minUserInfo.PictureLoaded += _ => SetPicture(minUserInfo.PictureSprite);
+            StartCoroutine(minUserInfo.DownloadPicture());
+        }
     }
 
-    private void SetPicture(Texture2D texture2D)
+    private void SetPicture(Sprite sprite)
     {
-        if (destroyed) return;
+        if (destroyed || sprite is null) return;
 
-        if (texture2D != null)
-            picture.sprite =
-                Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height),
-                    new Vector2(.5f, .5f));
+        picture.sprite = sprite;
     }
 
     private bool destroyed;
@@ -49,12 +59,16 @@ public class MinUserView : MonoBehaviour
     }
 
     /// <summary>
-    /// personal and room view overrides this 
+    /// personal, room and final overrides this 
     /// </summary>
     public virtual void ShowFullInfo()
     {
-        var operation = NetManager.I.InvokeAsync<FullUserInfo>("GetUserData", Id);
-        BlockingOperationManager.I.Forget(operation, FullUserView.Show);
+        UniTask.Create(async () =>
+        {
+            var fullInfo = await BlockingOperationManager.I.Start(MasterHub.I.GetUserData(Id));
+            fullInfo.PictureSprite = MinUserInfo.PictureSprite;
+            FullUserView.Show(fullInfo);
+        });
     }
 
     protected string Id;
@@ -84,15 +98,5 @@ public class MinUserView : MonoBehaviour
             if (title)
                 title.text = value;
         }
-    }
-
-    public static async UniTask<MinUserView> Create(MinUserInfo info, Transform parent)
-    {
-        var muv = (await Addressables.InstantiateAsync("minUserView", parent))
-            .GetComponent<MinUserView>();
-
-        muv.Init(info);
-
-        return muv;
     }
 }

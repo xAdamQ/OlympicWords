@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using OlympicWords.Data;
 
 namespace OlympicWords.Services
 {
@@ -10,16 +11,21 @@ namespace OlympicWords.Services
         /// </summary>
         public string Id { get; set; }
 
-        [ForeignKey("User")] public string MainId { get; set; }
+        public string UserId { get; set; }
 
         public int Type { get; set; }
+
+        public virtual User User { get; set; }
+        //I don't have 2FA, no roles, no intention to add them
+        //much better to focus on real features
+        //and to make sure the current flow is safe
+        //anyway the game even could be played without authentication  
     }
 
     public enum ExternalIdType
     {
         Demo, //leave it even when disabled in production
         Facebook,
-        Fbig,
         Huawei,
     }
 }

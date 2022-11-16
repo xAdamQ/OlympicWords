@@ -1,7 +1,6 @@
-using Cysharp.Threading.Tasks;
 using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.Scripting;
 
 // [Preserve]
@@ -10,11 +9,15 @@ public class MinUserInfo
     [Preserve]
     public MinUserInfo()
     {
-        UniTask.Create(async () =>
-        {
-            await UniTask.DelayFrame(1); //to get data from object inititalizer >> {abdc = value}
-            DownloadPicture().Forget();
-        });
+        PictureLoaded += OnPictureLoaded;
+    }
+
+    private void OnPictureLoaded(Texture2D texture2D)
+    {
+        IsPictureLoaded = true;
+        if (texture2D != null)
+            PictureSprite = Sprite.Create(texture2D,
+                new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
     }
 
     public int CalcLevel()
@@ -22,12 +25,13 @@ public class MinUserInfo
         return GetLevelFromXp(Xp);
     }
 
-    private const int MaxLevel = 999;
-    private const float Expo = .55f, Divi = 10;
+    private const int MAX_LEVEL = 999;
+    private const float EXPO = .55f, DIVIDER = 10;
+
     private static int GetLevelFromXp(int xp)
     {
-        var level = (int)(Mathf.Pow(xp, Expo) / Divi);
-        return level < MaxLevel ? level : MaxLevel;
+        var level = (int)(Mathf.Pow(xp, EXPO) / DIVIDER);
+        return level < MAX_LEVEL ? level : MAX_LEVEL;
     }
 
     //transferred model
@@ -36,55 +40,28 @@ public class MinUserInfo
     public int SelectedTitleId { get; set; }
     private int selectedTitleId;
     public string Name { get; set; }
-    public string PictureUrl { get; set; }
 
-    public Texture2D Picture { get; set; }
+    public Sprite PictureSprite { get; set; }
 
     public event Action<Texture2D> PictureLoaded;
     public bool IsPictureLoaded;
 
-    private async UniTaskVoid DownloadPicture()
+    private string PictureAddress { get; } =
+        Extensions.UriCombine(NetManager.I.GetServerAddress(), "Picture", "GetUserPicture");
+
+    public IEnumerator DownloadPicture()
     {
-        if (string.IsNullOrEmpty(PictureUrl)) return;
+        if (string.IsNullOrEmpty(PictureAddress)) yield break;
 
-        Picture = await GetRemoteTexture(PictureUrl);
-        PictureLoaded?.Invoke(Picture);
-        IsPictureLoaded = true;
-    }
+        var query = NetManager.I.GetAuthQuery();
+        query["userId"] = Id;
 
-    public static async UniTask<Texture2D> GetRemoteTexture(string url)
-    {
-        using (var www = UnityWebRequestTexture.GetTexture(url))
-        {
-            // begin request:
-            var asyncOp = www.SendWebRequest();
-
-            // await until it's done: 
-            try
+        var uriBuilder = new UriBuilder
+            (PictureAddress)
             {
-                await asyncOp;
-            }
-            catch (Exception)
-            {
-                Debug.Log($"{www.error}, URL:{www.url}");
-            }
+                Query = query.ToString(),
+            };
 
-            // read results:
-            if (www.result == UnityWebRequest.Result.ConnectionError ||
-                www.result == UnityWebRequest.Result.ProtocolError)
-            {
-                // log error:
-#if DEBUG
-                Debug.Log($"{www.error}, URL:{www.url}");
-#endif
-
-                // nothing to return on error:
-                return null;
-            }
-
-            // return valid results:
-            Debug.Log($"img from url {url} downloaded");
-            return DownloadHandlerTexture.GetContent(www);
-        }
+        yield return Extensions.GetRemoteTexture(uriBuilder.Uri.ToString(), PictureLoaded);
     }
 }

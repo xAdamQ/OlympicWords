@@ -8,7 +8,7 @@ using OlympicWords.Services;
 
 #nullable disable
 
-namespace OlymbicWords.Migrations
+namespace OlympicWords.Migrations
 {
     [DbContext(typeof(MasterContext))]
     partial class MasterContextModelSnapshot : ModelSnapshot
@@ -17,30 +17,12 @@ namespace OlymbicWords.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.5")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("OlympicWords.Services.ExternalId", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("MainId")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExternalIds");
-                });
-
-            modelBuilder.Entity("OlympicWords.Services.User", b =>
+            modelBuilder.Entity("OlympicWords.Data.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,8 +32,15 @@ namespace OlymbicWords.Migrations
                     b.Property<int>("EatenCardsCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
                     b.Property<bool>("EnableOpenMatches")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LastMoneyAimRequestTime")
                         .HasColumnType("datetime2");
@@ -79,8 +68,8 @@ namespace OlymbicWords.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PictureUrl")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<int>("PlayedRoomsCount")
                         .HasColumnType("int");
@@ -119,6 +108,7 @@ namespace OlymbicWords.Migrations
                             Id = "0",
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Level = 13,
                             MaxWinStreak = 0,
                             Money = 22250,
@@ -142,6 +132,7 @@ namespace OlymbicWords.Migrations
                             Id = "999",
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Level = 7,
                             MaxWinStreak = 0,
                             Money = 1000,
@@ -165,6 +156,7 @@ namespace OlymbicWords.Migrations
                             Id = "9999",
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Level = 8,
                             MaxWinStreak = 0,
                             Money = 1100,
@@ -188,6 +180,7 @@ namespace OlymbicWords.Migrations
                             Id = "99999",
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Level = 8,
                             MaxWinStreak = 0,
                             Money = 0,
@@ -211,6 +204,7 @@ namespace OlymbicWords.Migrations
                             Id = "1",
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Level = 43,
                             MaxWinStreak = 0,
                             Money = 89000,
@@ -234,6 +228,7 @@ namespace OlymbicWords.Migrations
                             Id = "2",
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Level = 139,
                             MaxWinStreak = 0,
                             Money = 8500,
@@ -257,6 +252,7 @@ namespace OlymbicWords.Migrations
                             Id = "3",
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
+                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Level = 4,
                             MaxWinStreak = 0,
                             Money = 3,
@@ -277,6 +273,43 @@ namespace OlymbicWords.Migrations
                         });
                 });
 
+            modelBuilder.Entity("OlympicWords.Services.ExternalId", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExternalIds");
+                });
+
+            modelBuilder.Entity("OlympicWords.Services.UserPicture", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("AvatarId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Picture")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserPictures");
+                });
+
             modelBuilder.Entity("OlympicWords.Services.UserRelation", b =>
                 {
                     b.Property<string>("FollowerId")
@@ -289,7 +322,9 @@ namespace OlymbicWords.Migrations
 
                     b.HasKey("FollowerId", "FollowingId");
 
-                    b.ToTable("UserRelations");
+                    b.HasIndex("FollowingId");
+
+                    b.ToTable("UserRelation");
 
                     b.HasData(
                         new
@@ -304,9 +339,60 @@ namespace OlymbicWords.Migrations
                         },
                         new
                         {
-                            FollowerId = "9999",
-                            FollowingId = "0"
+                            FollowerId = "0",
+                            FollowingId = "99999"
                         });
+                });
+
+            modelBuilder.Entity("OlympicWords.Services.ExternalId", b =>
+                {
+                    b.HasOne("OlympicWords.Data.User", "User")
+                        .WithMany("ExternalIds")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OlympicWords.Services.UserPicture", b =>
+                {
+                    b.HasOne("OlympicWords.Data.User", "User")
+                        .WithOne("Picture")
+                        .HasForeignKey("OlympicWords.Services.UserPicture", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("OlympicWords.Services.UserRelation", b =>
+                {
+                    b.HasOne("OlympicWords.Data.User", "Follower")
+                        .WithMany("FollowingRelations")
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OlympicWords.Data.User", "Following")
+                        .WithMany("FollowerRelations")
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("Follower");
+
+                    b.Navigation("Following");
+                });
+
+            modelBuilder.Entity("OlympicWords.Data.User", b =>
+                {
+                    b.Navigation("ExternalIds");
+
+                    b.Navigation("FollowerRelations");
+
+                    b.Navigation("FollowingRelations");
+
+                    b.Navigation("Picture");
                 });
 #pragma warning restore 612, 618
         }

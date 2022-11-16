@@ -9,18 +9,16 @@ namespace OlympicWords.Services
 {
     public interface IGameplay
     {
-        Task UpStreamChar(IAsyncEnumerable<char> stream);
+        Task<string> UpStreamChar(IAsyncEnumerable<char> stream);
 
         /// <summary>
         /// after ready, change domain, initial distribute, start 0 player turn
         /// </summary>
         Task StartRoom();
 
-        IAsyncEnumerable<List<char>[]> DownStreamCharBuffer(
-            [EnumeratorCancellation] CancellationToken cancellationToken);
+        IAsyncEnumerable<string[]> DownStreamCharBuffer(CancellationToken cancellationToken);
 
-        Task ProcessDigit(char chr, RoomActor roomActor);
-        Task Surrender();
+        Task ProcessChar(char chr);
     }
 
     /// <summary>
@@ -33,7 +31,6 @@ namespace OlympicWords.Services
         private readonly IFinalizer finalizer;
         private readonly IServerLoop serverLoop;
         private readonly IScopeRepo scopeRepo;
-
 
         public Gameplay(IHubContext<MasterHub> masterHub, ILogger<Gameplay> logger,
             IFinalizer finalizer, IServerLoop serverLoop, IScopeRepo scopeRepo)
@@ -52,24 +49,23 @@ namespace OlympicWords.Services
             if (room.Started)
                 throw new BadUserInputException("the start room is called more than once");
 
-            room.Started = true;
-
-            room.SetUsersDomains(typeof(UserDomain.App.Room.Active));
-
-            foreach (var roomBot in room.Bots)
-            {
-                serverLoop.BotLoop(roomBot, room.cancellationTokenSource.Token);
-            }
+            room.SetUsersDomain<UserDomain.App.Room.ReadyGo>();
+            logger.LogInformation("all users are 321");
 
             foreach (var roomUser in room.RoomUsers)
                 await masterHub.SendOrderedAsync(roomUser.ActiveUser, "StartRoomRpc");
 
-            room.RoomActors.ForEach(ru => ru.StartTime = DateTime.Now);
-        } //no test
+#pragma warning disable CS4014
+            Task.Delay(TimeSpan.FromSeconds(1.5f))
+                .ContinueWith(_ => serverLoop.StartGame(room));
+#pragma warning restore CS4014
+
+            logger.LogInformation("awaited successfully");
+        }
 
         //todo limit the sent chars count
         //todo check make sure they are only basic chars, no special ones, you can insert unsupported instead for every char 
-        public async Task UpStreamChar(IAsyncEnumerable<char> stream)
+        public async Task<string> UpStreamChar(IAsyncEnumerable<char> stream)
         {
             var roomUser = scopeRepo.RoomUser;
 
@@ -77,98 +73,116 @@ namespace OlympicWords.Services
             {
                 await foreach (var chr in stream.WithCancellation(roomUser.Cancellation.Token))
                 {
-                    if (roomUser.CharBuffer.Count > RoomActor.MAX_BUFFER)
-                        throw new BadUserBehaviourException(
-                            "you sent too many characters, you're sent out of the room");
+                    // logger.LogInformation("received {Chr}", chr);
 
-                    await ProcessDigit(chr, roomUser);
-                    //processing is increasing the pointer at each player and finalize at the last digit
+                    await ProcessChar(chr);
                 }
             }
             catch (OperationCanceledException e)
             {
-                logger.LogInformation($"user: {roomUser.Id} has cancelled the stream");
+                logger.LogInformation("user: {RoomUserId} has cancelled the stream", roomUser.Id);
             }
+
+            return "done";
         }
 
-        public async Task ProcessDigit(char chr, RoomActor roomActor)
+        public async Task ProcessChar(char chr)
         {
-            logger.LogInformation("processing: " + chr);
-
+            var roomActor = scopeRepo.RoomActor;
             var room = roomActor.Room;
 
-            roomActor.CharBuffer.Add(chr);
+            if (roomActor.TextPointer == room.Text.Length) return;
+            //in case the last input was string not char, and the finalization was already done
 
-            if (room.Text[roomActor.StreamPointer] == chr)
+            roomActor.CharBuffer[roomActor.BufferPointer] = chr;
+            roomActor.BufferPointer++;
+
+            if (roomActor.BufferPointer > RoomActor.MAX_BUFFER - 1)
             {
-                roomActor.StreamPointer++;
+                await finalizer.Surrender();
+                logger.LogInformation(
+                    "user was forced to surrender because of exceeding the possible amount of inputs");
+                return;
             }
 
-            if (roomActor.StreamPointer == room.Text.Length)
+            //todo check from linux and make if the new line code the same
+            if (chr == '\r')
             {
+                await roomActor.JetJump();
+            }
+            else
+            {
+                // logger.LogInformation(
+                //     "received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}, text size {TextSize}",
+                //     chr, room.Text[roomActor.TextPointer], roomActor.TextPointer, room.Text.Length);
+
+                if (room.Text[roomActor.TextPointer] == chr)
+                {
+                    if (room.Text[roomActor.TextPointer] == ' ')
+                        roomActor.WordPointer++;
+
+                    roomActor.TextPointer++;
+                }
+            }
+
+            if (roomActor.TextPointer == room.Text.Length)
                 await finalizer.FinalizeUser();
-            }
+
+            if (roomActor.FillersWords is { Count: > 0 })
+                if (roomActor.WordPointer == roomActor.FillersWords[0])
+                {
+                    var wordLength = room.Words[roomActor.WordPointer].Length + 1;
+                    await roomActor.Jump(wordLength);
+                    roomActor.FillersWords.RemoveAt(0);
+                }
         }
 
-
-        //todo change list here to something more lightweight
-        public async IAsyncEnumerable<List<char>[]> DownStreamCharBuffer(
-            [EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<string[]> DownStreamCharBuffer
+            ([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            //other cool thing could be sending the current char index for each, why? because this is stateless
-            //putting anti-cheating in mind: if the client know his chars, he can send them all at once
-            //a better option would be: not sending all: like? send one get one(word)
-            //get five by five? client buffer! but the problem with it is?
-            //overall is it even possible to get around this? I don't think so because it is easy to 
-            //know the current letter buffer and send, the only blocking thing would the network
-            //however sending the no letter is a little dumb, because it won't make me able to make statistics 
-            //and easier to cheat the system
-            //the anti-cheat will work on the whole paragraph because of the network delay make shoot many chars at once
-            //so the only thing I can make about the hacking is limit wpm to 250 or 300
             var roomUser = scopeRepo.RoomUser;
             var room = scopeRepo.Room;
 
-            while (!roomUser.Cancellation.IsCancellationRequested) //send as long as the channel is opened
-                //this token is set by the server
+            //send as long as the channel is opened
+            //this token is set by the server, second token is set by the client
+            while (!roomUser.Cancellation.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
             {
                 // Check the cancellation token regularly so that the server will stop
                 // producing items if the client disconnects.
-                if (cancellationToken.IsCancellationRequested)
-                    //this token is set by the client
-                    break;
 
-                var updateBuffer = new List<char>[room.Capacity];
+                var updateBuffer = new string[room.Capacity];
 
                 // attempt to send the real digits including the failed ones
                 for (var u = 0; u < room.Capacity; u++)
                 {
-                    var pointer = roomUser.StreamSyncPointers[u];
-                    var userBuffer = room.RoomActors[u].CharBuffer;
+                    var otherActor = room.RoomActors[u];
 
-                    var count = userBuffer.Count - pointer;
+                    if (roomUser.BufferSyncPointers[u] == otherActor.BufferPointer)
+                    {
+                        updateBuffer[u] = string.Empty;
+                        continue;
+                    }
 
-                    updateBuffer[u] = userBuffer.GetRange(pointer, count);
+                    updateBuffer[u] = new string
+                    (otherActor.CharBuffer[
+                        roomUser.BufferSyncPointers[u]..otherActor.BufferPointer]);
                     //can return empty list
 
-                    roomUser.StreamSyncPointers[u] += updateBuffer[u].Count;
+                    roomUser.BufferSyncPointers[u] = otherActor.BufferPointer;
                 }
 
-                if (updateBuffer.All(b => b.Count == 0)) continue;
+                if (!updateBuffer.All(string.IsNullOrEmpty))
+                {
+                    // logger.LogInformation("received digits {SerializeObject}",
+                    //     JsonConvert.SerializeObject(updateBuffer, Formatting.None));
 
-                logger.LogInformation($"received digits {JsonConvert.SerializeObject(updateBuffer, Formatting.None)}");
-
-                yield return updateBuffer;
+                    yield return updateBuffer;
+                }
 
                 // Use the cancellationToken in other APIs that accept cancellation
                 // tokens so the cancellation can flow down to them.
                 await Task.Delay(100, cancellationToken);
             }
-        }
-
-        public async Task Surrender()
-        {
-            scopeRepo.RemoveRoomUser();
-            await finalizer.SurrenderFinalization();
         }
     }
 }

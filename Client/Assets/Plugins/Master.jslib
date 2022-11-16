@@ -56,9 +56,25 @@ mergeInto(LibraryManager.library, {
         return buffer;
     },
 
-    StartFbigGame: function () { FBInstant.startGameAsync().then(onGameStart) },
+    StartFbigGame: function () {
+        FBInstant.startGameAsync().then(onGameStart)
+    },
 
-    IsFigSdkInit: function () { return fbigSdkInitialized },
+    IsFigSdkInit: function () {
+        return fbigSdkInitialized
+    },
 
-    BackendAddress: function () { return backendAddress },
+    BackendAddress: function () {
+        return backendAddress
+    },
+
+    GetFbResponse: function () {
+        return fbResponse;
+    },
+
+    ShowFbButton: function () {
+        showFbButton();
+    },
+
+
 });

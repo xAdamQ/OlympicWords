@@ -3,15 +3,15 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
+public enum ChallengeResponseResult
+{
+    Offline, //player is offline whatever the response
+    Canceled, //player is not interested anymore
+    Success, //successful whatever the response
+}
+
 public class ChallengeResponsePanel : MonoBehaviour
 {
-    public enum ChallengeResponseResult
-    {
-        Offline, //player is offline whatever the response
-        Canceled, //player is not interested anymore
-        Success, //successful whatever the response
-    }
-
     [SerializeField] private MinUserView minUserView;
 
     public static void Show(MinUserInfo senderInfo)
@@ -29,8 +29,8 @@ public class ChallengeResponsePanel : MonoBehaviour
     {
         UniTask.Create(async () =>
         {
-            var res = await NetManager.I.InvokeAsync<ChallengeResponseResult>(
-                "RespondChallengeRequest", minUserView.MinUserInfo.Id, response == 0);
+            var res = await MasterHub.I
+                .RespondChallengeRequest(minUserView.MinUserInfo.Id, response == 0);
 
             Toast.I.Show(res.ToString());
 

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e6ca90faad4746a4e86da52a2495cf, type: 3}
+  m_Name: planets
+  m_EditorClassIdentifier: 
+  Nodes:
+  - Position: {x: 43.64708, y: 6.56707, z: 55.448498}
+    Type: 0
+  - Position: {x: 42.10014, y: 6.978451, z: 54.564613}
+    Type: 0
+  - Position: {x: 39.094475, y: 5.5913086, z: 53.866318}
+    Type: 0
+  - Position: {x: 41.421898, y: 4.469848, z: 56.834183}
+    Type: 0
+  Edges:
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 0
+    End: 1
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 1
+    End: 2
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 2
+    End: 3

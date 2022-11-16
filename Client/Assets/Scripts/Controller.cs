@@ -1,19 +1,9 @@
-using Basra.Common;
-using BestHTTP;
-using BestHTTP.SignalRCore;
-using BestHTTP.SignalRCore.Encoders;
-using BestHTTP.SignalRCore.Messages;
-using Cysharp.Threading.Tasks;
 using System;
+using BestHTTP;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Web;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 #if !UNITY_WEBGL
 using Newtonsoft.Json;
 #endif
@@ -22,24 +12,34 @@ using Newtonsoft.Json;
 [Rpc]
 public class Controller : MonoModule<Controller>
 {
-    private void Update()
+    [Serializable]
+    public class ScopeReferences
     {
-        Keyboard.current.onTextInput += c => { Debug.Log(c); };
+        public MonoModule<LevelUpPanel> LevelUpView;
+        public GameObject BlockingPanelPrefab;
+        
+        public void SetSources()
+        {
+            LevelUpPanel.SetSource(LevelUpView.gameObject, I.canvas);
+        }
     }
 
-    public Transform canvas { get; set; }
+    public ScopeReferences References;
+
+    public Transform canvas;
 
     [SerializeField] private int targetFps;
-    
+
     protected override void Awake()
     {
+        if (I) Destroy(I.gameObject);
+        DontDestroyOnLoad(this);
+
         base.Awake();
 
 #if UNITY_EDITOR
         Application.targetFrameRate = targetFps;
 #endif
-
-        DontDestroyOnLoad(this);
 
         new BlockingOperationManager();
 
@@ -51,48 +51,41 @@ public class Controller : MonoModule<Controller>
         Toast.Create().Forget();
 
         NetManager.I.AddRpcContainer(this);
+
+        References.SetSources();
+
+        NetManager.I.Connected += OnConnected;
     }
 
-    [Rpc]
-    public void InitGame(PersonalFullUserInfo myFullUserInfo)
+    private void OnConnected()
     {
-        Debug.Log("InitGame is being called");
+        UniTask.Create(async () =>
+        {
+            var myFullUserInfo = await MasterHub.I.GetPersonalUserData();
+            //I ask for the data manually rather than let the server send it after connection, because sometimes
+            //the server init with this data before I even get connected
 
-        new Repository(myFullUserInfo, null, null);
+            Debug.Log("personal info fetched");
 
-        Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
+            new Repository(myFullUserInfo, null, null);
 
-        SceneManager.LoadScene("Lobby");
+            Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
+
+            SceneManager.LoadScene("Lobby");
+        });
     }
 
-    public string InitGameName => nameof(InitGame);
-
-    private Dictionary<string, object> TransitionData = new();
+    private readonly Dictionary<string, object> transitionData = new();
 
     public void AddTransitionData(string name, object obj)
     {
-        TransitionData.Add(name, obj);
+        transitionData.Add(name, obj);
     }
 
     public object TakeTransitionData(string name)
     {
-        var data = TransitionData[name];
-        TransitionData.Remove(name);
+        var data = transitionData[name];
+        transitionData.Remove(name);
         return data;
     }
-
-
-    #region out rpcs
-
-    // public void ToggleFollow(string targetId)
-    // {
-    //     SendAsync("ToggleFollow", targetId).Forget();
-    // }
-    //
-    // public async UniTask<bool> IsFollowing(string targetId)
-    // {
-    //     return await InvokeAsync<bool>("IsFollowing", targetId);
-    // }
-
-    #endregion
 }

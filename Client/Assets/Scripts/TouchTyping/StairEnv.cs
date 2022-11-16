@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class StairEnv : EnvBase
@@ -42,20 +43,26 @@ public class StairEnv : EnvBase
         throw new NotImplementedException();
     }
 
+    public override int WordsCount => throw new NotImplementedException();
+
     protected override void Awake()
     {
         base.Awake();
         I = this;
     }
 
-    protected override void Start()
+    /// <summary>
+    /// when envebase calls his method, it will call this, because this is right version (not tested)
+    /// </summary>
+    public override void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text,
+        List<(int index, int player)> fillerWords, List<int> chosenPowerUps)
     {
-        base.Start();
-        
-        for (var i = 0; i < capacity; i++)
+        base.PrepareRequestedRoomRpc(userInfos, myTurn, text, fillerWords, chosenPowerUps);
+
+        for (var i = 0; i < Capacity; i++)
             stairs.Add(new List<Stair>());
 
-        GenerateStairs(words);
+        GenerateStairs(Words);
 
         if (TestController.I.UseTest)
         {
@@ -110,7 +117,7 @@ public class StairEnv : EnvBase
 
     private float CalcDiameter(int stairSize)
     {
-        var angle = 2 * Mathf.PI / capacity; //we divide 360 degree over players count
+        var angle = 2 * Mathf.PI / Capacity; //we divide 360 degree over players count
         var totalStairSize = stairSize + spacing.z;
 
         return totalStairSize * .5f / Mathf.Tan(angle * .5f);
@@ -144,7 +151,7 @@ public class StairEnv : EnvBase
         for (var i = 0; i < words.Count; i++)
         {
             //pozPointer.x += words[i].Length / 2f + spacing.x / 2f;
-            for (var j = 0; j < capacity; j++)
+            for (var j = 0; j < Capacity; j++)
             {
                 var stair = Instantiate(stairPrefab).GetComponent<Stair>();
 
@@ -178,7 +185,9 @@ public class StairEnv : EnvBase
                 stairs[j].Add(stair);
             }
 
-            pozPointer.x += words[i].Length / 1f + spacing.x / 1f; //stair.GetComponent<Renderer>().bounds.max.x;
+            pozPointer.x +=
+                words[i].Length / 1f +
+                spacing.x / 1f; //stair.GetComponent<Renderer>().bounds.max.x;
             //I made the size always 1, changes the models accordingly 
             pozPointer.y += spacing.y;
             pozPointer.z = 0;
@@ -190,16 +199,18 @@ public class StairEnv : EnvBase
     private void GenerateStairsLevel(float baseDiameter, int degree, string word)
     {
         var stairSize = word.Length;
-        var portionAngle = 2 * Mathf.PI / capacity; //we divide 360 degree over players count
+        var portionAngle = 2 * Mathf.PI / Capacity; //we divide 360 degree over players count
         var absoluteAngle = prevDegreeEndAngle;
         var fullStairSize = stairSize + spacing.z;
-        for (var i = 0; i < capacity; i++)
+        for (var i = 0; i < Capacity; i++)
         {
             var stair = Instantiate(stairPrefab).GetComponent<Stair>();
 
             var fullDiameter = baseDiameter + degree * spacing.x;
 
-            var rotationAngle = i == 0 && useConnected ? +Mathf.Atan(fullStairSize / 2f / fullDiameter) : portionAngle;
+            var rotationAngle = i == 0 && useConnected
+                ? +Mathf.Atan(fullStairSize / 2f / fullDiameter)
+                : portionAngle;
             absoluteAngle += rotationAngle;
 
             if (i == 0 && useConnected)

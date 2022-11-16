@@ -37,7 +37,7 @@ public class Translatable : MonoBehaviour
     //first lang is english, matches index 1 in enum
 
     private static Dictionary<string, string[]> Dictionary =
-        new Dictionary<string, string[]>
+        new()
         {
             { "player_rejected", new[] { "تم رفض اللعب من قبل اللاعب", "player rejected" } },
             { "creating_room", new[] { "يتم تجهيز الغرفه الان", "creating room" } },
@@ -58,7 +58,8 @@ public class Translatable : MonoBehaviour
     }
 
     //we get current lang from presisitant storage like instantGames 1mb
-    private static Language currentLanguage = Language.Arabic;
+    private static Language currentLanguage = Language.English;
+
     public static Language CurrentLanguage
     {
         get { return currentLanguage; }

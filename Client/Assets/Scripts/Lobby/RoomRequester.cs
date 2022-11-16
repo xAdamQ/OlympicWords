@@ -4,6 +4,8 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 
 public class RoomRequester : MonoBehaviour
 {
@@ -12,7 +14,7 @@ public class RoomRequester : MonoBehaviour
 
     private void Awake()
     {
-        var bet = RoomController.Bets[transform.GetSiblingIndex()];
+        var bet = EnvBase.Bets[transform.GetSiblingIndex()];
 
         betText.text = bet.ToString();
         ticketText.text = (bet / 11f).ToString();
@@ -20,20 +22,40 @@ public class RoomRequester : MonoBehaviour
 
     public async void RequestRandomRoom(int betChoice)
     {
-        if (Repository.I.PersonalFullInfo.Money < RoomController.Bets[betChoice])
+        if (betChoice > 0)
+        {
+            var handle = Addressables.DownloadDependenciesAsync("Env" + betChoice);
+            await BlockingOperationManager.I.Start(handle, "the level is downloading");
+        }
+
+        if (Repository.I.PersonalFullInfo.Money < EnvBase.Bets[betChoice])
         {
             Toast.I.Show(Translatable.GetText("no_money"));
             return;
         }
 
-        var operation = NetManager.I.SendAsync("RequestRandomRoom", betChoice, capacityChoiceButton.CurrentChoice);
+        var operation = MasterHub.I.RequestRandomRoom
+            (betChoice, capacityChoiceButton.CurrentChoice);
         await BlockingOperationManager.I.Start(operation);
 
         LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
 
-        BlockingPanel.Show("finding players")
-            .Forget(e => throw e);
+        await SwitchScene(betChoice);
+
+        // BlockingPanel.Show("finding players")
+        //     .Forget(e => throw e);
         //this is shown even if the room is started, it's removed before game start directly
+    }
+
+    private async UniTask SwitchScene(int betChoice)
+    {
+        LobbyController.DestroyModule();
+
+        BlockingPanel.Show("loading");
+        await SceneManager.LoadSceneAsync("RoomBase");
+        var envName = "Env" + betChoice;
+        await SceneManager.LoadSceneAsync(envName, LoadSceneMode.Additive);
+        BlockingPanel.Hide();
     }
 
     public static (int capacityChoice, int betChoice) LastRequest;

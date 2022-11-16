@@ -105,7 +105,7 @@ public class Shop : MonoBehaviour
         BackgroundType.hearts,
     };
 
-    private readonly List<ShopItem> shopItems = new List<ShopItem>();
+    private readonly List<ShopItem> shopItems = new();
 
     public ItemType ItemType { get; private set; }
 
@@ -168,7 +168,7 @@ public class Shop : MonoBehaviour
 
         var itemType = (int)ItemType;
 
-        for (int i = 0; i < ConstData.ItemPrices[itemType].Length; i++)
+        for (var i = 0; i < ConstData.ItemPrices[itemType].Length; i++)
         {
             var itemId = ItemType == ItemType.Cardback
                 ? (int)cardbacksInOrder[i]
