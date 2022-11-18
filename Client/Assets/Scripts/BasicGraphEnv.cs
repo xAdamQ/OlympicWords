@@ -9,7 +9,7 @@ public class BasicGraphEnv : EnvBase
 {
     public new static BasicGraphEnv I;
 
-    private GameObject[][] wordObjects;
+    private GameObject[] charObjects;
     private readonly Vector3 digitAddedRotation = Vector3.zero;
     [SerializeField] private GraphData[] graphs;
 
@@ -43,11 +43,11 @@ public class BasicGraphEnv : EnvBase
         return !rayHit ? (at, normal) : (hitInfo.point + Vector3.up * SPACING_Y, hitInfo.normal);
     }
 
-    public override Vector3 GetDigitPozAt(int wordIndex, int digitIndex)
+    public override Vector3 GetCharPozAt(int charIndex)
     {
-        var digit = wordObjects[wordIndex][digitIndex];
-        var maxBound = digit.transform.GetChild(0).GetComponent<MeshRenderer>().bounds.max - new Vector3(.1f, 0, .1f);
-        var minBound = digit.transform.GetChild(0).GetComponent<MeshRenderer>().bounds.min - new Vector3(.1f, 0, .1f);
+        var chr = charObjects[charIndex];
+        var maxBound = chr.transform.GetChild(0).GetComponent<MeshRenderer>().bounds.max - new Vector3(.1f, 0, .1f);
+        var minBound = chr.transform.GetChild(0).GetComponent<MeshRenderer>().bounds.min - new Vector3(.1f, 0, .1f);
 
         return new Vector3(
             Random.Range(minBound.x, maxBound.x),
@@ -57,38 +57,47 @@ public class BasicGraphEnv : EnvBase
         // return wordObjects[wordIndex][digitIndex].transform.position + Vector3.up * .3f;
     }
 
-    public override Vector3 GetDigitRotAt(int wordIndex, int digitIndex)
+    public override Vector3 GetCharRotAt(int charIndex)
     {
-        return wordObjects[wordIndex][digitIndex].transform.eulerAngles - digitAddedRotation;
+        return charObjects[charIndex].transform.eulerAngles - digitAddedRotation;
     }
 
-    public override GameObject[] GetWordObjects(int wordIndex)
+    public override GameObject GetCharObjectAt(int charIndex)
     {
-        return wordObjects[wordIndex].Select(g => g.transform.GetChild(0).gameObject).ToArray();
+        return charObjects[charIndex].transform.GetChild(0).gameObject;
     }
 
+    public override IEnumerable<GameObject> GetWordObjects(int wordIndex)
+    {
+        return charObjects[WordMap[wordIndex]..WordMap[wordIndex + 1]]
+            .Select(g => g.transform.GetChild(0).gameObject);
+    }
+
+    /// <summary>
+    /// activate/deactivate the word
+    /// </summary>
     public void WordState(int wordIndex, bool state)
     {
         var endScale = Vector3.one * (state ? 1 : 0);
         if (state)
         {
-            foreach (var wordObject in wordObjects[wordIndex])
+            foreach (var wordObject in GetWordObjects(wordIndex))
             {
-                wordObject.SetActive(true);
-                wordObject.transform.GetChild(0).transform.DOScale(endScale, .4f);
+                wordObject.transform.parent.gameObject.SetActive(true);
+                wordObject.transform.DOScale(endScale, .4f);
             }
         }
         else
         {
-            foreach (var wordObject in wordObjects[wordIndex])
+            foreach (var wordObject in GetWordObjects(wordIndex))
             {
-                wordObject.transform.GetChild(0).transform.DOScale(endScale, .4f)
-                    .OnComplete(() => wordObject.SetActive(false));
+                wordObject.transform.DOScale(endScale, .4f)
+                    .OnComplete(() => wordObject.transform.parent.gameObject.SetActive(false));
             }
         }
     }
 
-    public override int WordsCount => wordObjects.Length;
+    public override int WordsCount => Words.Count;
 
     private static float GetEdgeLengths(List<Vector3> nodes)
     {
@@ -143,7 +152,7 @@ public class BasicGraphEnv : EnvBase
     /// </summary>
     protected override void GenerateDigits()
     {
-        wordObjects = new GameObject[Words.Count][];
+        charObjects = new GameObject[Text.Length];
 
         var path = GraphManager.GetRandomPath(graph);
         var nodes = path.Select(n => (node: graph.Nodes[n.node], n.isWalkable)).ToList();
@@ -166,6 +175,7 @@ public class BasicGraphEnv : EnvBase
         // Debug.Log(string.Join(", ", nodes.Select(n => n.isWalkable)));
 
         //there would be at least 2 nodes in the path
+        var charIndex = 0;
 
         for (var w = 0; w < Words.Count; w++)
         {
@@ -223,7 +233,6 @@ public class BasicGraphEnv : EnvBase
 
                 var currentWord = Words[globalWordIndex];
                 var wordObject = new GameObject[currentWord.Length];
-                wordObjects[globalWordIndex] = new GameObject[currentWord.Length];
 
                 var (digitStartPoint, digitStartNormal) =
                     GetPointOnPath(connectedBranch, subPathNormals, passedDistance);
@@ -250,11 +259,13 @@ public class BasicGraphEnv : EnvBase
 
                     digitObject.transform.localScale = Vector3.one * actualDigitSize * DIGIT_FILL_PERCENT;
 
-                    wordObjects[globalWordIndex][i] = digitObject;
+                    charObjects[charIndex] = digitObject;
                     wordObject[i] = digitObject;
 
                     digitStartPoint = digitEndPoint;
                     digitStartNormal = digitEndNormal;
+
+                    charIndex++;
                 }
 
                 passedDistance += SPACE_DISTANCE;
@@ -286,10 +297,18 @@ public class BasicGraphEnv : EnvBase
             return DIGIT_SIZE * word.Length + SPACE_DISTANCE;
         }
 
-        foreach (var go in wordObjects.SelectMany(g => g))
+        try
         {
-            go.transform.GetChild(0).transform.localScale = Vector3.zero;
-            go.SetActive(false);
+            foreach (var go in charObjects)
+            {
+                go.transform.GetChild(0).transform.localScale = Vector3.zero;
+                go.SetActive(false);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
     }
 

@@ -70,7 +70,7 @@ namespace OlympicWords.Services
         //         await finalizer.FinalizeUser();
         // }
 
-        public async Task Jump(int count)
+        public void JumpWords(int count)
         {
             var consumedWords = 0;
 
@@ -84,16 +84,18 @@ namespace OlympicWords.Services
                     consumedWords++;
             }
 
+            WordPointer += consumedWords;
+
             UsedJets++;
         }
 
-        public async Task JetJump()
+        public void JetJump()
         {
             if (ChosenPowerUp == 0 && UsedJets < 2)
-                await Jump(1);
+                JumpWords(1);
 
             if (ChosenPowerUp == 1 && UsedJets < 1)
-                await Jump(4);
+                JumpWords(4);
         }
 
         // public async Task SmallJetJump(IFinalizer finalizer)

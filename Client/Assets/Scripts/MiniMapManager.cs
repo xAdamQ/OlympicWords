@@ -48,7 +48,7 @@ public class MiniMapManager : MonoBehaviour
 
     private void OnMovedADigit(MiniMap miniMap, PlayerBase playerBase)
     {
-        SetFill(miniMap, (float)playerBase.textPointer / (EnvBase.I.Text.Length - 1));
+        SetFill(miniMap, (float)playerBase.TextPointer / (EnvBase.I.Text.Length - 1));
     }
 
     private void SetFill(MiniMap miniMap, float percent)

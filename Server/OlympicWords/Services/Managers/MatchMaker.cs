@@ -39,8 +39,7 @@ namespace OlympicWords.Services
         private readonly IScopeRepo scopeRepo;
 
         public MatchMaker(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo,
-            IScopeRepo scopeRepo,
-            IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger)
+            IScopeRepo scopeRepo, IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger)
         {
             this.masterHub = masterHub;
             this.offlineRepo = offlineRepo;

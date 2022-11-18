@@ -29,10 +29,9 @@ public class RadioSet : MonoBehaviour
         }
     }
 
-    private void Choose(int choice)
+    protected virtual void Choose(int choice)
     {
         CurrentChoice = choice;
-        Debug.Log(choice);
         RefreshColors();
     }
 

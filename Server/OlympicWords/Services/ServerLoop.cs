@@ -41,8 +41,7 @@ namespace OlympicWords.Services
 
             var cSource = new CancellationTokenSource();
             PendingRoomCancellations.Add(room, cSource);
-
-            Task.Delay(PENDING_ROOM_TIMEOUT, cSource.Token).ContinueWith(async task =>
+            Task.Delay(PENDING_ROOM_TIMEOUT, cSource.Token).ContinueWith(async _ =>
             {
                 await Task.Run(() => OnPendingRoomTimeout(room), cSource.Token);
             });
@@ -121,7 +120,7 @@ namespace OlympicWords.Services
                     var canJump = (roomBot.ChosenPowerUp == 0 && roomBot.UsedJets < 2) ||
                                   (roomBot.ChosenPowerUp == 1 && roomBot.UsedJets < 1);
 
-                    if (canJump && StaticRandom.GetRandom(5) == 3)
+                    if (canJump && StaticRandom.GetRandom(10) == 3)
                         chr = '\r';
                     else
                         chr = StaticRandom.GetRandom(100) > Room.WRONG_CHAR_PROB

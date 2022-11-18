@@ -38,7 +38,19 @@ public class StairEnv : EnvBase
     // }
 
 
-    public override GameObject[] GetWordObjects(int wordIndex)
+    public override Vector3 GetCharPozAt(int charIndex)
+    {
+        throw new NotImplementedException();
+    }
+    public override Vector3 GetCharRotAt(int charIndex)
+    {
+        throw new NotImplementedException();
+    }
+    public override GameObject GetCharObjectAt(int charIndex)
+    {
+        throw new NotImplementedException();
+    }
+    public override IEnumerable<GameObject> GetWordObjects(int wordIndex)
     {
         throw new NotImplementedException();
     }
@@ -244,13 +256,4 @@ public class StairEnv : EnvBase
     }
 
 
-    public override Vector3 GetDigitPozAt(int wordIndex, int digitIndex)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override Vector3 GetDigitRotAt(int wordIndex, int digitIndex)
-    {
-        throw new NotImplementedException();
-    }
 }

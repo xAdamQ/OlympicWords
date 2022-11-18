@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
@@ -11,10 +12,10 @@ public class BasicGraphMyPlayer : MyPlayerBase
         base.Start();
 
         MovedADigit += OnMyDigitMoved;
-        MovedAWord += ColorActiveWord;
+        MovedAWord += ColorWord;
 
-        ColorActiveWord(0);
-        ColorCurrentDigit(0, 0);
+        ColorWord(0);
+        ColorChar(0);
 
         BasicGraphEnv.I.WordState(0, true);
         BasicGraphEnv.I.WordState(1, true);
@@ -22,28 +23,32 @@ public class BasicGraphMyPlayer : MyPlayerBase
 
     private void OnMyDigitMoved()
     {
-        ColorCurrentDigit(WordIndex, CharIndex);
+        ColorChar(0);
 
-        MinimizeDigit(WordIndex, CharIndex);
+        MinimizeChar(TextPointer);
     }
 
 
-    private void ColorCurrentDigit(int wordIndex, int letterIndex)
+    private void ColorChar(int charIndex)
     {
-        Env.GetWordObjects(wordIndex)[letterIndex]
+        Env.GetCharObjectAt(charIndex)
             .GetComponent<Renderer>().material = wordHighlightMat;
 
-        var isLastLetter = letterIndex == Env.GetWordLengthAt(wordIndex) - 1;
-        var isLastWord = wordIndex == EnvBase.I.WordsCount - 1;
-        if (isLastLetter && isLastWord) return;
-        var targetWord = isLastLetter ? wordIndex + 1 : wordIndex;
-        var targetLetter = isLastLetter ? 0 : letterIndex + 1;
+        // if (charIndex == EnvBase.I.Text.Length - 1)
+        //     return;
 
-        Env.GetWordObjects(targetWord)[targetLetter]
-            .GetComponent<Renderer>().material = digitHighlightMat;
+        // var isLastLetter = charIndex == Env.GetWordLengthAt(wordIndex) - 1;
+        // var isLastWord = wordIndex == EnvBase.I.WordsCount - 1;
+        // if (isLastLetter && isLastWord)
+        //     return;
+        // var targetWord = isLastLetter ? wordIndex + 1 : wordIndex;
+        // var targetLetter = isLastLetter ? 0 : charIndex + 1;
+        //
+        // Env.GetWordObjects(targetWord)[targetLetter]
+        //     .GetComponent<Renderer>().material = digitHighlightMat;
     }
 
-    private void ColorActiveWord(int wordIndex)
+    private void ColorWord(int wordIndex)
     {
         foreach (var digit in Env.GetWordObjects(wordIndex))
         {
@@ -56,8 +61,6 @@ public class BasicGraphMyPlayer : MyPlayerBase
     protected override void JetJump(int count)
     {
         BasicGraphEnv.I.WordState(WordIndex, false);
-        for (var i = CharIndex; i < EnvBase.I.GetWordLengthAt(WordIndex); i++)
-            MinimizeDigit(WordIndex, i);
 
         var lastWordIndex = WordIndex;
 
@@ -68,16 +71,12 @@ public class BasicGraphMyPlayer : MyPlayerBase
             BasicGraphEnv.I.WordState(WordIndex + 1, true);
 
         for (var i = lastWordIndex + 1; i <= WordIndex - 1; i++)
-        {
             BasicGraphEnv.I.WordState(i, false);
-            //     for (var j = 0; j < EnvBase.I.GetWordLengthAt(i); j++)
-            //         MinimizeDigit(i, j);
-        }
     }
 
-    private void MinimizeDigit(int wordIndex, int digitIndex)
+    private void MinimizeChar(int charIndex)
     {
-        var digit = Env.GetWordObjects(wordIndex)[digitIndex];
+        var digit = Env.GetCharObjectAt(charIndex);
 
         var digitRenderer = digit.GetComponent<Renderer>();
 
@@ -94,11 +93,18 @@ public class BasicGraphMyPlayer : MyPlayerBase
         //previous word
         BasicGraphEnv.I.WordState(WordIndex, false);
 
-        base.JumpWord();
+        base.JumpWord(); //word index got updated here
 
-        //current word + 1
-        if (WordIndex + 1 == EnvBase.I.WordsCount) return;
-
-        BasicGraphEnv.I.WordState(WordIndex + 1, true);
+        try
+        {
+//current word + 1
+            if (WordIndex < EnvBase.I.WordsCount - 1)
+                BasicGraphEnv.I.WordState(WordIndex + 1, true);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }

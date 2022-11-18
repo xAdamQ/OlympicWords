@@ -19,14 +19,14 @@ public abstract class PlayerBase : MonoBehaviour
         Index,
         WordIndex,
         CharIndex,
-        textPointer;
+        TextPointer;
 
     [SerializeField] private TMP_Text nameText;
 
     private Animator animator;
     private static readonly int jump = Animator.StringToHash("jump");
 
-    protected char CurrentChar => EnvBase.I.Text[textPointer];
+    protected char CurrentChar => EnvBase.I.Text[TextPointer];
 
     public PowerUp ChosenPowerUp;
     private int usedJets;
@@ -72,7 +72,7 @@ public abstract class PlayerBase : MonoBehaviour
         // Debug.LogWarning
         // ($"MY WARN:::: the globalCharIndex: {globalCharIndex} exceeds the text length: {EnvBase.I.Text.Length}");
 
-        return textPointer >= EnvBase.I.Text.Length;
+        return TextPointer >= EnvBase.I.Text.Length;
 
         // return
         //     (WordIndex == EnvBase.I.Words.Count - 1 && CharIndex >= EnvBase.I.GetWordLengthAt(WordIndex))
@@ -83,32 +83,37 @@ public abstract class PlayerBase : MonoBehaviour
     public event Action MovedADigit;
     public event Action<int> MovedAWord;
 
-    public void TakeInput(char digit)
+    public void TakeInput(char chr)
     {
         //supposed we won't have \r naturally in the text
-        if (digit == '\r')
+        if (chr == '\r')
         {
             if (ChosenPowerUp == PowerUp.MegaJet && usedJets < 1)
                 JetJump(4);
             else if (ChosenPowerUp == PowerUp.SmallJet && usedJets < 2)
                 JetJump(1);
         }
-        else if (digit == CurrentChar)
+        else if (chr == CurrentChar)
         {
-            CharJump();
+            CharJump(chr);
         }
     }
 
-    private void CharJump()
+    private void CharJump(char chr)
     {
         PrepareNewJump();
-        MoveADigit();
+        JumpToCurrent();
+        //CharIndex is the coming character, 
+
+        MovedADigit?.Invoke();
+        TextPointer++;
 
         //don't jump to the next word if there are no more words
         if (IsTextFinished())
             return;
 
-        if (CharIndex == EnvBase.I.GetWordLengthAt(WordIndex))
+        // if (CharIndex == EnvBase.I.GetWordLengthAt(WordIndex))
+        if (chr == ' ')
             JumpWord();
     }
 
@@ -126,21 +131,12 @@ public abstract class PlayerBase : MonoBehaviour
 
     private const float MOVE_TIME = .2f;
 
-    private void MoveADigit()
-    {
-        JumpToTarget();
 
-
-        MovedADigit?.Invoke();
-        CharIndex++;
-        textPointer++;
-    }
-
-    protected void JumpToTarget()
+    protected void JumpToCurrent()
     {
         try
         {
-            var targetPoz = EnvBase.I.GetDigitPozAt(WordIndex, CharIndex);
+            var targetPoz = EnvBase.I.GetCharPozAt(TextPointer);
             var upVector = Vector3.up * (Vector3.Distance(transform.position, targetPoz) * .5f);
             var middlePoint = Vector3.Lerp(transform.position, targetPoz, .5f);
 
@@ -150,7 +146,7 @@ public abstract class PlayerBase : MonoBehaviour
 
             lastMoveTween = transform.DOPath(currentPath, .2F, PathType.CatmullRom)
                 .OnUpdate(() => StartCoroutine(SetLinearY()));
-            lastRotateTween = transform.DORotate(EnvBase.I.GetDigitRotAt(WordIndex, CharIndex), .2f);
+            lastRotateTween = transform.DORotate(EnvBase.I.GetCharRotAt(TextPointer), .2f);
         }
         catch (Exception e)
         {
@@ -179,7 +175,6 @@ public abstract class PlayerBase : MonoBehaviour
     protected virtual void JumpWord()
     {
         WordIndex++;
-        CharIndex = 0;
 
         if (fillerWords is { Count: > 0 })
             Debug.Log($"current word: {WordIndex}, and current filler {fillerWords[0]}");
@@ -195,6 +190,8 @@ public abstract class PlayerBase : MonoBehaviour
             }
 
             JetJump(toSkip);
+
+            Debug.Log("text pointer after skip: " + TextPointer);
         }
         else
         {
@@ -208,10 +205,10 @@ public abstract class PlayerBase : MonoBehaviour
 
         var consumedWords = 0;
 
-        if (CurrentChar == ' ') textPointer++;
+        if (CurrentChar == ' ') TextPointer++;
         //in case we are in the start of a word
 
-        for (; consumedWords < count && !IsTextFinished(); textPointer++)
+        for (; consumedWords < count && !IsTextFinished(); TextPointer++)
         {
             if (CurrentChar == ' ')
             {
@@ -223,10 +220,9 @@ public abstract class PlayerBase : MonoBehaviour
         if (IsTextFinished())
         {
             WordIndex = EnvBase.I.WordsCount - 1;
-            CharIndex = EnvBase.I.GetWordLengthAt(WordIndex) - 1;
 
             //just jump to the last digit
-            JumpToTarget();
+            JumpToCurrent();
 
             //finish directly because time is critical, the player will see
             //the animation through finalize panel anyway
@@ -234,11 +230,11 @@ public abstract class PlayerBase : MonoBehaviour
         }
         else
         {
+            TextPointer--;
             //jump to the initial space then skip it
-            CharIndex = 0;
-            JumpToTarget();
+            JumpToCurrent();
+            TextPointer++;
 
-            CharIndex = 1;
             //it is guaranteed you will have an additional word
         }
 

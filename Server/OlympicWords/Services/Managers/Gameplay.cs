@@ -108,13 +108,14 @@ namespace OlympicWords.Services
             //todo check from linux and make if the new line code the same
             if (chr == '\r')
             {
-                await roomActor.JetJump();
+                roomActor.JetJump();
             }
             else
             {
-                // logger.LogInformation(
-                //     "received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}, text size {TextSize}",
-                //     chr, room.Text[roomActor.TextPointer], roomActor.TextPointer, room.Text.Length);
+                if (roomActor is RoomUser)
+                    logger.LogInformation(
+                        "received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}, text size {TextSize}",
+                        chr, room.Text[roomActor.TextPointer], roomActor.TextPointer, room.Text.Length);
 
                 if (room.Text[roomActor.TextPointer] == chr)
                 {
@@ -122,19 +123,18 @@ namespace OlympicWords.Services
                         roomActor.WordPointer++;
 
                     roomActor.TextPointer++;
+                    //in the last char, this pointer is out of range
                 }
             }
 
             if (roomActor.TextPointer == room.Text.Length)
                 await finalizer.FinalizeUser();
 
-            if (roomActor.FillersWords is { Count: > 0 })
-                if (roomActor.WordPointer == roomActor.FillersWords[0])
-                {
-                    var wordLength = room.Words[roomActor.WordPointer].Length + 1;
-                    await roomActor.Jump(wordLength);
-                    roomActor.FillersWords.RemoveAt(0);
-                }
+            while (roomActor.FillersWords is { Count: > 0 } && roomActor.WordPointer == roomActor.FillersWords[0])
+            {
+                roomActor.JumpWords(1);
+                roomActor.FillersWords.RemoveAt(0);
+            }
         }
 
         public async IAsyncEnumerable<string[]> DownStreamCharBuffer

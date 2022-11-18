@@ -37,7 +37,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
     #region props
 
     [HideInInspector] public int MyTurn, BetChoice, CapacityChoice;
-    [HideInInspector] public List<string> Words;
+    [HideInInspector] protected List<string> Words;
     public List<FullUserInfo> UserInfos;
 
     public int Bet => Bets[BetChoice];
@@ -73,10 +73,11 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     public int GetWordLengthAt(int wordIndex) => Words[wordIndex].Length;
 
-    public abstract Vector3 GetDigitPozAt(int wordIndex, int digitIndex);
-    public abstract Vector3 GetDigitRotAt(int wordIndex, int digitIndex);
+    public abstract Vector3 GetCharPozAt(int charIndex);
+    public abstract Vector3 GetCharRotAt(int charIndex);
+    public abstract GameObject GetCharObjectAt(int charIndex);
 
-    public abstract GameObject[] GetWordObjects(int wordIndex);
+    public abstract IEnumerable<GameObject> GetWordObjects(int wordIndex);
 
     public abstract int WordsCount { get; }
 
@@ -107,6 +108,12 @@ public abstract class EnvBase : MonoModule<EnvBase>
         GameStarted += OnGameStarted;
     }
 
+    /// <summary>
+    /// each number represents the start index of the word at index
+    /// the length of the word is arr[i+1]-arr[i]
+    /// </summary>
+    public int[] WordMap;
+
     [Rpc]
     public virtual void PrepareRequestedRoomRpc
     (List<FullUserInfo> userInfos, int myTurn, string text,
@@ -118,8 +125,13 @@ public abstract class EnvBase : MonoModule<EnvBase>
         MyTurn = myTurn;
         Text = text;
 
-        Words = Text.Split(' ').Select(w => " " + w).ToList(); //each word has space before it
+        var trimmedWords = Text.Split(' ');
+        Words = trimmedWords.Select(w => ' ' + w).ToList(); //each word has space before it
         Words[0] = Words[0][1..]; //remove initial space
+
+        WordMap = new int[trimmedWords.Length + 1];
+        for (var i = 1; i <= Words.Count; i++)
+            WordMap[i] = WordMap[i - 1] + Words[i - 1].Length;
 
         UserInfos.ForEach(info => StartCoroutine(info.DownloadPicture()));
 
@@ -150,8 +162,8 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     private void SetPlayersStartPoz()
     {
-        Players.ForEach(p => p.transform.position = GetDigitPozAt(0, 0));
-        Players.ForEach(p => p.transform.eulerAngles = GetDigitRotAt(0, 0));
+        Players.ForEach(p => p.transform.position = GetCharPozAt(0));
+        Players.ForEach(p => p.transform.eulerAngles = GetCharRotAt(0));
     }
 
     protected abstract void GenerateDigits();

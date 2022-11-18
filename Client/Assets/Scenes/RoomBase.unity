@@ -1106,11 +1106,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 938745812}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 600bec33789b43d8b65dea9504d8e991, type: 3}
+  m_Script: {fileID: 11500000, guid: 64b4de7a096541268dc6df5f6e0ea53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChosenColor: {r: 0, g: 1, b: 0.004926443, a: 0.47058824}
-  NormalColor: {r: 0, g: 0, b: 0, a: 0.47058824}
+  ChosenColor: {r: 0, g: 1, b: 0.003921569, a: 0.5019608}
+  NormalColor: {r: 0, g: 0, b: 0, a: 0.5019608}
   CurrentChoice: 0
 --- !u!1 &960599499
 GameObject:
