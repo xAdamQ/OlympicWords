@@ -82,7 +82,6 @@ services.AddHangfireServer();
 
 var app = builder.Build();
 
-
 app.UseAuthentication();
 app.MapControllers();
 
@@ -94,8 +93,11 @@ app.UseCors(corsPolicyBuilder => corsPolicyBuilder
 
 app.MapGet("/weatherforecast", () => new List<int> { 1, 2, 3 });
 
-app.UseRouting();
+app.UseHttpsRedirection();
+
 app.UseEndpoints(endpoint => endpoint.MapHub<MasterHub>("/connect"));
+
+app.UseRouting();
 
 
 app.Run();
