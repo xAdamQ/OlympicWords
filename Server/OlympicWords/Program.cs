@@ -39,13 +39,17 @@ services.AddSignalR(options =>
         options.AddFilter<BadUserInputFilter>();
         options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
     })
+    .AddAzureSignalR()
     .AddJsonProtocol(options => { options.PayloadSerializerOptions.IncludeFields = true; });
 
 services.AddHttpContextAccessor();
 
 services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.IncludeFields = true);
 
-services.AddDbContext<MasterContext>(options => { options.UseSqlServer(configuration.GetConnectionString("Main")); });
+services.AddDbContext<MasterContext>(options =>
+{
+    options.UseSqlServer(configuration.GetConnectionString("Main"));
+});
 
 
 services.AddScoped<IGameplay, Gameplay>();

@@ -17,8 +17,8 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="Microsoft SQL Server (JetBrains)" uuid="ea2a2f95-6986-4052-ae42-e87f6d1489e2">
-      <database-info product="Microsoft SQL Server" version="12.00.0816" jdbc-version="4.2" driver-name="JetBrains JDBC Driver for SQL Server" driver-version="1.0" dbms="AZURE" exact-version="12.0.816" exact-driver-version="1.0">
+    <data-source name="@wordwar.database.windows.net" uuid="ea2a2f95-6986-4052-ae42-e87f6d1489e2">
+      <database-info product="Microsoft SQL Server" version="12.00.816" jdbc-version="4.2" driver-name="Microsoft JDBC Driver 11.2 for SQL Server" driver-version="11.2.0.0" dbms="AZURE" exact-version="12.0.816" exact-driver-version="11.2">
         <extra-name-characters>$#@</extra-name-characters>
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
