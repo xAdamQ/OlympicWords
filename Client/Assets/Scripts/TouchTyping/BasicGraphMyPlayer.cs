@@ -1,12 +1,9 @@
-using System;
-using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
 public class BasicGraphMyPlayer : MyPlayerBase
 {
     [SerializeField] private Material wordHighlightMat, digitHighlightMat, fadeMaterial;
-
     protected override void Start()
     {
         base.Start();
@@ -95,16 +92,8 @@ public class BasicGraphMyPlayer : MyPlayerBase
 
         base.JumpWord(); //word index got updated here
 
-        try
-        {
-//current word + 1
-            if (WordIndex < EnvBase.I.WordsCount - 1)
-                BasicGraphEnv.I.WordState(WordIndex + 1, true);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        //current word + 1
+        if (WordIndex < EnvBase.I.WordsCount - 1)
+            BasicGraphEnv.I.WordState(WordIndex + 1, true);
     }
 }

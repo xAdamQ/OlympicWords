@@ -19,18 +19,21 @@ namespace OlympicWords.Services
         private readonly SecurityManager securityManager;
         private readonly IScopeRepo scopeRepo;
         private readonly PersistantData persistantData;
+        private readonly IOfflineRepo offlineRepo;
         private readonly ILogger<MasterAuthenticationHandler> logger;
 
         public MasterAuthenticationHandler(
             IOptionsMonitor<MasterAuthenticationSchemeOptions> options,
             ILoggerFactory loggerFac,
             UrlEncoder encoder, ISystemClock clock, ILogger<MasterAuthenticationHandler> logger,
-            SecurityManager securityManager, IScopeRepo scopeRepo, PersistantData persistantData)
+            SecurityManager securityManager, IScopeRepo scopeRepo, PersistantData persistantData,
+            IOfflineRepo offlineRepo)
             : base(options, loggerFac, encoder, clock)
         {
             this.securityManager = securityManager;
             this.scopeRepo = scopeRepo;
             this.persistantData = persistantData;
+            this.offlineRepo = offlineRepo;
             this.logger = logger;
         }
 
@@ -39,65 +42,77 @@ namespace OlympicWords.Services
             //can have exceptions, they are caught here
             try
             {
-                Request.Query.TryGetValue("provider", out var provider);
+                Request.Query.TryGetValue("provider", out var providerString);
                 Request.Query.TryGetValue("access_token", out var accessToken);
 
+                //exists only in the upgrade request
+                Request.Query.TryGetValue("original_provider", out var originalProviderString);
+                Request.Query.TryGetValue("original_provider_token", out var originalProviderToken);
+                Request.Query.TryGetValue("link_overwrite", out var linkOverwrite);
+
+                var originalProviderParsed = Enum.TryParse(originalProviderString, out ExternalIdType originalProvider);
+
                 User user;
+                var providerParsed = Enum.TryParse(providerString, out ExternalIdType provider);
+
                 if (string.IsNullOrEmpty(accessToken))
                     return AuthenticateResult.Fail("no access token provided");
-                if (string.IsNullOrEmpty(provider))
-                    return AuthenticateResult.Fail("specify the token provider");
+                if (!providerParsed)
+                    return AuthenticateResult.Fail($"specify a valid token provider, passed: {providerString}");
 
-                if (provider == "demo")
+                try
                 {
-                    var demoProvider = new ProviderUser
+                    var profile = await securityManager.GetProfile(provider, accessToken);
+                    user = await securityManager.GetDiskUser(profile);
+
+                    if (originalProviderParsed)
                     {
-                        Id = accessToken,
-                        Name = new Guid().ToString()[..8],
-                        Provider = ExternalIdType.Demo,
-                    };
-                    user = await securityManager.SignInAsync(demoProvider);
+                        if (string.IsNullOrEmpty(originalProviderToken))
+                        {
+                            logger.LogError("an original provider name exits, but no token");
+                            //I won't break here, it is not terminal error, it should be a user fault only, but just in case
+                        }
+                        else
+                        {
+                            var originalProfile = new ProviderUser
+                            {
+                                Id = originalProviderToken,
+                                Provider = originalProvider,
+                            };
+                            var originalUser = await securityManager.GetDiskUser(originalProfile);
+
+                            if (user == null && originalUser != null)
+                            {
+                                await securityManager.LinkUser(originalUser.Id, profile);
+                                user = originalUser;
+                            }
+                            else if (originalUser == null)
+                            {
+                                throw new BadUserInputException("you're trying to link to a non-existing user");
+                            }
+                            else if (linkOverwrite == "true") //both user and originalUser are not null
+                            {
+                                await offlineRepo.DeleteUserAsync(originalUser.Id);
+                                await securityManager.LinkUser(user.Id, originalProfile);
+                            }
+                            else
+                            {
+                                throw new BadUserInputException
+                                    ("overwriting is false and you're trying rewrite an existing user");
+                            }
+                        }
+                    }
+                    //in case we upgrade from guest to facebook
+
+                    if (user == null)
+                        user = await securityManager.SignUpAndInAsync(profile);
+                    else
+                        user = await securityManager.SignInAsync(profile, user);
                 }
-                else if (provider == "huawei")
+
+                catch (Exception e)
                 {
-                    logger.LogInformation("huawei login with token: {token}", accessToken);
-
-                    try
-                    {
-                        var token = await SecurityManager.GetTokenByHuaweiAuthCode(accessToken);
-
-                        var userData = await SecurityManager.GetHuaweiUserDataByToken(token);
-
-                        user = await securityManager.SignInAsync(userData);
-                    }
-                    catch (SecurityManager.HuaweiApiFailure exc)
-                    {
-                        return AuthenticateResult.Fail(exc.Message);
-                    }
-                }
-                else if (provider == "facebook")
-                {
-                    try
-                    {
-                        // var isValid = await securityManager.ValidateFbAccToken(accessToken);
-
-                        // if (!isValid)
-                        // return AuthenticateResult
-                        // .Fail("the given facebook token is not valid");
-
-                        var fbProfile = await SecurityManager.GetFbProfile(accessToken);
-
-                        user = await securityManager.SignInAsync(fbProfile);
-                    }
-                    //you should send bad input exc only to him not fb api error also
-                    catch (Exception e)
-                    {
-                        return AuthenticateResult.Fail(e.Message);
-                    }
-                }
-                else
-                {
-                    return AuthenticateResult.Fail("the passed provider is not supported");
+                    return AuthenticateResult.Fail(e.Message);
                 }
 
                 persistantData.FeedScope(scopeRepo);
@@ -125,7 +140,7 @@ namespace OlympicWords.Services
 
                 var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
-                logger.LogInformation($"login succeeded for player: {user.Id}");
+                logger.LogInformation("login succeeded for player: {UserId}", user.Id);
                 return AuthenticateResult.Success(ticket);
             }
             catch (Exception exception)

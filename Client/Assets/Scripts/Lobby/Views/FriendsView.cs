@@ -10,7 +10,7 @@ public class FriendsView : MonoModule<FriendsView>
     /// </summary>
     [SerializeField] private Transform container;
 
-    public async UniTask ShowFriendList(bool followings)
+    public void ShowFriendList(bool followings)
     {
         var list = followings
             ? Repository.I.PersonalFullInfo.Followings
@@ -19,11 +19,11 @@ public class FriendsView : MonoModule<FriendsView>
         foreach (Transform go in container)
             Destroy(go.gameObject);
         foreach (var info in list)
-            await MinUserView.Create(info, container);
+            MinUserView.Create(info, container);
     }
 
-    private async UniTaskVoid Start()
+    private void Start()
     {
-        await ShowFriendList(true);
+        ShowFriendList(true);
     }
 }

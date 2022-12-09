@@ -19,18 +19,18 @@ public class FinalMuv : MinUserView
 
     private FullUserInfo fullUserInfo;
 
-    public static async UniTask<FinalMuv> Create(FullUserInfo fullUserInfo, PlayerBase player, Transform parent)
+    public static FinalMuv Create(FullUserInfo fullUserInfo, PlayerBase player, Transform parent)
     {
-        var asset = await Addressables.InstantiateAsync("finalMuv", parent);
-        var finalMuv = asset.GetComponent<FinalMuv>();
-        finalMuv.player = player;
-        finalMuv.Init((MinUserInfo)fullUserInfo);
-        finalMuv.Init(fullUserInfo);
+        var finalMuv = Instantiate(Finalizer.I.FinalMuvPrefab, parent).GetComponent<FinalMuv>();
+        finalMuv.Init(fullUserInfo, player);
         return finalMuv;
     }
 
-    private void Init(FullUserInfo fullUserInfo)
+    private void Init(FullUserInfo fullUserInfo, PlayerBase player)
     {
+        this.player = player;
+        Init((MinUserInfo)fullUserInfo);
+
         this.fullUserInfo = fullUserInfo;
         UpdateFriendshipView();
     }
@@ -45,6 +45,7 @@ public class FinalMuv : MinUserView
         WpmText.text = userRoomStatus.Wpm.ToString("f2");
         scoreText.text = userRoomStatus.Score.ToString();
         finalPositionText.text = userRoomStatus.FinalPosition.ToString();
+        transform.parent.SetSiblingIndex(userRoomStatus.FinalPosition);
     }
 
     public void SetTemporalStatus()
@@ -57,7 +58,6 @@ public class FinalMuv : MinUserView
     {
         var timeInterval = (Time.time - player.startTime) / 60f;
         WpmText.text = (player.WordIndex / timeInterval).ToString("f2");
-        Debug.Log("updating wpm");
     }
 
     public override void ShowFullInfo()
@@ -101,16 +101,6 @@ public class FinalMuv : MinUserView
 
             UpdateFriendshipView();
         });
-    }
-
-    public void SetWpm(float wpm)
-    {
-        WpmText.text = wpm.ToString("F1");
-    }
-
-    public void SetFinished(int position)
-    {
-        transform.parent.SetSiblingIndex(position);
     }
 
     private void UpdateFriendshipView()

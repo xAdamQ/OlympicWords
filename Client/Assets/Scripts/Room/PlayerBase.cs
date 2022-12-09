@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Core.PathCore;
@@ -18,15 +19,16 @@ public abstract class PlayerBase : MonoBehaviour
     [HideInInspector] public int
         Index,
         WordIndex,
-        CharIndex,
         TextPointer;
 
     [SerializeField] private TMP_Text nameText;
 
+    [SerializeField] private GameObject Jetpack;
+
     private Animator animator;
     private static readonly int jump = Animator.StringToHash("jump");
 
-    protected char CurrentChar => EnvBase.I.Text[TextPointer];
+    private char CurrentChar => EnvBase.I.Text[TextPointer];
 
     public PowerUp ChosenPowerUp;
     private int usedJets;
@@ -95,11 +97,11 @@ public abstract class PlayerBase : MonoBehaviour
         }
         else if (chr == CurrentChar)
         {
-            CharJump(chr);
+            CharJump();
         }
     }
 
-    private void CharJump(char chr)
+    private void CharJump()
     {
         PrepareNewJump();
         JumpToCurrent();
@@ -113,7 +115,7 @@ public abstract class PlayerBase : MonoBehaviour
             return;
 
         // if (CharIndex == EnvBase.I.GetWordLengthAt(WordIndex))
-        if (chr == ' ')
+        if (EnvBase.I.Text[TextPointer - 1] == ' ')
             JumpWord();
     }
 
@@ -127,32 +129,31 @@ public abstract class PlayerBase : MonoBehaviour
     }
 
     protected Vector3 MovePozWithLinearY;
-    private Vector3[] currentPath;
+    protected Vector3[] currentPath;
 
     private const float MOVE_TIME = .2f;
+    [SerializeField] private float moveSpeed, movePower, moveRoot, jumpTime = .3f, automationSpeedUp, jetJumpSlowDown;
 
 
-    protected void JumpToCurrent()
+    protected virtual void JumpToCurrent(Action onDone = null)
     {
-        try
-        {
-            var targetPoz = EnvBase.I.GetCharPozAt(TextPointer);
-            var upVector = Vector3.up * (Vector3.Distance(transform.position, targetPoz) * .5f);
-            var middlePoint = Vector3.Lerp(transform.position, targetPoz, .5f);
+        var targetPoz = EnvBase.I.GetCharPozAt(TextPointer);
+        var upVector = Vector3.up * (Vector3.Distance(transform.position, targetPoz) * .5f);
+        var middlePoint = Vector3.Lerp(transform.position, targetPoz, .5f);
 
-            var middlePoz = middlePoint + upVector;
+        var middlePoz = middlePoint + upVector;
 
-            currentPath = new[] { transform.position, middlePoz, targetPoz };
+        currentPath = new[] { transform.position, middlePoz, targetPoz };
 
-            lastMoveTween = transform.DOPath(currentPath, .2F, PathType.CatmullRom)
-                .OnUpdate(() => StartCoroutine(SetLinearY()));
-            lastRotateTween = transform.DORotate(EnvBase.I.GetCharRotAt(TextPointer), .2f);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        // var time = Vector3.Distance(targetPoz, transform.position) / moveSpeed;
+
+        // var normalizedTime = MathF.Min(MathF.Pow(time, movePower), MathF.Pow(time, 1f / moveRoot));
+        lastMoveTween = transform.DOPath(currentPath, jumpTime, PathType.CatmullRom)
+            .OnUpdate(() => StartCoroutine(SetLinearY()))
+            // .OnKill(() => onDone?.Invoke())
+            .OnComplete(() => onDone?.Invoke());
+
+        lastRotateTween = transform.DORotate(EnvBase.I.GetCharRotAt(TextPointer), .2f);
     }
 
     private IEnumerator SetLinearY()
@@ -163,7 +164,8 @@ public abstract class PlayerBase : MonoBehaviour
         var endPoint = currentPath[^1];
         for (var i = 0; i < framesCount; i++)
         {
-            MovePozWithLinearY = Vector3.Lerp(startPoint, endPoint, i * part);
+            var lazyPoz = Vector3.Lerp(startPoint, endPoint, i * part);
+            MovePozWithLinearY = new Vector3(transform.position.x, lazyPoz.y, transform.position.z);
             yield return new WaitForFixedUpdate();
         }
     }
@@ -171,6 +173,7 @@ public abstract class PlayerBase : MonoBehaviour
     private TweenerCore<Vector3, Path, PathOptions> lastMoveTween;
     private TweenerCore<Quaternion, Vector3, QuaternionOptions> lastRotateTween;
     private Tweener stepMoveTween;
+
 
     protected virtual void JumpWord()
     {
@@ -182,14 +185,7 @@ public abstract class PlayerBase : MonoBehaviour
         //we have fillers, and the coming is at least a filler
         if (fillerWords is { Count: > 0 } && WordIndex == fillerWords[0])
         {
-            var toSkip = 0;
-            while (fillerWords.Count > 0 && WordIndex + toSkip == fillerWords[0])
-            {
-                toSkip++;
-                fillerWords.RemoveAt(0);
-            }
-
-            JetJump(toSkip);
+            StartCoroutine(SkipWord());
 
             Debug.Log("text pointer after skip: " + TextPointer);
         }
@@ -199,8 +195,35 @@ public abstract class PlayerBase : MonoBehaviour
         }
     }
 
+    protected Action WordSkipping, WordSkipped;
+    private IEnumerator SkipWord()
+    {
+        WordSkipping?.Invoke();
+
+        fillerWords.RemoveAt(0);
+
+        var original = jumpTime;
+        jumpTime /= automationSpeedUp;
+
+        while (CurrentChar != ' ')
+        {
+            CharJump();
+            yield return new WaitForSeconds(jumpTime);
+        }
+
+        jumpTime = original;
+        WordSkipped?.Invoke();
+
+        CharJump();
+        //this can make recursive call to skip work, I put it at the end to make it sequential
+    }
+
     protected virtual void JetJump(int count)
     {
+        Jetpack.SetActive(true);
+
+        jumpTime *= jetJumpSlowDown;
+
         PrepareNewJump();
 
         var consumedWords = 0;
@@ -221,8 +244,7 @@ public abstract class PlayerBase : MonoBehaviour
         {
             WordIndex = EnvBase.I.WordsCount - 1;
 
-            //just jump to the last digit
-            JumpToCurrent();
+            jumpPreChar();
 
             //finish directly because time is critical, the player will see
             //the animation through finalize panel anyway
@@ -230,17 +252,28 @@ public abstract class PlayerBase : MonoBehaviour
         }
         else
         {
-            TextPointer--;
-            //jump to the initial space then skip it
-            JumpToCurrent();
-            TextPointer++;
+            jumpPreChar();
+        }
 
-            //it is guaranteed you will have an additional word
+        void jumpPreChar()
+        {
+            TextPointer--;
+            JumpToCurrent(HideJetpack);
+            TextPointer++;
         }
 
         usedJets++;
     }
 
+    private void HideJetpack()
+    {
+        UniTask.Create(async () =>
+        {
+            jumpTime /= jetJumpSlowDown;
+            await UniTask.Delay(250);
+            Jetpack.SetActive(false);
+        });
+    }
 
     public static string[] Titles =
     {

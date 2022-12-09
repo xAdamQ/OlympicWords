@@ -9,17 +9,18 @@ namespace OlympicWords.Services
     /// </summary>
     public static class StaticRandom
     {
-        private static int seed = Environment.TickCount;
+        private static int seed = new Random().Next();
+        // private static int seed = Environment.TickCount;
 
-        private static readonly ThreadLocal<Random> Random = new(() => new Random(Interlocked.Increment(ref seed)));
+        private static readonly ThreadLocal<Random> random = new(() => new Random(Interlocked.Increment(ref seed)));
 
         public static int GetRandom(int min, int max)
         {
-            return Random.Value.Next(min, max);
+            return random.Value!.Next(min, max);
         }
         public static int GetRandom(int max)
         {
-            return Random.Value.Next(max);
+            return random.Value!.Next(max);
         }
     }
 }

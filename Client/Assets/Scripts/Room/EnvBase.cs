@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = System.Random;
 
 [Serializable]
 public class Kvp<TKey, TValue>
@@ -116,7 +117,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     [Rpc]
     public virtual void PrepareRequestedRoomRpc
-    (List<FullUserInfo> userInfos, int myTurn, string text,
+    (List<FullUserInfo> userInfos, int myTurn, string text, int randomSeed,
         List<(int index, int player)> fillerWords, List<int> chosenPowerUps)
     {
         BetChoice = RoomRequester.LastRequest.betChoice;
@@ -133,7 +134,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
         for (var i = 1; i <= Words.Count; i++)
             WordMap[i] = WordMap[i - 1] + Words[i - 1].Length;
 
-        UserInfos.ForEach(info => StartCoroutine(info.DownloadPicture()));
+        UserInfos.ForEach(info => info.DownloadPicture().Forget(e => throw e));
 
         Repository.I.PersonalFullInfo.Money -= Bet;
 
@@ -141,7 +142,8 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
         CreatePlayers(fillerWords, chosenPowerUps, userInfos);
 
-        GenerateDigits();
+        var random = new System.Random(randomSeed);
+        GenerateDigits(random);
 
         ColorFillers(fillerWords);
 
@@ -162,11 +164,22 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     private void SetPlayersStartPoz()
     {
-        Players.ForEach(p => p.transform.position = GetCharPozAt(0));
-        Players.ForEach(p => p.transform.eulerAngles = GetCharRotAt(0));
+        var pozPointer = GetCharPozAt(0);
+        var rot = GetCharRotAt(0);
+        var charObj = GetCharObjectAt(0);
+        for (int i = 0; i < Players.Count; i++)
+        {
+            Players[i].transform.position = pozPointer;
+            Players[i].transform.eulerAngles = rot;
+
+            pozPointer += -charObj.transform.forward * .5f;
+        }
+
+        // Players.ForEach(p => p.transform.position = GetCharPozAt(0));
+        // Players.ForEach(p => p.transform.eulerAngles = GetCharRotAt(0));
     }
 
-    protected abstract void GenerateDigits();
+    protected abstract void GenerateDigits(Random random);
 
     public Material[] PlayerMats;
 

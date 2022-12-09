@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -9,16 +10,8 @@ public class MinUserInfo
     [Preserve]
     public MinUserInfo()
     {
-        PictureLoaded += OnPictureLoaded;
     }
 
-    private void OnPictureLoaded(Texture2D texture2D)
-    {
-        IsPictureLoaded = true;
-        if (texture2D != null)
-            PictureSprite = Sprite.Create(texture2D,
-                new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
-    }
 
     public int CalcLevel()
     {
@@ -43,15 +36,15 @@ public class MinUserInfo
 
     public Sprite PictureSprite { get; set; }
 
-    public event Action<Texture2D> PictureLoaded;
+    // public event Action<Texture2D> PictureLoaded;
     public bool IsPictureLoaded;
 
     private string PictureAddress { get; } =
-        Extensions.UriCombine(NetManager.I.GetServerAddress(), "Picture", "GetUserPicture");
+        Extensions.UriCombine(NetManager.I.SelectedAddress, "Picture", "GetUserPicture");
 
-    public IEnumerator DownloadPicture()
+    public async UniTask DownloadPicture()
     {
-        if (string.IsNullOrEmpty(PictureAddress)) yield break;
+        if (string.IsNullOrEmpty(PictureAddress)) return;
 
         var query = NetManager.I.GetAuthQuery();
         query["userId"] = Id;
@@ -62,6 +55,12 @@ public class MinUserInfo
                 Query = query.ToString(),
             };
 
-        yield return Extensions.GetRemoteTexture(uriBuilder.Uri.ToString(), PictureLoaded);
+        var texture2D = await Extensions.GetRemoteTexture(uriBuilder.Uri.ToString());
+
+        IsPictureLoaded = true;
+        PictureSprite = Sprite.Create(texture2D,
+            new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
+
+        Debug.Log($"picture for player {Name} downloaded");
     }
 }

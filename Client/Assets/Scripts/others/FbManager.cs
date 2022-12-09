@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
@@ -81,7 +82,7 @@ public static class FbManager
     public static void CachedLogin()
     {
         var cachedToken = PlayerPrefs.GetString("fbToken");
-        NetManager.I.ConnectToServer(cachedToken, "facebook");
+        NetManager.I.ConnectToServer(cachedToken, "Facebook");
     }
 
     public static void Login(string responseStr)
@@ -93,7 +94,37 @@ public static class FbManager
 
         PlayerPrefs.SetString("fbToken", response.AuthResponse.AccessToken);
 
-        NetManager.I.ConnectToServer(response.AuthResponse.AccessToken, "facebook");
+        var guestToken = PlayerPrefs.GetString("GuestGuid");
+
+        if (!string.IsNullOrEmpty(guestToken))
+        {
+            const string message = "you will link your local progress to facebook, but in case facebook " +
+                                   "profile has progress do you want to overwrite it with local?";
+            var choices = new List<(string, Action)>
+            {
+                ("YES", () => link(true)),
+                ("NO", () => link(false)),
+                ("login with facebook account separately", justLogin)
+            };
+
+            Popup.Show(message, choices);
+        }
+        else
+        {
+            justLogin();
+        }
+
+        void link(bool overwrite)
+        {
+            NetManager.I.ConnectToServer
+                (response.AuthResponse.AccessToken, "Facebook", ("Guest", guestToken, overwrite));
+            NetManager.I.Connected += () => PlayerPrefs.DeleteKey("GuestGuid");
+        }
+
+        void justLogin()
+        {
+            NetManager.I.ConnectToServer(response.AuthResponse.AccessToken, "Facebook");
+        }
     }
 
     public static bool Logout()

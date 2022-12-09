@@ -71,7 +71,7 @@ public class Room
 
 
     //will be decided at run time, based on player average speed
-    public const int WRONG_CHAR_PROB = -1, BOT_TIME_MIN = 200, BOT_TIME_MAX = 700;
+    public const int WRONG_CHAR_PROB = -1, BOT_TIME_MIN = 200, BOT_TIME_MAX = 400;
 
     //I may leave this prop public because some feature like nitro may use it
     public List<string> Words { get; set; }

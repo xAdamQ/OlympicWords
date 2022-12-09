@@ -16,13 +16,10 @@ public class MinUserView : MonoBehaviour
 
     public MinUserInfo MinUserInfo { get; set; }
 
-    public static async UniTask<MinUserView> Create(MinUserInfo info, Transform parent)
+    public static MinUserView Create(MinUserInfo info, Transform parent)
     {
-        var muv = (await Addressables.InstantiateAsync("minUserView", parent))
-            .GetComponent<MinUserView>();
-
+        var muv = Instantiate(Controller.I.References.MuvPrefab, parent).GetComponent<MinUserView>();
         muv.Init(info);
-
         return muv;
     }
 
@@ -35,20 +32,23 @@ public class MinUserView : MonoBehaviour
         DisplayName = minUserInfo.Name;
         Title = PlayerBase.Titles[minUserInfo.SelectedTitleId];
 
-        if (minUserInfo.IsPictureLoaded)
-            SetPicture(minUserInfo.PictureSprite);
-        else
-        {
-            minUserInfo.PictureLoaded += _ => SetPicture(minUserInfo.PictureSprite);
-            StartCoroutine(minUserInfo.DownloadPicture());
-        }
+        SetPicture(minUserInfo).Forget();
     }
 
-    private void SetPicture(Sprite sprite)
-    {
-        if (destroyed || sprite is null) return;
 
-        picture.sprite = sprite;
+    private async UniTaskVoid SetPicture(MinUserInfo info)
+    {
+        if (info.IsPictureLoaded)
+        {
+            if (destroyed || info.PictureSprite is null)
+                return;
+        }
+        else
+        {
+            await info.DownloadPicture();
+        }
+
+        picture.sprite = info.PictureSprite;
     }
 
     private bool destroyed;

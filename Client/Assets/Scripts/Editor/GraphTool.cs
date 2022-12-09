@@ -5,11 +5,10 @@ using System.Linq;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.EditorTools;
-using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.SceneManagement;
-using UnityEngine.XR;
+using Random = UnityEngine.Random;
+using SystemRandom = System.Random;
 
 // ReSharper disable AccessToModifiedClosure
 
@@ -695,7 +694,8 @@ internal class GraphTool : EditorTool
 
     private void CreateRandomPath()
     {
-        algoPath = GraphManager.GetRandomPath(graphData);
+        var r = new SystemRandom(Random.Range(0, 99999));
+        algoPath = GraphManager.GetRandomPath(graphData, r);
     }
 
 

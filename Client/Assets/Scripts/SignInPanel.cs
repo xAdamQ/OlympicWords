@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SignInPanel : MonoModule<SignInPanel>
 {
-    [SerializeField] private GameObject guestLoginButton, havingTroubleButton;
+    [SerializeField] private GameObject guestLoginButton, havingTroubleButton, linkAdvice;
 
     // ReSharper disable once Unity.IncorrectMethodSignature
     private async UniTaskVoid Start()
@@ -38,6 +38,9 @@ public class SignInPanel : MonoModule<SignInPanel>
 
     private void ShowGuest()
     {
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("GuestGuid")))
+            linkAdvice.SetActive(true);
+
         guestLoginButton.SetActive(true);
     }
 
@@ -55,13 +58,15 @@ public class SignInPanel : MonoModule<SignInPanel>
 
     public void LoginAsGuest()
     {
-        var guid = new Guid().ToString();
-        NetManager.I.Connected += cacheGuestGuid;
-        NetManager.I.ConnectToServer(guid, "guest");
+        var guestToken = PlayerPrefs.GetString("GuestGuid");
 
-        void cacheGuestGuid()
+        if (string.IsNullOrEmpty(guestToken))
         {
-            PlayerPrefs.SetString("GuestGuid", guid);
+            guestToken = Guid.NewGuid().ToString();
+            PlayerPrefs.SetString("GuestGuid", guestToken);
+            // NetManager.I.Connected += cacheGuestGuid;
         }
+
+        NetManager.I.ConnectToServer(guestToken, "Guest");
     }
 }

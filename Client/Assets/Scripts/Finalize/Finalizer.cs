@@ -17,6 +17,8 @@ public class Finalizer : MonoModule<Finalizer>
     [SerializeField] private GameObject view;
     [SerializeField] private Transform muvParent;
 
+    public GameObject FinalMuvPrefab;
+
     protected override void Awake()
     {
         base.Awake();
@@ -42,17 +44,14 @@ public class Finalizer : MonoModule<Finalizer>
 
         FinalMuvs = new FinalMuv[EnvBase.I.Capacity];
 
-        UniTask.Create(async () =>
-        {
-            for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
-                FinalMuvs[i] = await FinalMuv.Create(EnvBase.I.UserInfos[i], EnvBase.I.Players[i], muvParent);
+        for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
+            FinalMuvs[i] = FinalMuv.Create(EnvBase.I.UserInfos[i], EnvBase.I.Players[i], muvParent);
 
-            FinalMuvs[EnvBase.I.MyTurn].SetFinal(myUserRoomStatus);
-            FinishedUsersStatus.ForEach(rs => FinalMuvs[rs.index].SetFinal(rs.status));
+        FinalMuvs[EnvBase.I.MyTurn].SetFinal(myUserRoomStatus);
+        FinishedUsersStatus.ForEach(rs => FinalMuvs[rs.index].SetFinal(rs.status));
 
-            foreach (var finalMuv in FinalMuvs.Where(fm => !fm.Finished))
-                finalMuv.SetTemporalStatus();
-        });
+        foreach (var finalMuv in FinalMuvs.Where(fm => !fm.Finished))
+            finalMuv.SetTemporalStatus();
     }
 
     [Rpc]

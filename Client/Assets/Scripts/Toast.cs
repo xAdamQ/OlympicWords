@@ -33,24 +33,24 @@ public class Toast : MonoBehaviour, IToast
 
     public static async UniTask Create()
     {
-        I = (await Addressables.InstantiateAsync("toast", Controller.I.canvas)).GetComponent<Toast>();
+        I = Instantiate(Controller.I.References.ToastPrefab, Controller.I.canvas).GetComponent<Toast>();
     }
 
     [SerializeField] private TMP_Text messageText;
 
-    private CancellationTokenSource currentMessageTS;
+    private CancellationTokenSource currentMessageTs;
 
     public void Show(string message, float seconds = 1)
     {
-        currentMessageTS?.Cancel();
+        currentMessageTs?.Cancel();
 
         messageText.text = message ?? "";
 
-        var milliSeconds = (int) (seconds * 1000);
+        var milliSeconds = (int)(seconds * 1000);
 
-        currentMessageTS = new CancellationTokenSource();
+        currentMessageTs = new CancellationTokenSource();
 
-        UniTask.Delay(milliSeconds, cancellationToken: currentMessageTS.Token).ContinueWith(Hide).Forget();
+        UniTask.Delay(milliSeconds, cancellationToken: currentMessageTs.Token).ContinueWith(Hide).Forget();
 
         gameObject.SetActive(true);
     }

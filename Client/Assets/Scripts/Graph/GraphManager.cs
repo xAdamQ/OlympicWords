@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 // ReSharper disable AccessToModifiedClosure
 
 public static class GraphManager
 {
-    public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData)
+    public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData, Random random)
     {
-        return GetRandomPath(graphData, (-1, -1));
+        return GetRandomPath(graphData, (-1, -1), random);
     }
 
     public static List<(int node, bool isWalkable)> GetRandomPath(GraphData graphData,
-        (int start, int end) linkerEdge)
+        (int start, int end) linkerEdge, Random random)
     {
         var nodesEdges = GetNodeEdges(graphData);
         var remainingEdges = graphData.Edges.ToList();
@@ -23,11 +23,11 @@ public static class GraphManager
 
         if (linkerEdge == (-1, -1))
         {
-            startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom();
+            startEdge = remainingEdges.Where(e => e.Type == 0).ToList().GetRandom(random);
             //get random walkable edge
             finishNode = startEdge.RealFinish;
             if (finishNode == -1) //this means the edge is bidirectional 
-                finishNode = Random.Range(0, 2) == 0 ? startEdge.Start : startEdge.End;
+                finishNode = random.Next(2) == 0 ? startEdge.Start : startEdge.End;
             //if not directed choose random dir, otherwise stick with the dir
             startNode = startEdge.Start == finishNode ? startEdge.End : startEdge.Start;
             //choose the other node as start
@@ -36,7 +36,7 @@ public static class GraphManager
         {
             startEdge = nodesEdges[linkerEdge.end]
                 .Where(e => e.Start != linkerEdge.start && e.End != linkerEdge.start)
-                .ToList().GetRandom();
+                .ToList().GetRandom(random);
             startNode = linkerEdge.end;
             finishNode = startEdge.OtherEnd(startNode);
         }
@@ -89,7 +89,7 @@ public static class GraphManager
                 break;
             }
 
-            var chosenBranch = eligibleBranches.GetRandom();
+            var chosenBranch = eligibleBranches.GetRandom(random);
             //choose eligible branch in terms of grouping and direction
 
             lastEdge = chosenBranch.edges.Last();

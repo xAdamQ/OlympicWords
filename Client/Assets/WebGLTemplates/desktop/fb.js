@@ -39,6 +39,14 @@ function OnFbLogin() {
     });
 }
 
-function showFbButton() {
+//called from unity
+function ShowFbButton() {
     document.getElementById("fbLoginButton").hidden = false;
 }
+
+function HideFbButton() {
+    document.getElementById("fbLoginButton").hidden = true;
+}
+
+
+

@@ -60,24 +60,35 @@ namespace OlympicWords.Services
             fbAppToken = this.configuration["Secrets:FbAppToken"];
         }
 
-        /// <summary>
-        /// checks if the user exist and make a new one if not
-        /// the last 2 args are not used if you won't sign up and would be usually null
-        /// </summary>
-        public async Task<User> SignInAsync(ProviderUser providerUser)
+        public async Task<User> GetDiskUser(ProviderUser providerUser)
         {
             if (providerUser.Id == null)
                 throw new BadUserInputException();
 
-            var user =
-                await offlineRepo.GetUserByEIdAsync(providerUser.Id, (int)providerUser.Provider);
+            var user = await offlineRepo.GetUserByEIdAsync(providerUser.Id, (int)providerUser.Provider);
 
-            logger.LogInformation("sign in attempt of {EId} -- named: {Name} -- isNull? {Unknown}",
+            logger.LogInformation("sign in attempt of {EId} -- named: {Name} -- isNull? {IsNull}",
                 providerUser.Id, providerUser.Name, user == null);
+
+            return user;
+        }
+
+        /// <summary>
+        /// checks if the user exist and make a new one if not
+        /// the last 2 args are not used if you won't sign up and would be usually null
+        /// </summary>
+        public async Task<User> SignUpAndInAsync(ProviderUser providerUser)
+        {
+            var user = await GetDiskUser(providerUser);
 
             if (user == null)
                 return await SignUpAsync(providerUser);
 
+            return await SignInAsync(providerUser, user);
+        }
+
+        public async Task<User> SignInAsync(ProviderUser providerUser, User user)
+        {
             await SetProviderFriends(user, providerUser.Friends);
 
             await UpdateUserData(user, providerUser);
@@ -86,6 +97,7 @@ namespace OlympicWords.Services
             await offlineRepo.SaveChangesAsync();
             return user;
         }
+
 
         private async Task UpdateUserData(User user, ProviderUser providerUser)
         {
@@ -101,6 +113,8 @@ namespace OlympicWords.Services
 
         private async Task SetProviderFriends(User user, List<ProviderPublicUser> friends)
         {
+            if (friends == null) return;
+
             var friendsIds = await offlineRepo.IdsByProviderIds(friends.Select(f => f.Id).ToList());
 
             var newFriends = friendsIds
@@ -138,12 +152,7 @@ namespace OlympicWords.Services
                 LastLogin = DateTime.Now,
             });
 
-            await offlineRepo.CreateExternalId(new ExternalId
-            {
-                Id = providerUser.Id,
-                Type = (int)providerUser.Provider,
-                UserId = user.Id,
-            });
+            await LinkUser(user.Id, providerUser);
 
             try
             {
@@ -164,6 +173,39 @@ namespace OlympicWords.Services
 
             await offlineRepo.SaveChangesAsync();
             return user;
+        }
+
+        public async Task LinkUser(string userId, ProviderUser providerUser)
+        {
+            await offlineRepo.CreateExternalId(new ExternalId
+            {
+                UserId = userId,
+                Type = (int)providerUser.Provider,
+                Id = providerUser.Id,
+            });
+        }
+
+        public async Task<ProviderUser> GetProfile(ExternalIdType provider, string accessToken)
+        {
+            switch (provider)
+            {
+                case ExternalIdType.Guest:
+                    return new ProviderUser
+                    {
+                        Id = accessToken,
+                        Name = accessToken[..8],
+                        Provider = ExternalIdType.Guest,
+                    };
+                case ExternalIdType.Facebook:
+                    return await GetFbProfile(accessToken);
+                case ExternalIdType.Huawei:
+                    // var token = await SecurityManager.GetTokenByHuaweiAuthCode(accessToken);
+                    // var userData = await SecurityManager.GetHuaweiUserDataByToken(token);
+                    // user = await securityManager.SignInAsync(userData);
+                    throw new NotImplementedException();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(provider), provider, null);
+            }
         }
 
         #region facebook

@@ -13,6 +13,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using Wintellect.PowerCollections;
 using Random = UnityEngine.Random;
+using SystemRandom = System.Random;
 
 public static partial class Extensions
 {
@@ -29,6 +30,15 @@ public static partial class Extensions
             throw new Exception("you are trying to get a random element from an empty list");
 
         var randIndex = Random.Range(0, list.Count);
+        return list[randIndex];
+    }
+
+    public static T GetRandom<T>(this List<T> list, SystemRandom random)
+    {
+        if (list.Count == 0)
+            throw new Exception("you are trying to get a random element from an empty list");
+
+        var randIndex = random.Next(list.Count);
         return list[randIndex];
     }
 
@@ -202,6 +212,10 @@ public static partial class Extensions
     public static async UniTask<Texture2D> GetRemoteTexture(string url)
     {
         using var request = UnityWebRequestTexture.GetTexture(url);
+
+#if UNITY_EDITOR
+        request.certificateHandler = new CertificateWhore();
+#endif
 
         //if there wer an exception here, just throw it
         await request.SendWebRequest();

@@ -17,11 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 4c63252681545033d8fd573591b57f07
   m_SerializeEntries:
-  - m_GUID: 68aff56aa30865e4ab0dadcfd4a17353
-    m_Address: ground
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: af3a47f10f07a2bc5b9ae50840851838
     m_Address: player3
     m_ReadOnly: 0
@@ -84,11 +79,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cf0222e9f7b8c382a9b5df6f44871e7d
     m_Address: backgroundShop
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 39883e13245f1054aac7b33760e03982
-    m_Address: frontSprites
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -162,66 +152,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4d5d60543ce6c8c88983df6d7a991c8c
-    m_Address: redStarPlus
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e1d5a1bb8c6cf0459ad090b6e4da1cfa
-    m_Address: redStar
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8007e32e748c107c6ac5ec8297159a45
-    m_Address: redRect
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7b9430c7537c4a7d18f3a0dcf6f4b2ac
-    m_Address: red
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f03d816863facd25eb348a3da1c627b5
-    m_Address: greenStarPlus
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0dc42bb1f85f0aca696e48d300f4e55f
-    m_Address: greenStar
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9f55822368c447670831b69d6b7dfe6f
-    m_Address: greenRect
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b1bd47be53a8dd0e49c45c31e87e00a0
-    m_Address: green
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 645b107b824111003b4eab8b3534e758
-    m_Address: blueStarPlus
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f3d7f6f3eae9757bb8965a8d75dc6bfa
-    m_Address: blueStar
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bad45651e90e3a8aab33a89eef9b6388
-    m_Address: blueRect
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ce208150fe4b1e57e9ee084f9534d6dc
-    m_Address: blue
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 23439f6f8b0c42cf6a991002fc201565
     m_Address: personalFuv
     m_ReadOnly: 0
@@ -247,21 +177,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 696122235d23ffbc49cbf33fe12eefc9
-    m_Address: distributeClip
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9331bcf1bccf68c0981eb35188e0f32b
-    m_Address: throwClip
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ddad84f7a78e4d57d96539bc9b1dae60
-    m_Address: turnClip
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: feb1582f02f3cfd83838e2d01ecf07b7
     m_Address: soundButton
     m_ReadOnly: 0
@@ -274,11 +189,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7d372d430443807219f3647b458cacd1
     m_Address: addMoneyPopup
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dba2c421b870d9c24bef91c36ff6399c
-    m_Address: langSelector
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

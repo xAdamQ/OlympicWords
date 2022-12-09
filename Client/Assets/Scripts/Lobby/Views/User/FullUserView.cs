@@ -40,28 +40,21 @@ public class FullUserView : MinUserView
 
     public static void Show(FullUserInfo fullUserInfo)
     {
-        UniTask.Create(async () =>
+        var fuvPrefab = fullUserInfo is PersonalFullUserInfo
+            ? Controller.I.References.PersonalFuvPrefab
+            : Controller.I.References.FuvPrefab;
+
+        if (!activeInstance)
         {
-            var key = (fullUserInfo is PersonalFullUserInfo) ? "personalFuv" : "fullUserView";
+            activeInstance = Instantiate(fuvPrefab, Controller.I.canvas).GetComponent<FullUserView>();
+        }
+        else if (activeInstance.FullUserInfo.GetType() != fullUserInfo.GetType())
+        {
+            activeInstance.Destroy();
+            activeInstance = Instantiate(fuvPrefab, Controller.I.canvas).GetComponent<FullUserView>();
+        }
 
-            if (!activeInstance)
-            {
-                activeInstance = await Create(key);
-            }
-            else if (activeInstance.FullUserInfo.GetType() != fullUserInfo.GetType())
-            {
-                activeInstance.Destroy();
-                activeInstance = await Create(key);
-            }
-
-            activeInstance.Init(fullUserInfo);
-        });
-    }
-
-    private static async UniTask<FullUserView> Create(string key)
-    {
-        return (await Addressables.InstantiateAsync(key, Controller.I.canvas))
-            .GetComponent<FullUserView>();
+        activeInstance.Init(fullUserInfo);
     }
 
     private void UpdateFriendShipView()

@@ -13,7 +13,7 @@ public class BasicGraphEnv : EnvBase
     private readonly Vector3 digitAddedRotation = Vector3.zero;
     [SerializeField] private GraphData[] graphs;
 
-    private GraphData graph => graphs[chosenGraphIndex];
+    private GraphData Graph => graphs[chosenGraphIndex];
     private int chosenGraphIndex;
 
     private const float DIGIT_SIZE = .3f,
@@ -22,18 +22,18 @@ public class BasicGraphEnv : EnvBase
         MAX_DIGIT_SIZE = .5f,
         SPACING_Y = .1f;
 
+    public override int WordsCount => Words.Count;
 
     protected override void Awake()
     {
         base.Awake();
         I = this;
-        chosenGraphIndex = Random.Range(0, graphs.Length);
     }
 
-    public override void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text,
+    public override void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text, int randomSeed,
         List<(int index, int player)> fillerWords, List<int> chosenPowerUps)
     {
-        base.PrepareRequestedRoomRpc(userInfos, myTurn, text, fillerWords, chosenPowerUps);
+        base.PrepareRequestedRoomRpc(userInfos, myTurn, text, randomSeed, fillerWords, chosenPowerUps);
         Debug.Log("prepare child called");
     }
 
@@ -45,28 +45,24 @@ public class BasicGraphEnv : EnvBase
 
     public override Vector3 GetCharPozAt(int charIndex)
     {
-        var chr = charObjects[charIndex];
-        var maxBound = chr.transform.GetChild(0).GetComponent<MeshRenderer>().bounds.max - new Vector3(.1f, 0, .1f);
-        var minBound = chr.transform.GetChild(0).GetComponent<MeshRenderer>().bounds.min - new Vector3(.1f, 0, .1f);
+        var chr = charObjects[charIndex].transform.GetChild(0);
+        var maxBound = chr.GetComponent<MeshRenderer>().bounds.max - new Vector3(.1f, 0, .1f);
+        var minBound = chr.GetComponent<MeshRenderer>().bounds.min - new Vector3(.1f, 0, .1f);
 
         return new Vector3(
             Random.Range(minBound.x, maxBound.x),
             maxBound.y + .1f,
             Random.Range(minBound.z, maxBound.z));
-
-        // return wordObjects[wordIndex][digitIndex].transform.position + Vector3.up * .3f;
     }
 
     public override Vector3 GetCharRotAt(int charIndex)
     {
         return charObjects[charIndex].transform.eulerAngles - digitAddedRotation;
     }
-
     public override GameObject GetCharObjectAt(int charIndex)
     {
         return charObjects[charIndex].transform.GetChild(0).gameObject;
     }
-
     public override IEnumerable<GameObject> GetWordObjects(int wordIndex)
     {
         return charObjects[WordMap[wordIndex]..WordMap[wordIndex + 1]]
@@ -96,8 +92,6 @@ public class BasicGraphEnv : EnvBase
             }
         }
     }
-
-    public override int WordsCount => Words.Count;
 
     private static float GetEdgeLengths(List<Vector3> nodes)
     {
@@ -150,12 +144,15 @@ public class BasicGraphEnv : EnvBase
     /// <summary>
     /// the only difference between generate digit functions in different environment is the transform of the digit until now
     /// </summary>
-    protected override void GenerateDigits()
+    /// <param name="randomSeed"></param>
+    protected override void GenerateDigits(System.Random random)
     {
+        chosenGraphIndex = random.Next(graphs.Length);
+
         charObjects = new GameObject[Text.Length];
 
-        var path = GraphManager.GetRandomPath(graph);
-        var nodes = path.Select(n => (node: graph.Nodes[n.node], n.isWalkable)).ToList();
+        var path = GraphManager.GetRandomPath(Graph, random);
+        var nodes = path.Select(n => (node: Graph.Nodes[n.node], n.isWalkable)).ToList();
         var nodeCounter = 1;
 
         // (Vector2 start, Vector2 end, List<Arc>) getDynamicPath(List<Vector2> path)
@@ -282,8 +279,9 @@ public class BasicGraphEnv : EnvBase
                     Debug.Log($"out of nodes! regenerating at {path[nodeCounter].node}");
 
                     if (lastWalkable != -1) nodeCounter = lastWalkable;
-                    path = GraphManager.GetRandomPath(graph, (path[nodeCounter - 1].node, path[nodeCounter].node));
-                    nodes = path.Select(n => (graph.Nodes[n.node], n.isWalkable)).ToList();
+                    path = GraphManager.GetRandomPath(Graph, (path[nodeCounter - 1].node, path[nodeCounter].node),
+                        random);
+                    nodes = path.Select(n => (Graph.Nodes[n.node], n.isWalkable)).ToList();
                     nodeCounter = 1;
                     return;
                 }

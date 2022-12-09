@@ -314,6 +314,8 @@ namespace OlympicWords.Services
         {
             var tasks = new List<Task>();
 
+            var seed = StaticRandom.GetRandom(9999);
+
             for (var i = 0; i < turnSortedUsersInfo.Count; i++)
             {
                 var userInfo = turnSortedUsersInfo[i];
@@ -327,7 +329,7 @@ namespace OlympicWords.Services
                 var chosenPowerUps = room.RoomActors.Select(a => a.ChosenPowerUp);
 
                 var task = masterHub.SendOrderedAsync(ru.ActiveUser, "PrepareRequestedRoomRpc",
-                    turnSortedUsersInfo, i, room.Text, room.FillerWords, chosenPowerUps);
+                    turnSortedUsersInfo, i, room.Text, seed, room.FillerWords, chosenPowerUps);
 
                 //changes in the same room when he disconnect
                 logger.LogInformation("prepare sent");

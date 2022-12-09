@@ -47,10 +47,7 @@ public class NetManager : MonoModule<NetManager>
         base.Awake();
 
         FetchRpcInfos();
-
-        serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = GetServerAddress();
     }
-
 
     private void DownStream()
     {
@@ -82,7 +79,7 @@ public class NetManager : MonoModule<NetManager>
     {
         // try
         // {
-        Debug.Log($"received: {JsonConvert.SerializeObject(playerBuffers)}");
+        // Debug.Log($"received: {JsonConvert.SerializeObject(playerBuffers)}");
         for (var p = 0; p < playerBuffers.Length; p++)
             if (p != EnvBase.I.MyTurn)
                 foreach (var digit in playerBuffers[p])
@@ -139,11 +136,7 @@ public class NetManager : MonoModule<NetManager>
         return hubConnection.InvokeAsync<T>(method, args);
     }
 
-    [SerializeField] private int selectedAddress;
-    [SerializeField] private string[] addresses;
-    [SerializeField] private ChoiceButton serverAddressChoice;
-    [SerializeField] private TMP_InputField customAddress;
-    [SerializeField] private TMP_Text chosenAddressText;
+    public string SelectedAddress;
 
     private (string token, string provider) currentAuth;
 
@@ -194,12 +187,6 @@ public class NetManager : MonoModule<NetManager>
         return JsonConvert.DeserializeObject<T>(response.DataAsText);
     }
 
-    public string GetServerAddress()
-    {
-        return serverAddressChoice.CurrentChoice >= addresses.Length
-            ? customAddress.text
-            : addresses[serverAddressChoice.CurrentChoice];
-    }
 
     public NameValueCollection GetAuthQuery()
     {
@@ -212,15 +199,25 @@ public class NetManager : MonoModule<NetManager>
     }
 
     //I use event functions because awaiting returns hub conn and this is useless
-    public void ConnectToServer(string accessToken, string provider)
+    public void ConnectToServer(string accessToken, string provider,
+        (string provider, string accessToken, bool overwrite) original = default)
     {
+        SelectedAddress = GuestView.I.GetServerAddress();
+
         currentAuth = (accessToken, provider);
 
         Debug.Log("connecting to server");
 
         var query = GetAuthQuery();
 
-        var uriBuilder = new UriBuilder(Extensions.UriCombine(GetServerAddress(), "/connect"))
+        if (original != default)
+        {
+            query["original_provider"] = original.provider;
+            query["original_provider_token"] = original.accessToken;
+            query["link_overwrite"] = original.overwrite.ToString();
+        }
+
+        var uriBuilder = new UriBuilder(Extensions.UriCombine(SelectedAddress, "/connect"))
         {
             Query = query.ToString()
         };
@@ -271,6 +268,10 @@ public class NetManager : MonoModule<NetManager>
     private void OnConnected(HubConnection obj)
     {
         IsConnected = true;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        JsManager.HideFbButton();
+#endif
 
         Debug.Log("connected to server");
 

@@ -37,6 +37,7 @@ MonoBehaviour:
   dirtTexture:
     m_OverrideState: 0
     m_Value: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+    dimension: 1
   dirtIntensity:
     m_OverrideState: 0
     m_Value: 5
@@ -203,8 +204,8 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
-          time: 0.32801357
-          value: 0.46830988
+          time: 0.3952715
+          value: 0.6783761
           inSlope: 1.3670374
           outSlope: 1.3670374
           tangentMode: 0
@@ -260,8 +261,8 @@ MonoBehaviour:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: 0.3773848
-          value: 0.7382352
+          time: 0.7986701
+          value: 0.71116316
           inSlope: 0
           outSlope: 0
           tangentMode: 0

@@ -16,8 +16,14 @@ public class Controller : MonoModule<Controller>
     public class ScopeReferences
     {
         public MonoModule<LevelUpPanel> LevelUpView;
-        public GameObject BlockingPanelPrefab;
-        
+        public GameObject
+            BlockingPanelPrefab,
+            PopupPrefab,
+            FuvPrefab,
+            PersonalFuvPrefab,
+            MuvPrefab,
+            ToastPrefab;
+
         public void SetSources()
         {
             LevelUpPanel.SetSource(LevelUpView.gameObject, I.canvas);

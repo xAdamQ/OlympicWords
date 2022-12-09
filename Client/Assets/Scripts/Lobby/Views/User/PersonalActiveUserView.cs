@@ -9,11 +9,6 @@ using UnityEngine.AddressableAssets;
 /// </summary>
 public class PersonalActiveUserView : MinUserView
 {
-    public static async UniTask Create()
-    {
-        await Addressables.InstantiateAsync("personalActiveUserView", LobbyController.I.Canvas);
-    }
-
     [SerializeField] private TMP_Text money;
 
     [SerializeField] private MoneyAidButton moneyAidButton;

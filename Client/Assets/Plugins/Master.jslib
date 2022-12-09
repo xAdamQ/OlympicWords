@@ -73,7 +73,11 @@ mergeInto(LibraryManager.library, {
     },
 
     ShowFbButton: function () {
-        showFbButton();
+        ShowFbButton();
+    },
+
+    HideFbButton: function () {
+        HideFbButton();
     },
 
 

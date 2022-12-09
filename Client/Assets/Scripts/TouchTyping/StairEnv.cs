@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Random = System.Random;
 
 public class StairEnv : EnvBase
 {
@@ -62,14 +63,18 @@ public class StairEnv : EnvBase
         base.Awake();
         I = this;
     }
+    protected override void GenerateDigits(Random random)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// when envebase calls his method, it will call this, because this is right version (not tested)
     /// </summary>
-    public override void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text,
+    public override void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text, int randomSeed,
         List<(int index, int player)> fillerWords, List<int> chosenPowerUps)
     {
-        base.PrepareRequestedRoomRpc(userInfos, myTurn, text, fillerWords, chosenPowerUps);
+        base.PrepareRequestedRoomRpc(userInfos, myTurn, text, randomSeed, fillerWords, chosenPowerUps);
 
         for (var i = 0; i < Capacity; i++)
             stairs.Add(new List<Stair>());
@@ -86,11 +91,6 @@ public class StairEnv : EnvBase
             circular = TestController.I.circular;
             useRepetition = TestController.I.useRepetition;
         }
-    }
-
-    protected override void GenerateDigits()
-    {
-        throw new NotImplementedException();
     }
 
     // private void GenerateDigits(string word, Stair stair)
@@ -254,6 +254,4 @@ public class StairEnv : EnvBase
             stairs[i].Add(stair);
         }
     }
-
-
 }

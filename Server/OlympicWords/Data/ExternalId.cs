@@ -24,7 +24,7 @@ namespace OlympicWords.Services
 
     public enum ExternalIdType
     {
-        Demo, //leave it even when disabled in production
+        Guest, //leave it even when disabled in production
         Facebook,
         Huawei,
     }

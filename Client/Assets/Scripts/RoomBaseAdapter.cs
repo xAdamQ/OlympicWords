@@ -1,5 +1,7 @@
-﻿using TMPro;
+﻿using Cysharp.Threading.Tasks;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RoomBaseAdapter : MonoModule<RoomBaseAdapter>
 {
@@ -13,6 +15,10 @@ public class RoomBaseAdapter : MonoModule<RoomBaseAdapter>
 
     public void Surrender()
     {
-        MasterHub.I.Surrender();
+        UniTask.Create(async () =>
+        {
+            await MasterHub.I.Surrender();
+            SceneManager.LoadScene("Lobby");
+        });
     }
 }

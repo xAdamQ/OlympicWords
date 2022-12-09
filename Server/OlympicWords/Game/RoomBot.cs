@@ -4,7 +4,7 @@ namespace OlympicWords.Services
     {
         public RoomBot(string id, Room room) : base(id, room)
         {
-            ChosenPowerUp = 2;
+            ChosenPowerUp = 0;
             // StaticRandom.GetRandom(3);
         }
     }
