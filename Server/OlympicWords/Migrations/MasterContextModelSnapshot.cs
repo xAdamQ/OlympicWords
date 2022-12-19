@@ -273,7 +273,7 @@ namespace OlympicWords.Migrations
                         });
                 });
 
-            modelBuilder.Entity("OlympicWords.Services.ExternalId", b =>
+            modelBuilder.Entity("OlympicWords.Services.ProviderLink", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(256)
@@ -308,6 +308,23 @@ namespace OlympicWords.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UserPictures");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "999",
+                            AvatarId = 1
+                        },
+                        new
+                        {
+                            UserId = "9999",
+                            AvatarId = 2
+                        },
+                        new
+                        {
+                            UserId = "99999",
+                            AvatarId = 3
+                        });
                 });
 
             modelBuilder.Entity("OlympicWords.Services.UserRelation", b =>
@@ -344,10 +361,10 @@ namespace OlympicWords.Migrations
                         });
                 });
 
-            modelBuilder.Entity("OlympicWords.Services.ExternalId", b =>
+            modelBuilder.Entity("OlympicWords.Services.ProviderLink", b =>
                 {
                     b.HasOne("OlympicWords.Data.User", "User")
-                        .WithMany("ExternalIds")
+                        .WithMany("Providers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -386,13 +403,13 @@ namespace OlympicWords.Migrations
 
             modelBuilder.Entity("OlympicWords.Data.User", b =>
                 {
-                    b.Navigation("ExternalIds");
-
                     b.Navigation("FollowerRelations");
 
                     b.Navigation("FollowingRelations");
 
                     b.Navigation("Picture");
+
+                    b.Navigation("Providers");
                 });
 #pragma warning restore 612, 618
         }

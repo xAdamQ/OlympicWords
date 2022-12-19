@@ -8,19 +8,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CsvHelper" Version="27.2.1"/>
-        <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30"/>
-        <PackageReference Include="Hangfire.Core" Version="1.7.30"/>
-        <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0"/>
-        <PackageReference Include="Microsoft.Azure.SignalR" Version="1.19.1"/>
+        <PackageReference Include="AutoMapper" Version="12.0.0" />
+        <PackageReference Include="CsvHelper" Version="27.2.1" />
+        <PackageReference Include="EntityFrameworkCore.NCache" Version="5.3.0" />
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.7.30" />
+        <PackageReference Include="Hangfire.Core" Version="1.7.30" />
+        <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
+        <PackageReference Include="Lib.AspNetCore.ServerSentEvents" Version="8.2.0" />
+        <PackageReference Include="Microsoft.Azure.SignalR" Version="1.19.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.9"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5"/>
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,6 +36,10 @@
         <Content Include="Cert\*">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="NGINX" />
     </ItemGroup>
 
 </Project>

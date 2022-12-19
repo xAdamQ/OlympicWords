@@ -1,29 +1,35 @@
-﻿using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
-
-namespace OlympicWords.Services
+﻿namespace OlympicWords.Services
 {
     public class RoomUser : RoomActor
     {
-        public bool IsReady { get; set; }
+        public string ConnectionId { get; }
+        public Type Domain { get; set; }
+        public int MessageIndex { get; set; }
 
-        public ActiveUser ActiveUser { get; set; }
+        public event Action Disconnected;
+
+        public void Disconnect()
+        {
+            Active = false;
+            Disconnected?.Invoke();
+        }
+
+        public bool IsReady { get; set; }
 
         public int[] BufferSyncPointers { get; set; }
 
         //false when the game is finished or the user surrendered, kicked or disconnected on pending
-        public bool InRoom { get; set; }
+        public bool Active { get; private set; }
 
 
-        public RoomUser(string id, Room room, ActiveUser activeUser) : base(id, room)
+        public RoomUser(string id, Room room, string connectionId) : base(id, room)
         {
-            ActiveUser = activeUser;
-
+            // ActiveUser = activeUser;
+            ConnectionId = connectionId;
+            Domain = typeof(UserDomain.Room);
             BufferSyncPointers = new int[room.Capacity];
         }
 
         public CancellationTokenSource Cancellation { get; } = new();
-
-
     }
 }

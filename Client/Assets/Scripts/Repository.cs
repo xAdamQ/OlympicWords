@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
 
-public class Repository : Singleton<Repository>
+public class Repository
+    // : Singleton<Repository>
 {
+    public static Repository I;
+
     public PersonalFullUserInfo PersonalFullInfo;
     public MinUserInfo[] YesterdayChampions;
     public MinUserInfo[] TopFriends;
 
-    public Repository(PersonalFullUserInfo personalFullInfo, MinUserInfo[] yesterdayChampions,
-        MinUserInfo[] topFriends) : base()
-    {
-        PersonalFullInfo = personalFullInfo;
-        YesterdayChampions = yesterdayChampions;
-        TopFriends = topFriends;
-    }
+    // public Repository(PersonalFullUserInfo personalFullInfo, MinUserInfo[] yesterdayChampions,
+    //     MinUserInfo[] topFriends) : base()
+    // {
+    //     PersonalFullInfo = personalFullInfo;
+    //     YesterdayChampions = yesterdayChampions;
+    //     TopFriends = topFriends;
+    // }
 }

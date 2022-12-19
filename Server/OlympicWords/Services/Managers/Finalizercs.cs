@@ -37,11 +37,11 @@ namespace OlympicWords.Services
         public async Task Surrender()
         {
             scopeRepo.RemoveRoomUser();
-            scopeRepo.ActiveUser.Domain = typeof(UserDomain.App.Lobby.Idle);
+            scopeRepo.RoomUser.Domain = typeof(UserDomain.Stateless);
 
             var room = scopeRepo.Room;
             var roomUser = scopeRepo.RoomUser;
-            var dataUser = await offlineRepo.GetUserByIdAsyc(roomUser.Id);
+            var dataUser = await offlineRepo.GetCurrentUserAsync();
 
             //dataUser.Money -= room.SurrenderPenalty;
             //bet money is enough penalty for preventing enter and leave misuse
@@ -50,7 +50,9 @@ namespace OlympicWords.Services
             await offlineRepo.SaveChangesAsync();
 
             foreach (var ru in room.InRoomUsers.Where(ru => ru != roomUser))
-                await masterHub.SendOrderedAsync(ru.ActiveUser, "UserSurrender", roomUser.Id);
+                await masterHub.SendOrderedAsync(ru, "UserSurrender", roomUser.Id);
+
+            // masterHub.Clients.Client(scopeRepo.UserId).
         }
 
         public async Task FinalizeUser()
@@ -58,12 +60,11 @@ namespace OlympicWords.Services
             logger.LogInformation("finalize room");
             var room = scopeRepo.Room;
             var roomActor = scopeRepo.RoomActor;
-            var realUser = roomActor is RoomUser;
-            var activeUser = realUser ? scopeRepo.ActiveUser : null;
-            var dataUser = await offlineRepo.GetUserByIdAsyc(roomActor.Id);
+            var realUser = roomActor as RoomUser;
+            var dataUser = await offlineRepo.GetCurrentUserAsync();
 
-            if (realUser)
-                activeUser.Domain = typeof(UserDomain.App.Room.Finished);
+            if (realUser is not null)
+                realUser.Domain = typeof(UserDomain.Room.Finished);
 
             roomActor.EndTime = DateTime.Now;
 
@@ -80,16 +81,16 @@ namespace OlympicWords.Services
             dataUser.PlayedRoomsCount++;
             //todo add long term statistics like top 3 positions count, max and average wpm(no need for graph)
 
-            await LevelUp(dataUser, activeUser);
+            await LevelUp(dataUser);
 
             await offlineRepo.SaveChangesAsync();
 
-            if (realUser)
-                await masterHub.SendOrderedAsync(scopeRepo.ActiveUser, "FinalizeRoom",
+            if (realUser is not null)
+                await masterHub.SendOrderedAsync(scopeRepo.RoomUser, "FinalizeRoom",
                     userRoomStatus);
 
             foreach (var oppo in room.InRoomUsers.Where(ru => ru != roomActor))
-                await masterHub.SendOrderedAsync(oppo.ActiveUser, "TakeOppoUserRoomStatus",
+                await masterHub.SendOrderedAsync(oppo, "TakeOppoUserRoomStatus",
                     roomActor.TurnId,
                     userRoomStatus);
 
@@ -117,7 +118,7 @@ namespace OlympicWords.Services
         /// check current level against xp to level up and send to client
         /// functions that takes data user as param doesn't save changes
         /// </summary>
-        private async Task LevelUp(User roomDataUser, ActiveUser activeUser)
+        private async Task LevelUp(User roomDataUser)
         {
             var calcedLevel = Room.GetLevelFromXp(roomDataUser.Xp);
             if (calcedLevel > roomDataUser.Level)
@@ -134,8 +135,8 @@ namespace OlympicWords.Services
                 roomDataUser.Level = calcedLevel;
                 roomDataUser.Money += totalMoneyReward;
 
-                if (activeUser != null)
-                    await masterHub.SendOrderedAsync(activeUser, "LevelUp", calcedLevel,
+                if (scopeRepo.IsRealOwner)
+                    await masterHub.SendOrderedAsync(scopeRepo.RoomUser, "LevelUp", calcedLevel,
                         totalMoneyReward);
             }
         } //separate this to be called on every XP change 

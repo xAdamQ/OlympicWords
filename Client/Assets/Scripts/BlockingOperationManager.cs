@@ -36,22 +36,25 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     public async UniTask Start(Task operation)
     {
         BlockingPanel.Show();
+
         try
         {
             await operation;
-            BlockingPanel.Hide();
         }
-        catch (BadUserInputException) //todo test if you can get bad user input exc here
+        //todo test if you can get bad user input exc here
+        catch (BadUserInputException)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("operation is not allowed");
             throw;
         }
         catch (Exception)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("something wrong happened");
             throw;
+        }
+        finally
+        {
+            BlockingPanel.Hide();
         }
     }
     /// <summary>
@@ -63,19 +66,20 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
         try
         {
             await operation;
-            BlockingPanel.Hide();
         }
-        catch (BadUserInputException) //todo test if you can get bad user input exc here
+        catch (BadUserInputException)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("operation is not allowed");
             throw;
         }
         catch (Exception)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("something wrong happened");
             throw;
+        }
+        finally
+        {
+            BlockingPanel.Hide();
         }
     }
     /// <summary>
@@ -87,19 +91,20 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
         try
         {
             await operation;
-            BlockingPanel.Hide();
         }
-        catch (BadUserInputException) //todo test if you can get bad user input exc here
+        catch (BadUserInputException)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("operation is not allowed");
             throw;
         }
         catch (Exception)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("something wrong happened");
             throw;
+        }
+        finally
+        {
+            BlockingPanel.Hide();
         }
     }
     /// <summary>
@@ -111,20 +116,21 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
         try
         {
             var result = await operation;
-            BlockingPanel.Hide();
             return result;
         }
-        catch (BadUserInputException) //todo test if you can get bad user input exc here
+        catch (BadUserInputException)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("operation is not allowed");
             throw;
         }
         catch (Exception)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("something wrong happened");
             throw;
+        }
+        finally
+        {
+            BlockingPanel.Hide();
         }
     }
     /// <summary>
@@ -136,20 +142,21 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
         try
         {
             var result = await operation;
-            BlockingPanel.Hide();
             return result;
         }
-        catch (BadUserInputException) //todo test if you can get bad user input exc here
+        catch (BadUserInputException)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("operation is not allowed");
             throw;
         }
         catch (Exception)
         {
-            BlockingPanel.Hide();
             Toast.I.Show("something wrong happened");
             throw;
+        }
+        finally
+        {
+            BlockingPanel.Hide();
         }
     }
 }

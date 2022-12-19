@@ -12,35 +12,36 @@ namespace OlympicWords.Services
 {
     public interface ILobbyManager
     {
-        Task RequestMoneyAid(ActiveUser activeUser);
-        Task ClaimMoneyAim(ActiveUser activeUser);
+        Task RequestMoneyAid();
+        Task ClaimMoneyAim();
 
-        Task BuyCardBack(int cardbackId, string activeUserId);
-        Task BuyBackground(int backgroundId, string activeUserId);
-        Task SelectCardback(int cardbackId, string activeUserId);
-        Task SelectBackground(int backgroundId, string activeUserId);
-        Task MakePurchase(ActiveUser activeUser, string purchaseData, string sign);
+        Task BuyCardBack(int cardbackId);
+        Task BuyBackground(int backgroundId);
+        Task SelectCardback(int cardbackId);
+        Task SelectBackground(int backgroundId);
+        Task MakePurchase(string purchaseData, string sign);
     }
 
-    //todo split this to shop and other things for example
     public class LobbyManager : ILobbyManager
     {
         private readonly IOfflineRepo offlineRepo;
         private readonly IBackgroundJobClient backgroundJobClient;
         private readonly IHubContext<MasterHub> masterHub;
+        private readonly IScopeRepo scopeRepo;
         // private readonly IRequestCache _requestCache;
 
         public LobbyManager(IOfflineRepo offlineRepo, IBackgroundJobClient backgroundJobClient,
-            IHubContext<MasterHub> masterHub)
+            IHubContext<MasterHub> masterHub, IScopeRepo scopeRepo)
         {
             this.offlineRepo = offlineRepo;
             this.backgroundJobClient = backgroundJobClient;
             this.masterHub = masterHub;
+            this.scopeRepo = scopeRepo;
         }
 
-        public async Task RequestMoneyAid(ActiveUser activeUser)
+        public async Task RequestMoneyAid()
         {
-            var user = await offlineRepo.GetUserByIdAsyc(activeUser.Id);
+            var user = await offlineRepo.GetCurrentUserAsync();
             if (user.IsMoneyAidProcessing)
                 throw new Exceptions.BadUserInputException(
                     "the user requested money while there's a waiting request");
@@ -73,9 +74,9 @@ namespace OlympicWords.Services
         //     await _masterRepo.SaveChangesAsync();
         // } //issue changes, no test
 
-        public async Task ClaimMoneyAim(ActiveUser activeUser)
+        public async Task ClaimMoneyAim()
         {
-            var user = await offlineRepo.GetUserByIdAsyc(activeUser.Id);
+            var user = await offlineRepo.GetCurrentUserAsync();
 
             if (user.LastMoneyAimRequestTime == null)
                 throw new Exceptions.BadUserInputException(
@@ -111,9 +112,9 @@ namespace OlympicWords.Services
         2- add it's string adress to the client and append this address in the enum as last element
         */
 
-        public async Task BuyCardBack(int cardbackId, string activeUserId)
+        public async Task BuyCardBack(int cardbackId)
         {
-            var user = await offlineRepo.GetUserByIdAsyc(activeUserId);
+            var user = await offlineRepo.GetCurrentUserAsync();
 
             if (cardbackId < 0 || cardbackId >= CardbackPrices.Length)
                 throw new Exceptions.BadUserInputException("client give cardback id exceed count");
@@ -137,9 +138,9 @@ namespace OlympicWords.Services
 
             await offlineRepo.SaveChangesAsync();
         }
-        public async Task BuyBackground(int backgroundId, string activeUserId)
+        public async Task BuyBackground(int backgroundId)
         {
-            var user = await offlineRepo.GetUserByIdAsyc(activeUserId);
+            var user = await offlineRepo.GetCurrentUserAsync();
 
             if (backgroundId < 0 || backgroundId >= BackgroundPrices.Length)
                 throw new Exceptions.BadUserInputException("client give background id exceed count");
@@ -157,9 +158,9 @@ namespace OlympicWords.Services
         }
         //I tested cardback bu bu it's applicable on both
 
-        public async Task SelectCardback(int cardbackId, string activeUserId)
+        public async Task SelectCardback(int cardbackId)
         {
-            var user = await offlineRepo.GetUserByIdAsyc(activeUserId);
+            var user = await offlineRepo.GetCurrentUserAsync();
 
             if (!user.OwnedCardBackIds.Contains(cardbackId))
                 throw new Exceptions.BadUserInputException(
@@ -171,9 +172,9 @@ namespace OlympicWords.Services
 
             await offlineRepo.SaveChangesAsync();
         } //trivial to test
-        public async Task SelectBackground(int backgroundId, string activeUserId)
+        public async Task SelectBackground(int backgroundId)
         {
-            var user = await offlineRepo.GetUserByIdAsyc(activeUserId);
+            var user = await offlineRepo.GetCurrentUserAsync();
 
             if (!user.OwnedBackgroundIds.Contains(backgroundId))
                 throw new Exceptions.BadUserInputException(
@@ -186,7 +187,7 @@ namespace OlympicWords.Services
             await offlineRepo.SaveChangesAsync();
         }
 
-        public async Task MakePurchase(ActiveUser activeUser, string purchaseData, string sign)
+        public async Task MakePurchase(string purchaseData, string sign)
         {
             dynamic dataObj = JObject.Parse(purchaseData);
             string productId = dataObj.productId;
@@ -194,24 +195,24 @@ namespace OlympicWords.Services
             switch (productId)
             {
                 case "money500":
-                    await AddMoney(activeUser, 500);
+                    await AddMoney(500);
                     break;
 
                 case "money3000":
-                    await AddMoney(activeUser, 3000);
+                    await AddMoney(3000);
                     break;
             }
         }
 
-        private async Task AddMoney(ActiveUser activeUser, int amount)
+        private async Task AddMoney(int amount)
         {
-            var dUser = await offlineRepo.GetUserByIdAsyc(activeUser.Id);
+            var dUser = await offlineRepo.GetCurrentUserAsync();
 
             dUser.Money += amount;
 
             await offlineRepo.SaveChangesAsync();
 
-            await masterHub.SendOrderedAsync(activeUser, "AddMoney", amount);
+            await masterHub.SendOrderedAsync(scopeRepo.RoomUser, "AddMoney", amount);
         }
 
         public static bool VerifyIapSign(string content, string sign, string pubKey)

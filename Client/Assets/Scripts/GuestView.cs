@@ -1,4 +1,6 @@
 using System;
+using Cysharp.Threading.Tasks;
+using Shared;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -16,6 +18,7 @@ public class GuestView : MonoModule<GuestView>
     protected override void Awake()
     {
         base.Awake();
+        NetManager.I.SelectedAddress = addresses[0];
         serverAddressChoice.ChoiceChanged += _ => chosenAddressText.text = GetServerAddress();
     }
 
@@ -28,7 +31,7 @@ public class GuestView : MonoModule<GuestView>
 
     public void StartWithId()
     {
-        NetManager.I.ConnectToServer(idInput.text, "Guest");
+        BlockingOperationManager.I.Forget(NetManager.I.Login(idInput.text, ProviderType.Guest));
     }
 
     public void AddChar(string chr)
@@ -45,11 +48,12 @@ public class GuestView : MonoModule<GuestView>
 
     public void FacebookConnect()
     {
-        NetManager.I.ConnectToServer(accessTokenField.text, "Facebook");
+        BlockingOperationManager.I.Forget(NetManager.I.Login(accessTokenField.text, ProviderType.Facebook));
     }
 
     public void StartWithRandomId()
     {
-        NetManager.I.ConnectToServer(Random.Range(0, int.MaxValue).ToString(), "Guest");
+        var id = Random.Range(10000, 99999).ToString();
+        BlockingOperationManager.I.Forget(NetManager.I.Login(id, ProviderType.Guest));
     }
 }

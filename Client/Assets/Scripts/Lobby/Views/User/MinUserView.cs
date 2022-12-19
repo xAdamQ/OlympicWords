@@ -65,7 +65,7 @@ public class MinUserView : MonoBehaviour
     {
         UniTask.Create(async () =>
         {
-            var fullInfo = await BlockingOperationManager.I.Start(MasterHub.I.GetUserData(Id));
+            var fullInfo = await BlockingOperationManager.I.Start(Controllers.User.Public(Id));
             fullInfo.PictureSprite = MinUserInfo.PictureSprite;
             FullUserView.Show(fullInfo);
         });

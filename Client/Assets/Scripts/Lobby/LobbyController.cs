@@ -26,7 +26,10 @@ public class LobbyController : MonoModule<LobbyController>
             .Forget(e => throw e);
     }
 
-   
+    public void TestMessage()
+    {
+        NetManager.I.Send("TestMessage");
+    }
 
     // [Rpc]
     // public void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text,

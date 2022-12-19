@@ -83,9 +83,9 @@ public class ShopItem : MonoBehaviour
         }
 
         if (Shop.Active.ItemType == ItemType.Cardback)
-            await MasterHub.I.BuyCardback(id);
+            await Controllers.Lobby.BuyCardback(id);
         else
-            await MasterHub.I.BuyBackground(id);
+            await Controllers.Lobby.BuyBackground(id);
 
         //stop interaction? it depends on whether interacting will create issues or not.
         //and usually it will
@@ -123,9 +123,9 @@ public class ShopItem : MonoBehaviour
         }
 
         if (Shop.Active.ItemType == ItemType.Cardback)
-            await MasterHub.I.SelectCardback(id);
+            await Controllers.Lobby.SelectCardback(id);
         else
-            await MasterHub.I.SelectBackground(id);
+            await Controllers.Lobby.SelectBackground(id);
 
         if (Shop.Active.ItemType == ItemType.Cardback)
             Repository.I.PersonalFullInfo.SelectedCardback = id;

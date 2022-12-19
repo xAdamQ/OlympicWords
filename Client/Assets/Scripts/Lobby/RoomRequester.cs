@@ -34,13 +34,14 @@ public class RoomRequester : MonoBehaviour
             return;
         }
 
-        var operation = MasterHub.I.RequestRandomRoom
-            (betChoice, capacityChoiceButton.CurrentChoice);
-        await BlockingOperationManager.I.Start(operation);
+        UniTask.Create(async () =>
+        {
+            await NetManager.I.StartRandomRoom(betChoice, capacityChoiceButton.CurrentChoice);
 
-        LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
+            LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
 
-        await SwitchScene(betChoice);
+            await SwitchScene(betChoice);
+        });
 
         // BlockingPanel.Show("finding players")
         //     .Forget(e => throw e);

@@ -1,6 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
+using Shared;
 using UnityEngine;
 
 public class SignInPanel : MonoModule<SignInPanel>
@@ -8,32 +9,45 @@ public class SignInPanel : MonoModule<SignInPanel>
     [SerializeField] private GameObject guestLoginButton, havingTroubleButton, linkAdvice;
 
     // ReSharper disable once Unity.IncorrectMethodSignature
+    // ReSharper disable once UnusedMember.Local
     private async UniTaskVoid Start()
     {
-        if (!FbManager.IsLoggedInBefore())
+        var (p, t) = NetManager.I.GetActiveAuth();
+
+        if (string.IsNullOrEmpty(t))
         {
             FbManager.ShowButton();
             ShowGuest();
-            return;
         }
-
-        if (!await FbManager.IsTokenValid())
+        else if (p == ProviderType.Facebook)
         {
-            FbManager.ShowButton();
-            ShowHavingTrouble();
-            return;
+            if (!await FbManager.IsTokenValid())
+            {
+                FbManager.ShowButton();
+                ShowHavingTrouble();
+            }
+            else
+            {
+                try
+                {
+                    CachedLogin(p, t);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("failed to auto login fb due to: " + e);
+                    FbManager.ShowButton();
+                    ShowHavingTrouble();
+                }
+            }
         }
-
-        try
+        else if (p == ProviderType.Guest)
         {
-            FbManager.CachedLogin();
+            CachedLogin(p, t);
         }
-        catch (Exception e)
-        {
-            Debug.LogError("failed to auto login fb due to: " + e);
-            FbManager.ShowButton();
-            ShowHavingTrouble();
-        }
+    }
+    private void CachedLogin(ProviderType p, string t)
+    {
+        BlockingOperationManager.I.Forget(NetManager.I.Login(t, p));
     }
 
     private void ShowGuest()
@@ -58,15 +72,11 @@ public class SignInPanel : MonoModule<SignInPanel>
 
     public void LoginAsGuest()
     {
-        var guestToken = PlayerPrefs.GetString("GuestGuid");
+        var guestToken = NetManager.I.GetToken(ProviderType.Guest);
 
         if (string.IsNullOrEmpty(guestToken))
-        {
             guestToken = Guid.NewGuid().ToString();
-            PlayerPrefs.SetString("GuestGuid", guestToken);
-            // NetManager.I.Connected += cacheGuestGuid;
-        }
 
-        NetManager.I.ConnectToServer(guestToken, "Guest");
+        NetManager.I.Login(guestToken, ProviderType.Guest).Forget(e => throw e);
     }
 }

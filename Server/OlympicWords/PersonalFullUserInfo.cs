@@ -7,11 +7,11 @@ namespace OlympicWords.Common
     {
         public double? MoneyAimTimePassed { get; set; }
 
-        public int MoneyAidRequested { get; set; }
+        public int RequestedMoneyAidToday { get; set; }
 
         public int FlipWinCount { get; set; }
 
-        public List<int> Titles { get; set; }
+        public List<int> OwnedTitleIds { get; set; }
 
         public DateTime? LastMoneyAimRequestTime { get; set; }
 

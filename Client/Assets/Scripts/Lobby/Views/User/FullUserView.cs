@@ -1,21 +1,12 @@
-using System;
+using Common.Lobby;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
 public class FullUserView : MinUserView
 {
-    public enum MatchRequestResult
-    {
-        Offline,
-        Playing,
-        NoMoney,
-        Available,
-    }
-
     [SerializeField] private TMP_Text
         moneyText,
         playedRoomsText,
@@ -104,7 +95,7 @@ public class FullUserView : MinUserView
 
         UniTask.Create(async () =>
         {
-            var res = await MasterHub.I.RequestMatch(Id);
+            var res = await Controllers.Lobby.RequestMatch(Id);
 
             if (res == MatchRequestResult.Available)
                 BlockingPanel.Show("a challenge request is sent to the player",
@@ -118,7 +109,7 @@ public class FullUserView : MinUserView
     {
         UniTask.Create(async () =>
         {
-            await MasterHub.I.ToggleFollow(Id);
+            await Controllers.User.ToggleFollow(Id);
 
             Debug.Log("was:");
             Debug.Log(FullUserInfo.Friendship.ToString());
@@ -169,7 +160,7 @@ public class FullUserView : MinUserView
     {
         UniTask.Create(async () =>
         {
-            await MasterHub.I.ToggleOpenMatches();
+            await Controllers.User.ToggleOpenMatches();
             FullUserInfo.EnableOpenMatches = !FullUserInfo.EnableOpenMatches;
             UpdateOpenMatchesView();
         });

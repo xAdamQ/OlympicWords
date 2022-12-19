@@ -61,6 +61,6 @@ public class MinUserInfo
         PictureSprite = Sprite.Create(texture2D,
             new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
 
-        Debug.Log($"picture for player {Name} downloaded");
+        // Debug.Log($"picture for player {Name} downloaded");
     }
 }

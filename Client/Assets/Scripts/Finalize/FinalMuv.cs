@@ -75,7 +75,7 @@ public class FinalMuv : MinUserView
     {
         UniTask.Create(async () =>
         {
-            await MasterHub.I.ToggleFollow(Id);
+            await Controllers.User.ToggleFollow(Id);
 
             switch (fullUserInfo.Friendship)
             {

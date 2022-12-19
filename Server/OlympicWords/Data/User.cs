@@ -63,7 +63,7 @@ namespace OlympicWords.Data
         /// </summary>
         public bool EnableOpenMatches { get; set; }
 
-        public virtual List<ExternalId> ExternalIds { get; set; }
+        public virtual List<ProviderLink> Providers { get; set; }
 
         /// <summary>
         /// relations were I am the follower

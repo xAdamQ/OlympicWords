@@ -1,9 +1,3 @@
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
 namespace OlympicWords.Services
@@ -14,11 +8,9 @@ namespace OlympicWords.Services
         /// when players a late for ready
         /// </summary>
         void SetForceStartRoomTimeout(Room room);
-
         void CancelForceStart(Room room);
         void SetupPendingRoomTimeoutIfNotExist(Room room);
         void CancelPendingRoomTimeout(Room room);
-        void BotLoop(RoomBot roomBot, CancellationToken cancellationToken);
         void StartGame(Room room);
     }
 
@@ -33,6 +25,7 @@ namespace OlympicWords.Services
             this.logger = logger;
         }
 
+        #region pending room timout
         private Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
         private const int PENDING_ROOM_TIMEOUT = 4 * 1000;
         public void SetupPendingRoomTimeoutIfNotExist(Room room)
@@ -51,7 +44,13 @@ namespace OlympicWords.Services
             PendingRoomCancellations.Remove(room);
 
             using var scope = serviceScopeFactory.CreateScope();
+
+            var scopeRepo = scope.ServiceProvider.GetService<IScopeRepo>();
+            var persistantData = scope.ServiceProvider.GetService<PersistantData>();
+            persistantData!.FeedScope(scopeRepo);
+
             var roomRequester = scope.ServiceProvider.GetService<IMatchMaker>();
+
             await roomRequester!.FillPendingRoomWithBots(room);
         }
         public void CancelPendingRoomTimeout(Room room)
@@ -59,7 +58,9 @@ namespace OlympicWords.Services
             PendingRoomCancellations[room].Cancel();
             PendingRoomCancellations.Remove(room);
         }
+        #endregion
 
+        #region ready timoue
         private Dictionary<Room, CancellationTokenSource> ForceStartCancellations { get; } = new();
         private const int READY_TIMEOUT = 8 * 1000;
         public void SetForceStartRoomTimeout(Room room)
@@ -84,30 +85,34 @@ namespace OlympicWords.Services
             ForceStartCancellations[room].Cancel();
             ForceStartCancellations.Remove(room);
         }
+        #endregion
 
         public void StartGame(Room room)
         {
             foreach (var roomBot in room.Bots)
                 BotLoop(roomBot, room.CancellationTokenSource.Token);
 
-            room.SetUsersDomain<UserDomain.App.Room.Active>();
+            room.SetUsersDomain<UserDomain.Room.Active>();
             logger.LogInformation("all users are active");
 
-            room.Started = true;
-            room.RoomActors.ForEach(ru => ru.StartTime = DateTime.Now);
+            using var scope = serviceScopeFactory.CreateScope();
+            var masterHub = scope.ServiceProvider.GetService<IHubContext<MasterHub>>();
+            room.Start(masterHub);
         }
 
-        const string ALL_CHARS = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
-
-        //single loop for all bots to advance randomly on fixed update
+        /// <summary>
+        /// single loop for all bots to advance randomly on fixed update
+        /// </summary>
         public void BotLoop(RoomBot roomBot, CancellationToken cancellationToken)
         {
+            const string allChars = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
+
             Task.Factory.StartNew(async () =>
             {
                 var room = roomBot.Room;
 
                 using var scope = serviceScopeFactory.CreateScope();
-                scope.ServiceProvider.GetService<IScopeRepo>()!.SetOwner(roomBot: roomBot);
+                scope.ServiceProvider.GetService<IScopeRepo>()!.SetBotOwner(roomBot);
                 var gameplay = scope.ServiceProvider.GetService<IGameplay>()!;
 
                 while (roomBot.TextPointer < room.Text.Length)
@@ -125,7 +130,7 @@ namespace OlympicWords.Services
                     else
                         chr = StaticRandom.GetRandom(100) > Room.WRONG_CHAR_PROB
                             ? room.Text[roomBot.TextPointer]
-                            : ALL_CHARS[StaticRandom.GetRandom(ALL_CHARS.Length)];
+                            : allChars[StaticRandom.GetRandom(allChars.Length)];
 
                     await gameplay.ProcessChar(chr);
 
@@ -135,7 +140,6 @@ namespace OlympicWords.Services
         }
 
         #region friendly req
-
         // private Dictionary<(string, string), CancellationTokenSource>
         //     FriendlyMatchCancellations { get; } = new();
         // private List<Action> CancelTimoutDelegates;
@@ -183,7 +187,6 @@ namespace OlympicWords.Services
         // {
         //     return FriendlyMatchCancellations.ContainsKey(senderTarget);
         // }
-
         #endregion
     }
 }

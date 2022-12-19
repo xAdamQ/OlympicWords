@@ -21,7 +21,7 @@ namespace OlympicWords.Services
         public DbSet<User> Users { get; set; }
         public DbSet<UserPicture> UserPictures { get; set; }
         // public DbSet<UserRelation> UserRelations { get; set; }
-        public DbSet<ExternalId> ExternalIds { get; set; }
+        public DbSet<ProviderLink> ExternalIds { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -68,9 +68,9 @@ namespace OlympicWords.Services
             // modelBuilder.Entity<UserRelation>()
             // .HasKey(r => new { r.FollowerId, r.FollowingId });
 
-            modelBuilder.Entity<ExternalId>()
+            modelBuilder.Entity<ProviderLink>()
                 .HasOne(u => u.User)
-                .WithMany(u => u.ExternalIds)
+                .WithMany(u => u.Providers)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserPicture>()
@@ -177,9 +177,9 @@ namespace OlympicWords.Services
             modelBuilder.Entity<User>().Property(u => u.PictureUrl).HasMaxLength(512);
 
             //because facebook for example is very big
-            modelBuilder.Entity<ExternalId>().Property(id => id.Id).HasMaxLength(256);
+            modelBuilder.Entity<ProviderLink>().Property(id => id.Id).HasMaxLength(256);
 
-            modelBuilder.Entity<ExternalId>().Property(id => id.UserId).HasMaxLength(64);
+            modelBuilder.Entity<ProviderLink>().Property(id => id.UserId).HasMaxLength(64);
         }
 
         private void IntListConversion(ModelBuilder modelBuilder)

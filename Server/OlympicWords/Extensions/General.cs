@@ -85,7 +85,7 @@ namespace OlympicWords.Services.Extensions
             return value < max && value >= min;
         }
 
-        public static void Append<T>(this ConcurrentDictionary<int, T> concurrentDictionary,
+        public static void AppendWithId<T>(this ConcurrentDictionary<int, T> concurrentDictionary,
             ref int lastId, T value)
         {
             concurrentDictionary.TryAdd(Interlocked.Increment(ref lastId), value);
@@ -120,58 +120,58 @@ namespace OlympicWords.Services.Extensions
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method) where T : Hub
+            RoomUser roomUser, string method) where T : Hub
         {
-            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { (object)activeUser.MessageIndex++ });
+            await hub.Clients.User(roomUser.Id).SendCoreAsync(method,
+                new[] { (object)roomUser.MessageIndex++ });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1) where T : Hub
+            RoomUser roomUser, string method, object arg1) where T : Hub
         {
-            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { activeUser.MessageIndex++, arg1 });
+            await hub.Clients.User(roomUser.Id).SendCoreAsync(method,
+                new[] { roomUser.MessageIndex++, arg1 });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2) where T : Hub
+            RoomUser roomUser, string method, object arg1, object arg2) where T : Hub
         {
-            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { activeUser.MessageIndex++, arg1, arg2 });
+            await hub.Clients.User(roomUser.Id).SendCoreAsync(method,
+                new[] { roomUser.MessageIndex++, arg1, arg2 });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3)
+            RoomUser roomUser, string method, object arg1, object arg2, object arg3)
             where T : Hub
         {
-            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { activeUser.MessageIndex++, arg1, arg2, arg3 });
+            await hub.Clients.User(roomUser.Id).SendCoreAsync(method,
+                new[] { roomUser.MessageIndex++, arg1, arg2, arg3 });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3,
+            RoomUser roomUser, string method, object arg1, object arg2, object arg3,
             object arg4) where T : Hub
         {
-            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { activeUser.MessageIndex++, arg1, arg2, arg3, arg4 });
+            await hub.Clients.User(roomUser.Id).SendCoreAsync(method,
+                new[] { roomUser.MessageIndex++, arg1, arg2, arg3, arg4 });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3,
+            RoomUser roomUser, string method, object arg1, object arg2, object arg3,
             object arg4, object arg5)
             where T : Hub
         {
-            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { activeUser.MessageIndex++, arg1, arg2, arg3, arg4, arg5 });
+            await hub.Clients.User(roomUser.Id).SendCoreAsync(method,
+                new[] { roomUser.MessageIndex++, arg1, arg2, arg3, arg4, arg5 });
         }
 
         public static async Task SendOrderedAsync<T>(this IHubContext<T> hub,
-            ActiveUser activeUser, string method, object arg1, object arg2, object arg3,
+            RoomUser roomUser, string method, object arg1, object arg2, object arg3,
             object arg4, object arg5, object arg6)
             where T : Hub
         {
-            await hub.Clients.User(activeUser.Id).SendCoreAsync(method,
-                new[] { activeUser.MessageIndex++, arg1, arg2, arg3, arg4, arg5, arg6 });
+            await hub.Clients.User(roomUser.Id).SendCoreAsync(method,
+                new[] { roomUser.MessageIndex++, arg1, arg2, arg3, arg4, arg5, arg6 });
         }
 
         public static T GetLoggedInUserId<T>(this ClaimsPrincipal principal)
@@ -198,6 +198,13 @@ namespace OlympicWords.Services.Extensions
         {
             var randomIndex = StaticRandom.GetRandom(list.Count);
             return list[randomIndex];
+        }
+
+        public static bool CompareDomains<T2>(this Type t1)
+        {
+            var t2 = typeof(T2);
+
+            return t1.IsEquivalentTo(t2) && t1.IsSubclassOf(t2);
         }
     }
 }

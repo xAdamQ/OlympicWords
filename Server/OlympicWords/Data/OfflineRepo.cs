@@ -3,58 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Alachisoft.NCache.EntityFrameworkCore;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using OlympicWords.Common;
 using Microsoft.EntityFrameworkCore;
 using OlympicWords.Data;
-using OlympicWords.Services.Helpers;
+using Shared;
+using Mapper = OlympicWords.Services.Helpers.Mapper;
 
 namespace OlympicWords.Services
 {
     public interface IOfflineRepo
     {
         Task<User> CreateUserAsync(User user);
+        Task<User> GetUserAsync(string providerId, ProviderType providerType);
+        Task<List<User>> GetUsersAsync(List<string> ids);
+        Task<User> GetCurrentUserAsync();
+        void SetCurrentUser(User user);
+        void DeleteUserAsync(string id);
 
-        Task<string> GetNameOfUserAsync(string id);
-
-        // bool GetUserActiveState(string id);
-        Task<User> GetUserByEIdAsync(string eId, int eIdType);
-
-        Task<User> GetUserByIdAsyc(string id, bool track = true,
-            bool withFollowings = false, bool withFollowers = false);
-        Task<User> GetCurrentUser();
-
-        // void MarkAllUsersNotActive();
-        Task<bool> SaveChangesAsync();
-        // List<DisplayUser> GetRoomDisplayUsersAsync(Room room);
-
-        //
-        // // Task<Room> GetPendingRoomWithSpecs(int genre, int playerCount);
-        // // Task<Room> CreatePendingRoom(int genre, int playerCount);
-        // PendingRoom GetPendingRoomWithSpecs(int genre, int playerCount);
-        // PendingRoom MakeRoom(int genre, int userCount);
-        // RoomUser GetRoomUserWithId(string id);
-        // void DeleteRoom(Room room);
-        // RoomUser AddRoomUser(string id, string connId, PendingRoom pRoom);
-        // void RemovePendingRoom(PendingRoom pendingRoom);
-        //
-        // List<DisplayUser> GetRoomDisplayUsersAsync(PendingRoom pendingRoom);
-        // void StartRoomUser(RoomUser roomUser, int turnId, string roomId);
-        Task<List<User>> GetUsersByIdsAsync(List<string> ids);
+        Task<PersonalFullUserInfo> GetPersonalInfo(string providerId, ProviderType providerType);
+        Task<PersonalFullUserInfo> GetPersonalInfo();
         Task<FullUserInfo> GetFullUserInfoAsync(string id);
-        Task<List<FullUserInfo>> GetFullUserInfoListAsync(IEnumerable<string> ids);
-        Task DeleteUserAsync(string id);
 
-        Task<List<MinUserInfo>> GetFollowingsAsync(User user);
-        Task<List<MinUserInfo>> GetFollowersAsync(User user);
-        Task ToggleFollow(User user, User target);
+        Task ToggleFollow(string target);
         Task<FriendShip> GetFriendship(string userId, string targetId);
-        Task CreateExternalId(ExternalId externalId);
 
-        string ChooseText(int category);
+        Task CreateProviderLink(ProviderLink providerLink);
+        Task<List<string>> IdsByProviderIds(List<string> providerIds);
+
+        Task<bool> SaveChangesAsync();
+
         Task<byte[]> GetUserPicture(string userId);
         Task SaveUserPicture(string userId, byte[] picture);
-        Task UpdateUserPicture(string userId, byte[] picture);
-        Task<List<string>> IdsByProviderIds(List<string> providerIds);
+        void UpdateUserPicture(string userId, byte[] picture);
+
+        string ChooseText(int category);
         string[] SmallFillers { get; }
         string[] MediumFillers { get; }
         string[] LargeFillers { get; }
@@ -67,26 +52,13 @@ namespace OlympicWords.Services
     {
         private readonly MasterContext context;
         private readonly IScopeRepo scopeRepo;
-        private readonly ILogger<IOfflineRepo> logger;
-
-        public async Task<User> GetCurrentUser()
-        {
-            if (user != null)
-                return user;
-
-            user = await GetUserByIdAsyc(scopeRepo.ActiveUser.Id);
-
-            return user;
-        }
-
-        private User user;
+        private readonly ILogger<OfflineRepo> logger;
 
         private async Task<byte[]> GetAvatar(int id)
         {
             var absPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Avatars", id + ".jpg");
             return await File.ReadAllBytesAsync(absPath);
         }
-
         public async Task<byte[]> GetUserPicture(string userId)
         {
             var picRecord = await context.UserPictures.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId);
@@ -101,7 +73,6 @@ namespace OlympicWords.Services
 
             return picRecord.Picture;
         }
-
         public async Task SaveUserPicture(string userId, byte[] picture)
         {
             await context.UserPictures.AddAsync(new()
@@ -110,8 +81,7 @@ namespace OlympicWords.Services
                 Picture = picture,
             });
         }
-
-        public async Task UpdateUserPicture(string userId, byte[] picture)
+        public void UpdateUserPicture(string userId, byte[] picture)
         {
             context.UserPictures.Update(new UserPicture
             {
@@ -120,25 +90,15 @@ namespace OlympicWords.Services
             });
         }
 
-
         public OfflineRepo(MasterContext context, IScopeRepo scopeRepo,
-            ILogger<IOfflineRepo> logger)
+            ILogger<OfflineRepo> logger)
         {
             this.context = context;
             this.scopeRepo = scopeRepo;
             this.logger = logger;
         }
 
-        // private string[] testSentences =
-        // {
-        //     "He swung back the fishing pole and cast the line which ell 25 feet away into the river. The lure landed in the perfect spot and he was sure he would soon get a bite. He never expected that the bite would come from behind in the form of a bear.",
-        //     "There was nothing to indicate Nancy was going to change the world. She looked like an average girl going to an average high school. It was the fact that everything about her seemed average that would end up becoming her superpower.",
-        //     "Twenty-five stars were neatly placed on the piece of paper. There was room for five more stars but they would be difficult ones to earn. It had taken years to earn the first twenty-five, and they were considered the easy ones.",
-        //     "The lone lamp post of the one-street town flickered, not quite dead but definitely on its way out. Suitcase by her side, she paid no heed to the light, the street or the town. A car was coming down the street and with her arm outstretched and thumb in the air, she had a plan.",
-        //     "Bryan h ad made peace with himself and felt comfortable with the choices he made. This had made all the difference in the world. Being alone no longer bothered him and this was essential since there was a good chance he might spend the rest of his life alone in a cell.",
-        // };   
-        //
-        private string[] testSentences =
+        private readonly string[] testSentences =
         {
             // "i do well in school",
             "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes",
@@ -170,39 +130,11 @@ namespace OlympicWords.Services
         {
             "kind of", "by the way", "basically"
         };
-
         public string[] LargeFillers { get; } =
         {
             "at the end of the day", "you know what i mean", "you know like i said",
             "something like that",
         };
-
-
-        // private string[] testSentences =
-        // {
-        //     "the kitty door was dark and she could not see what was on the other side the first step we took in solving this problem was taping the kitty door open after a couple of days she was confidently coming and going through the open door",
-        // };
-
-        // private string[] testSentences =
-        // {
-        //     // "He swung back the fishing pole and cast the line which ell feet away into the river",
-        //     // "There was nothing to indicate Nancy was going to change the world",
-        //     // "Twenty five stars were neatly placed on the piece of paper",
-        //     "The lone lamp post of the one street town flickered",
-        //     // "Bryan had made peace with himself and felt comfortable with the choices he made Bryan had made peace with himself and felt comfortable with the choices he made Bryan had made peace with himself and felt comfortable with the choices he made ",
-        //     //////////-------------------------
-        //     // "He swung back the fishing pole and cast the line which ell feet away into the river There was nothing to indicate Nancy was going to change the world " +
-        //     // "Twenty five stars were neatly placed on the piece of paper The lone lamp post of the one street town flickered Bryan had made peace with himself and felt comfortable with the choices he made" +
-        //     // "He swung back the fishing pole and cast the line which ell feet away into the river There was nothing to indicate Nancy was going to change the world " +
-        //     // "Twenty five stars were neatly placed on the piece of paper The lone lamp post of the one street town flickered Bryan had made peace with himself and felt comfortable with the choices he made" +
-        //     // "He swung back the fishing pole and cast the line which ell feet away into the river There was nothing to indicate Nancy was going to change the world " +
-        //     // "Twenty five stars were neatly placed on the piece of paper The lone lamp post of the one street town flickered Bryan had made peace with himself and felt comfortable with the choices he made" +
-        //     // "He swung back the fishing pole and cast the line which ell feet away into the river There was nothing to indicate Nancy was going to change the world " +
-        //     // "Twenty five stars were neatly placed on the piece of paper The lone lamp post of the one street town flickered Bryan had made peace with himself and felt comfortable with the choices he made" +
-        //     // "He swung back the fishing pole and cast the line which ell feet away into the river There was nothing to indicate Nancy was going to change the world " +
-        //     // "Twenty five stars were neatly placed on the piece of paper The lone lamp post of the one street town flickered Bryan had made peace with himself and felt comfortable with the choices he made",
-        // };
-
 
         public string ChooseText(int category)
         {
@@ -214,11 +146,50 @@ namespace OlympicWords.Services
             return await context.SaveChangesAsync() >= 0;
         }
 
-        #region user
-
-        public async Task CreateExternalId(ExternalId externalId)
+        private static readonly MapperConfiguration mapperConfig = new(cfg =>
         {
-            await context.AddAsync(externalId);
+            cfg.CreateProjection<User, PersonalFullUserInfo>();
+            cfg.CreateProjection<User, FullUserInfo>();
+            cfg.CreateProjection<User, MinUserInfo>();
+        });
+        private static readonly CachingOptions cacheOptions = new()
+        {
+            StoreAs = StoreAs.SeperateEntities,
+        };
+
+        private User currentUser;
+        public async Task<User> GetCurrentUserAsync()
+        {
+            if (currentUser != null)
+                return currentUser;
+
+            currentUser = await context.Users.FirstAsync(u => u.Id == scopeRepo.UserId);
+
+            return currentUser;
+        }
+
+        public async Task<User> GetCurrentFullUserAsync()
+        {
+            if (currentUser is { Followers: not null, Followings: not null }) return currentUser;
+
+            currentUser = await context.Users
+                .Include(u => u.Followings)
+                .Include(u => u.Followers)
+                .FirstAsync(u => u.Id == scopeRepo.UserId);
+
+            return currentUser;
+        }
+
+
+        public void SetCurrentUser(User user)
+        {
+            currentUser = user;
+            scopeRepo.SetRealOwner(user.Id);
+        }
+
+        public async Task CreateProviderLink(ProviderLink providerLink)
+        {
+            await context.AddAsync(providerLink);
         }
 
         public async Task<User> CreateUserAsync(User user)
@@ -227,69 +198,76 @@ namespace OlympicWords.Services
             //await _context.Users.AddAsync(user);
             return user;
         }
-
-        public async Task<User> GetUserByEIdAsync(string eId, int eIdType)
+        public void DeleteUserAsync(string id)
         {
-            var externalId = await context.ExternalIds
-                .Include(i => i.User)
-                .ThenInclude(u => u.Followers)
-                .ThenInclude(u => u.Followings)
-                .FirstOrDefaultAsync(id => id.Id == eId);
-
-            return externalId?.User;
-
-            return await context.Users.Join(
-                context.ExternalIds.Where(id => id.Type == eIdType && id.Id == eId),
-                u => u.Id, id => id.UserId,
-                (u, _) => u).FirstOrDefaultAsync();
+            context.Users.Remove(new User { Id = id });
         }
 
-        public async Task<User> GetUserByIdAsyc(string id, bool track = true,
-            bool withFollowings = false, bool withFollowers = false)
+        public async Task<PersonalFullUserInfo> GetPersonalInfo(string providerId, ProviderType providerType)
         {
-            var userQ = context.Users;
+            var res = await context.Users
+                .Where(u => u.Providers
+                    .Any(provider => provider.Id == providerId && provider.Type == (int)providerType))
+                .ProjectTo<PersonalFullUserInfo>(mapperConfig)
+                .AsSplitQuery()
+                .FromCacheAsync(cacheOptions);
 
-            if (!track)
-                userQ.AsNoTracking();
+            return res.Single();
+        }
+        public async Task<PersonalFullUserInfo> GetPersonalInfo()
+        {
+            // return await context.Users
+            //     .Where(u => u.Id == scopeRepo.UserId)
+            //     .ProjectTo<PersonalFullUserInfo>(mapperConfig)
+            //     .AsSplitQuery()
+            //     .SingleAsync();
 
-            if (withFollowings)
-                userQ.Include(u => u.Followings);
+            var a = (await context.Users
+                    .Where(u => u.Id == scopeRepo.UserId)
+                    // .AsSplitQuery()
+                    .FromCacheAsync(cacheOptions))
+                .Single();
 
-            if (withFollowers)
-                userQ.Include(u => u.Followers);
+            return Mapper.UserToClientUserFunc(a);
 
-            return await userQ.FirstAsync(u => u.Id == id);
+            var q = await context.Users
+                .Where(u => u.Id == scopeRepo.UserId)
+                .ProjectTo<PersonalFullUserInfo>(mapperConfig)
+                .AsSplitQuery()
+                .FromCacheAsync(cacheOptions);
+
+            //I split the query because the projection was causing a join and making cartesian explosion
+
+            // var q2 = context.Users
+            //     .Where(u => u.Id == scopeRepo.UserId)
+            //     .Select(Mapper.UserToClientUserProjection);
+            //
+            // logger.LogInformation("==========q1==========");
+            // logger.LogInformation("==========q2==========");
+            // logger.LogInformation(q2.ToQueryString());
+            // //both queries are almost identical, I want to know why both automapper and microsoft are complaining
+
+            return q.Single();
         }
 
-        public async Task<List<User>> GetUsersByIdsAsync(List<string> ids)
+        public async Task<User> GetUserAsync(string providerId, ProviderType providerType)
+        {
+            return await context.Users
+                .Where(u => u.Providers
+                    .Any(provider => provider.Id == providerId && provider.Type == (int)providerType))
+                .SingleOrDefaultAsync();
+        }
+        public async Task<List<User>> GetUsersAsync(List<string> ids)
         {
             return await context.Users.Where(u => ids.Contains(u.Id)).Take(ids.Count)
                 .ToListAsync();
         }
 
-        public async Task<string> GetNameOfUserAsync(string id)
-        {
-            var q = context.Users.Where(u => u.Id == id).Select(u => u.Name);
-
-            return await context.Users.Where(u => u.Id == id).Select(u => u.Name).FirstAsync();
-        }
-
         public async Task<FullUserInfo> GetFullUserInfoAsync(string id)
         {
-            return await context.Users.Where(_ => _.Id == id)
-                .Select(Mapper.UserToFullUserInfoProjection).FirstAsync();
-        }
-
-        public async Task<List<FullUserInfo>> GetFullUserInfoListAsync(IEnumerable<string> ids)
-        {
-            return await context.Users.Where(u => ids.Contains(u.Id)).Take(ids.Count())
-                .Select(Mapper.UserToFullUserInfoProjection)
-                .ToListAsync();
-        }
-        public async Task DeleteUserAsync(string id)
-        {
-            context.Users.Remove(new User { Id = id });
-            await SaveChangesAsync();
+            return await context.Users.Where(u => u.Id == id)
+                .ProjectTo<FullUserInfo>(mapperConfig)
+                .SingleAsync();
         }
 
         public async Task<List<string>> IdsByProviderIds(List<string> providerIds)
@@ -300,93 +278,49 @@ namespace OlympicWords.Services
                 .ToListAsync();
         }
 
-        #endregion
-
         #region user relation
-
-        public async Task ToggleFollow(User user, User target)
+        public async Task ToggleFollow(string targetId)
         {
-            user.Followings ??= new List<User>();
+            await GetCurrentFullUserAsync();
 
-            if (user.Followings.Contains(target))
-                user.Followings.Remove(target);
+            currentUser.Followings ??= new List<User>();
+
+            var target = new User { Id = targetId };
+            context.Attach(target);
+
+            var targetFollowing = currentUser.Followings.FirstOrDefault(u => u.Id == targetId);
+
+            if (targetFollowing != null)
+                currentUser.Followings.Remove(targetFollowing);
             else
-                user.Followings.Add(target);
+                currentUser.Followings.Add(target);
         }
 
-        /// <summary>
-        /// Am I follower
-        /// </summary>
-        public async Task<bool> IsFollowing(string userId, string targetId)
+        private async Task<(bool IFollow, bool HeFollow)> GetFollowSate(string userId, string targetId)
         {
-            return await context.Users
-                .AnyAsync(u => u.Id == userId && u.Followings.Any(f => f.Id == targetId));
+            var res = await context.Users.Where(u => u.Id == userId)
+                .Select(me => new
+                {
+                    iFollow = me.Followings.Any(f => f.Id == targetId),
+                    heFollow = me.Followers.Any(f => f.Id == targetId),
+                }).SingleAsync();
 
-            //you have some follower for a, some following for b
-            // var q = context.Users.Where(u =>
-            //     u.Id == userId && u.Followers.Any(f => f.Id == followerId));
-            //
-            // logger.LogInformation(q.ToQueryString());
-            //
-            // return await q.AnyAsync();
-
-            // return context.Users.First(u => u.Id == userId).Followers.Any(u => u.Id == targetId);
+            return (res.iFollow, res.heFollow);
         }
-
-        // /// <summary>
-        // /// Is HE following me
-        // /// </summary>
-        // public bool IsFollowing(string userId, string targetId)
-        // {
-        //     return context.UserRelations.Any(r =>
-        //         r.FollowingId == userId && r.FollowerId == targetId);
-        // }
 
         public async Task<FriendShip> GetFriendship(string userId, string targetId)
         {
-            var isFollowing = await IsFollowing(userId, targetId);
-            var isFollower = await IsFollowing(targetId, userId);
+            var (iFollow, heFollow) = await GetFollowSate(userId, targetId);
 
-            if (isFollower && isFollowing)
+            if (iFollow && heFollow)
                 return FriendShip.Friend;
-            if (isFollower)
+            if (heFollow)
                 return FriendShip.Follower;
-            if (isFollowing)
+            if (iFollow)
                 return FriendShip.Following;
 
             return FriendShip.None;
         }
-
-        public async Task<List<MinUserInfo>> GetFollowingsAsync(User user)
-        {
-            return user.Followings
-                .Select(Mapper.UserToMinUserInfoFunc)
-                .ToList();
-
-            // var relationsWhereIFolllow = context.UserRelations.Where(u => u.FollowerId == userId);
-            //
-            // var myFollowingInfo = relationsWhereIFolllow.Join(context.Users,
-            //     relation => relation.FollowingId, u => u.Id,
-            //     (_, u) => Mapper.UserToMinUserInfoFunc(u));
-            //
-            // return await myFollowingInfo.ToListAsync();
-        }
-
-        public async Task<List<MinUserInfo>> GetFollowersAsync(User user)
-        {
-            return user.Followers
-                .Select(Mapper.UserToMinUserInfoFunc)
-                .ToList();
-
-            // var relationsWhereIFolllow = context.UserRelations.Where(u => u.FollowingId == userId);
-            //
-            // var myFollowingInfo = relationsWhereIFolllow.Join(context.Users,
-            //     relation => relation.FollowerId, u => u.Id,
-            //     (_, u) => Mapper.UserToMinUserInfoFunc(u));
-            //
-            // return await myFollowingInfo.ToListAsync();
-        }
-
         #endregion
     }
 }

@@ -7,9 +7,8 @@ namespace OlympicWords.Services.Helpers
 {
     public static class Mapper
     {
-        public static PersonalFullUserInfo ConvertUserDataToClient(User u)
-        {
-            return new()
+        public static Expression<Func<User, PersonalFullUserInfo>> UserToClientUserProjection =>
+            u => new PersonalFullUserInfo
             {
                 Id = u.Id,
                 Money = u.Money,
@@ -18,14 +17,13 @@ namespace OlympicWords.Services.Helpers
                 PictureUrl = u.PictureUrl,
                 WonRoomsCount = u.WonRoomsCount,
                 LastMoneyAimRequestTime = u.LastMoneyAimRequestTime,
-                MoneyAimTimePassed =
-                    u.LastMoneyAimRequestTime == null
-                        ? null
-                        : (DateTime.UtcNow - u.LastMoneyAimRequestTime).Value.TotalSeconds,
+                MoneyAimTimePassed = u.LastMoneyAimRequestTime == null
+                    ? null
+                    : (DateTime.UtcNow - u.LastMoneyAimRequestTime).Value.TotalSeconds,
                 OwnedCardBackIds = u.OwnedCardBackIds,
                 SelectedCardback = u.SelectedCardback,
                 SelectedBackground = u.SelectedBackground,
-                Titles = u.OwnedTitleIds,
+                OwnedTitleIds = u.OwnedTitleIds,
                 WinStreak = u.WinStreak,
                 EatenCardsCount = u.EatenCardsCount,
                 OwnedBackgroundsIds = u.OwnedBackgroundIds,
@@ -33,14 +31,19 @@ namespace OlympicWords.Services.Helpers
                 TotalEarnedMoney = u.TotalEarnedMoney,
                 Xp = u.Xp,
                 MaxWinStreak = u.MaxWinStreak,
-                MoneyAidRequested = u.RequestedMoneyAidToday,
+                RequestedMoneyAidToday = u.RequestedMoneyAidToday,
                 EnableOpenMatches = u.EnableOpenMatches,
-                Followers = u.Followers.Select(UserToMinUserInfoFunc).ToList(),
-                Followings = u.Followings.Select(UserToMinUserInfoFunc).ToList(),
+                Followers = u.Followers.Select(f => new MinUserInfo
+                {
+                    Name = f.Name,
+                }).ToList(),
+                Followings = u.Followings.Select(f => new MinUserInfo
+                {
+                    Name = f.Name,
+                }).ToList(),
             };
-        }
 
-        public static Expression<Func<User, FullUserInfo>> UserToFullUserInfoProjection =>
+        public static Expression<Func<User, FullUserInfo>> UserToFullProjection =>
             u => new FullUserInfo
             {
                 Id = u.Id,
@@ -62,7 +65,7 @@ namespace OlympicWords.Services.Helpers
                 EnableOpenMatches = u.EnableOpenMatches,
             };
 
-        public static Expression<Func<User, MinUserInfo>> UserToMinUserInfoProjection =>
+        public static Expression<Func<User, MinUserInfo>> UserToMinProjection =>
             u => new MinUserInfo
             {
                 Id = u.Id,
@@ -72,10 +75,13 @@ namespace OlympicWords.Services.Helpers
                 Xp = u.Xp,
             };
 
-        public static readonly Func<User, FullUserInfo> UserToFullUserInfoFunc =
-            UserToFullUserInfoProjection.Compile();
+        public static readonly Func<User, FullUserInfo> UserToFullFunc =
+            UserToFullProjection.Compile();
 
-        public static readonly Func<User, MinUserInfo> UserToMinUserInfoFunc =
-            UserToMinUserInfoProjection.Compile();
+        public static readonly Func<User, MinUserInfo> UserToMinFunc =
+            UserToMinProjection.Compile();
+
+        public static readonly Func<User, PersonalFullUserInfo> UserToClientUserFunc =
+            UserToClientUserProjection.Compile();
     }
 }

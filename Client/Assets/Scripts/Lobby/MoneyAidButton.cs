@@ -57,7 +57,7 @@ public class MoneyAidButton : MonoBehaviour
 
         if (info.MoneyAimTimePassed >= ConstData.MoneyAimTime)
         {
-            await MasterHub.I.ClaimMoneyAid();
+            await Controllers.Lobby.ClaimMoneyAid();
 
             info.MoneyAimTimePassed = null;
             info.Money += EnvBase.MinBet;
@@ -78,7 +78,7 @@ public class MoneyAidButton : MonoBehaviour
         } //can't ask, a lot of money
         else
         {
-            await MasterHub.I.ClaimMoneyAid();
+            await Controllers.Lobby.ClaimMoneyAid();
 
             info.MoneyAimTimePassed = 0;
             info.DecreaseMoneyAimTimeLeft().Forget();

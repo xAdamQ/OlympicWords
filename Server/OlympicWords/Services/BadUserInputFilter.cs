@@ -8,15 +8,13 @@ namespace OlympicWords.Services
 {
     public class BadUserInputFilter : IHubFilter
     {
-        private readonly MasterHub.MethodDomains methodDomains;
         private readonly IScopeRepo scopeRepo;
         private readonly ILogger<BadUserInputFilter> logger;
         private readonly PersistantData persistantData;
 
-        public BadUserInputFilter(MasterHub.MethodDomains methodDomains, IScopeRepo scopeRepo,
+        public BadUserInputFilter(IScopeRepo scopeRepo,
             ILogger<BadUserInputFilter> logger, PersistantData persistantData)
         {
-            this.methodDomains = methodDomains;
             this.scopeRepo = scopeRepo;
             this.logger = logger;
             this.persistantData = persistantData;
@@ -35,15 +33,15 @@ namespace OlympicWords.Services
             //     invocationContext.HubMethodArguments.Count > languageFilter.FilterArgument &&
             //     invocationContext.HubMethodArguments[languageFilter.FilterArgument] is string str)
 
-            logger.LogInformation(
-                $"Calling hub method '{invocationContext.HubMethodName}'" +
-                $" with args {string.Join(", ", invocationContext.HubMethodArguments)}");
+            logger.LogInformation("Calling hub method '{Method}' with args {Args}",
+                invocationContext!.HubMethodName,
+                string.Join(", ", invocationContext!.HubMethodArguments));
 
             persistantData.FeedScope(scopeRepo);
-            scopeRepo.SetOwner(userId: invocationContext.Context.UserIdentifier);
+            scopeRepo.SetRealOwner(invocationContext.Context.UserIdentifier);
 
-            var activeUser = scopeRepo.ActiveUser;
-            var domain = methodDomains.GetDomain(invocationContext.HubMethodName);
+            var roomUser = scopeRepo.RoomUser;
+            var domain = MethodDomains.Rpcs[invocationContext.HubMethod];
 
             if (domain == null)
             {
@@ -51,11 +49,11 @@ namespace OlympicWords.Services
                     "the user is invoking a function that doesn't exist or it's not an rpc");
             }
 
-            if (!activeUser.Domain.IsSubclassOf(domain) &&
-                !activeUser.Domain.IsEquivalentTo(domain))
+            if (!roomUser.Domain.IsSubclassOf(domain) &&
+                !roomUser.Domain.IsEquivalentTo(domain))
             {
                 throw new Exceptions.BadUserInputException(
-                    $"the called function with domain {domain} is not valid in the current user domain {activeUser.Domain}");
+                    $"the called function with domain {domain} is not valid in the current user domain {roomUser.Domain}");
             }
 
             try

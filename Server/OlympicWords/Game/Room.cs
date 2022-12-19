@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.SignalR;
 
 namespace OlympicWords.Services;
 
@@ -11,19 +12,19 @@ public class Room
 {
     public bool Started;
 
-    private const int MaxLevel = 999;
-    private const float Expo = .55f, Divi = 10;
+    private const int MAX_LEVEL = 999;
+    private const float EXPO = .55f, DIVIDER = 10;
 
     public static int GetLevelFromXp(int xp)
     {
-        var level = (int)(MathF.Pow(xp, Expo) / Divi);
-        return level < MaxLevel ? level : MaxLevel;
+        var level = (int)(MathF.Pow(xp, EXPO) / DIVIDER);
+        return level < MAX_LEVEL ? level : MAX_LEVEL;
     }
 
     public static int GetStartXpOfLevel(int level)
     {
         if (level == 0) return 0;
-        return (int)MathF.Pow(2, MathF.Log2(Divi * level) / Expo);
+        return (int)MathF.Pow(2, MathF.Log2(DIVIDER * level) / EXPO);
     }
 
     //don't bother yourself because it's readonly because if converted to database
@@ -57,18 +58,11 @@ public class Room
 
     public bool IsFull => RoomActors.Count == Capacity;
 
-    public void SetUsersDomains(Type domain)
-    {
-        foreach (var ru in RoomUsers) ru.ActiveUser.Domain = domain;
-    }
-
-    public void SetUsersDomain<T>() where T : UserDomain.App.Room
+    public void SetUsersDomain<T>() where T : UserDomain.Room
     {
         var domain = typeof(T);
-        foreach (var ru in RoomUsers)
-            ru.ActiveUser.Domain = domain;
+        foreach (var ru in RoomUsers) ru.Domain = domain;
     }
-
 
     //will be decided at run time, based on player average speed
     public const int WRONG_CHAR_PROB = -1, BOT_TIME_MIN = 200, BOT_TIME_MAX = 400;
@@ -82,6 +76,23 @@ public class Room
 
     public int FinishedPLayers { get; set; }
     //public int SurrenderPenalty => (int)(.25 * Bet);
+
+    // public string GroupName => "room" + Id;
+
+    public void Start(IHubContext<MasterHub> hub)
+    {
+        Started = true;
+
+        foreach (var ru in RoomActors)
+            ru.StartTime = DateTime.Now;
+
+        // foreach (var ru in RoomUsers)
+        // await hub.Groups.AddToGroupAsync(ru.ActiveUser.ConnectionId, GroupName);
+        //this grouping stuff shouldn't be used because I use the message id to preserve messages order with a queue on the client
+        //here is a big catch, what if the user dot disconnected and the connection id changes after reconnecting
+        //this means that my old approach of using the user id regardless of the connection id is better
+        //because it is consistent
+    }
 
     /// <summary>
     /// which is the last sent char to all users including self

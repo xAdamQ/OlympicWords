@@ -8,15 +8,15 @@ using Newtonsoft.Json.Linq;
 using OlympicWords.Data;
 using OlympicWords.Services.Helpers;
 using OlympicWords.Services.Models;
+using Shared;
 using JsonSerializer = System.Text.Json.JsonSerializer;
-
 
 namespace OlympicWords.Services
 {
     public class ProviderPublicUser
     {
         public string Id { get; set; }
-        public ExternalIdType Provider { get; set; }
+        public ProviderType Provider { get; set; }
     }
 
     public class ProviderUser : ProviderPublicUser
@@ -24,7 +24,7 @@ namespace OlympicWords.Services
         public string Name { get; set; }
         public string Email { get; set; }
         public List<ProviderPublicUser> Friends { get; set; }
-        public string Picture { get; set; }
+        public string PictureUrl { get; set; }
     }
 
     public class FbDataResponse<T>
@@ -41,37 +41,34 @@ namespace OlympicWords.Services
 
         //I think the issuer/audience is important
         //it defines who can use the token and the token maker
-        private readonly IConfiguration configuration;
         private readonly IOfflineRepo offlineRepo;
         private readonly ILogger<SecurityManager> logger;
+        private readonly IScopeRepo scopeRepo;
 
         private readonly string
             figAppSecret,
             fbAppToken;
 
         public SecurityManager(IConfiguration configuration, IOfflineRepo offlineRepo,
-            ILogger<SecurityManager> logger)
+            ILogger<SecurityManager> logger, IScopeRepo scopeRepo)
         {
-            this.configuration = configuration;
             this.offlineRepo = offlineRepo;
             this.logger = logger;
+            this.scopeRepo = scopeRepo;
 
-            figAppSecret = this.configuration["Secrets:AppSecret"];
-            fbAppToken = this.configuration["Secrets:FbAppToken"];
+            figAppSecret = configuration["Secrets:AppSecret"];
+            fbAppToken = configuration["Secrets:FbAppToken"];
         }
 
-        public async Task<User> GetDiskUser(ProviderUser providerUser)
-        {
-            if (providerUser.Id == null)
-                throw new BadUserInputException();
-
-            var user = await offlineRepo.GetUserByEIdAsync(providerUser.Id, (int)providerUser.Provider);
-
-            logger.LogInformation("sign in attempt of {EId} -- named: {Name} -- isNull? {IsNull}",
-                providerUser.Id, providerUser.Name, user == null);
-
-            return user;
-        }
+        // public async Task<User> GetDiskUser(ProviderUser providerUser)
+        // {
+        //     if (providerUser.Id == null)
+        //         throw new BadUserInputException();
+        //
+        //     var user = await offlineRepo.GetUserAsync(providerUser.Id, providerUser.Provider);
+        //
+        //     return user;
+        // }
 
         /// <summary>
         /// checks if the user exist and make a new one if not
@@ -79,7 +76,7 @@ namespace OlympicWords.Services
         /// </summary>
         public async Task<User> SignUpAndInAsync(ProviderUser providerUser)
         {
-            var user = await GetDiskUser(providerUser);
+            var user = await offlineRepo.GetUserAsync(providerUser.Id, providerUser.Provider);
 
             if (user == null)
                 return await SignUpAsync(providerUser);
@@ -89,25 +86,29 @@ namespace OlympicWords.Services
 
         public async Task<User> SignInAsync(ProviderUser providerUser, User user)
         {
+            logger.LogInformation("sign in attempt of {EId} -- named: {Name} -- isNull? {IsNull}",
+                providerUser.Id, providerUser.Name, user == null);
+
             await SetProviderFriends(user, providerUser.Friends);
 
             await UpdateUserData(user, providerUser);
-            user.LastLogin = DateTime.Now;
+            user!.LastLogin = DateTime.Now;
 
             await offlineRepo.SaveChangesAsync();
             return user;
         }
-
 
         private async Task UpdateUserData(User user, ProviderUser providerUser)
         {
             if (DateTime.Now - user.LastLogin < TimeSpan.FromDays(2)) return;
 
             user.Name = providerUser.Name;
-            user.PictureUrl = providerUser.Picture;
+            user.PictureUrl = providerUser.PictureUrl;
 
-            var imageBytes = await DownloadUserImage(providerUser.Picture);
-            await offlineRepo.UpdateUserPicture(user.Id, imageBytes);
+            var imageBytes = await TryGetImage(providerUser.PictureUrl);
+            if (imageBytes != null)
+                offlineRepo.UpdateUserPicture(user.Id, imageBytes);
+
             await offlineRepo.SaveChangesAsync();
         }
 
@@ -123,61 +124,47 @@ namespace OlympicWords.Services
 
             user.Followers.AddRange(newFriends);
             user.Followings.AddRange(newFriends);
-
-            // user.FollowerRelations.AddRange(friendsIds.Select(i => new UserRelation
-            // {
-            //     FollowerId = user.Id,
-            //     FollowingId = i,
-            // }));
-            //
-            // user.FollowerRelations.AddRange(friendsIds.Select(i => new UserRelation
-            // {
-            //     FollowerId = i,
-            //     FollowingId = user.Id,
-            // }));
         }
 
         private async Task<User> SignUpAsync(ProviderUser providerUser)
         {
+            var bot = new User() { Id = "999" };
+
+
             var user = await offlineRepo.CreateUserAsync(new User
             {
                 Name = providerUser.Name,
-                PictureUrl = providerUser.Picture,
+                PictureUrl = providerUser.PictureUrl,
                 Email = providerUser.Email,
-                Money = 100000,
+                Money = 9999999,
                 EnableOpenMatches = true,
                 OwnedBackgroundIds = new List<int> { 0 },
                 OwnedTitleIds = new List<int> { 0 },
                 OwnedCardBackIds = new List<int> { 0 },
                 LastLogin = DateTime.Now,
+                Followers = new(),
+                Followings = new(),
             });
+
+            offlineRepo.SetCurrentUser(user);
 
             await LinkUser(user.Id, providerUser);
 
-            try
-            {
-                var imageBytes = await DownloadUserImage(providerUser.Picture);
+            var imageBytes = await TryGetImage(providerUser.PictureUrl);
+            if (imageBytes != null)
                 await offlineRepo.SaveUserPicture(user.Id, imageBytes);
-            }
-            catch (Exception e)
-            {
-                logger.LogInformation("failed to download player pic due to error: {Exc}", e);
-            }
 
-
-            var botA = await offlineRepo.GetUserByIdAsyc("999", withFollowings: true);
-            var botB = await offlineRepo.GetUserByIdAsyc("9999", withFollowings: true);
-
-            await offlineRepo.ToggleFollow(user, botA);
-            await offlineRepo.ToggleFollow(user, botB);
+            await offlineRepo.ToggleFollow("999");
+            await offlineRepo.ToggleFollow("9999");
 
             await offlineRepo.SaveChangesAsync();
+
             return user;
         }
 
         public async Task LinkUser(string userId, ProviderUser providerUser)
         {
-            await offlineRepo.CreateExternalId(new ExternalId
+            await offlineRepo.CreateProviderLink(new ProviderLink
             {
                 UserId = userId,
                 Type = (int)providerUser.Provider,
@@ -185,20 +172,20 @@ namespace OlympicWords.Services
             });
         }
 
-        public async Task<ProviderUser> GetProfile(ExternalIdType provider, string accessToken)
+        public async Task<ProviderUser> GetProfile(ProviderType provider, string accessToken)
         {
             switch (provider)
             {
-                case ExternalIdType.Guest:
+                case ProviderType.Guest:
                     return new ProviderUser
                     {
                         Id = accessToken,
                         Name = accessToken[..8],
-                        Provider = ExternalIdType.Guest,
+                        Provider = ProviderType.Guest,
                     };
-                case ExternalIdType.Facebook:
+                case ProviderType.Facebook:
                     return await GetFbProfile(accessToken);
-                case ExternalIdType.Huawei:
+                case ProviderType.Huawei:
                     // var token = await SecurityManager.GetTokenByHuaweiAuthCode(accessToken);
                     // var userData = await SecurityManager.GetHuaweiUserDataByToken(token);
                     // user = await securityManager.SignInAsync(userData);
@@ -209,7 +196,6 @@ namespace OlympicWords.Services
         }
 
         #region facebook
-
         private const string FB_BASE_ADDRESS = "https://graph.facebook.com/v15.0/";
 
         /// <exception cref="FbApiError"></exception>
@@ -282,8 +268,8 @@ namespace OlympicWords.Services
                 Id = obj.id,
                 Name = obj.name,
                 Email = obj.email,
-                Picture = pictureUrl,
-                Provider = ExternalIdType.Facebook,
+                PictureUrl = pictureUrl,
+                Provider = ProviderType.Facebook,
                 Friends = friends,
             };
         }
@@ -306,19 +292,29 @@ namespace OlympicWords.Services
             var result = response.Content.ReadAsStringAsync().Result;
 
             var friends = JsonSerializer
-                .Deserialize<FbDataResponse<ProviderPublicUser>>(result, serializationOptions)
+                .Deserialize<FbDataResponse<ProviderPublicUser>>(result, serializationOptions)?
                 .Data;
             //for other providers with non matching names, map fields for serialization!
 
-            friends.ForEach(f => f.Provider = ExternalIdType.Facebook);
+            friends?.ForEach(f => f.Provider = ProviderType.Facebook);
 
-            return friends;
+            return friends ?? new();
         }
 
-        private async Task<byte[]> DownloadUserImage(string imageUrl)
+        private async Task<byte[]> TryGetImage(string imageUrl)
         {
-            using var httpClient = new HttpClient();
-            return await httpClient.GetByteArrayAsync(imageUrl);
+            if (!string.IsNullOrEmpty(imageUrl)) return null;
+
+            try
+            {
+                using var httpClient = new HttpClient();
+                return await httpClient.GetByteArrayAsync(imageUrl);
+            }
+            catch (Exception e)
+            {
+                logger.LogInformation("failed to download player pic due to error: {Exc}", e);
+                return null;
+            }
         }
 
         public class FbApiError : Exception
@@ -327,11 +323,9 @@ namespace OlympicWords.Services
             {
             }
         }
-
         #endregion
 
         #region huawei
-
         public static async Task<string> GetTokenByHuaweiAuthCode(string code)
         {
             var data = new FormUrlEncodedContent(new Dictionary<string, string>()
@@ -346,7 +340,7 @@ namespace OlympicWords.Services
                 { "redirect_uri", "hms://redirect_uri" }
             });
 
-            var url = "https://oauth-login.cloud.huawei.com/oauth2/v3/token";
+            const string url = "https://oauth-login.cloud.huawei.com/oauth2/v3/token";
             using var client = new HttpClient();
 
             var response = await client.PostAsync(url, data);
@@ -361,6 +355,7 @@ namespace OlympicWords.Services
 
             return obj.access_token;
         }
+
         public static async Task<ProviderUser> GetHuaweiUserDataByToken(string token)
         {
             var data = new FormUrlEncodedContent(new Dictionary<string, string>()
@@ -369,7 +364,7 @@ namespace OlympicWords.Services
                 { "getNickName", "1" },
             });
 
-            var url = "https://account.cloud.huawei.com/rest.php?nsp_svc=GOpen.User.getInfo";
+            const string url = "https://account.cloud.huawei.com/rest.php?nsp_svc=GOpen.User.getInfo";
             using var client = new HttpClient();
 
             var response = await client.PostAsync(url, data);
@@ -386,8 +381,8 @@ namespace OlympicWords.Services
             {
                 Id = obj.openID,
                 Name = obj.displayName,
-                Picture = obj.headPictureURL,
-                Provider = ExternalIdType.Huawei,
+                PictureUrl = obj.headPictureURL,
+                Provider = ProviderType.Huawei,
             };
         }
 
@@ -398,12 +393,10 @@ namespace OlympicWords.Services
             {
             }
         }
-
         #endregion
 
 
         #region fbig
-
         private bool VerifySignature(string[] token)
         {
             byte[] hash = null;
@@ -417,7 +410,7 @@ namespace OlympicWords.Services
             return hash64 == token[0];
         }
 
-        private ConnectBody DeserialzeConnectBody(string code)
+        private ConnectBody DeserializeConnectBody(string code)
         {
             var json = Encoding.Default.GetString(Base64UrlTextEncoder.Decode(code));
             return JsonConvert.DeserializeObject<ConnectBody>(json, Helper.SnakePropertyNaming);
@@ -440,7 +433,7 @@ namespace OlympicWords.Services
                     return false;
                 }
 
-                var connectBody = DeserialzeConnectBody(tokenParts[1]);
+                var connectBody = DeserializeConnectBody(tokenParts[1]);
 
                 if (!IsRecentConnection(connectBody.IssuedAt))
                 {
@@ -455,7 +448,6 @@ namespace OlympicWords.Services
                 return false;
             }
         }
-
         #endregion
     }
 }

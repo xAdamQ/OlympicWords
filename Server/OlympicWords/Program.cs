@@ -1,9 +1,11 @@
-using System.Net;
+using Alachisoft.NCache.EntityFrameworkCore;
 using Hangfire;
 using Hangfire.MemoryStorage;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Lib.AspNetCore.ServerSentEvents;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 using Microsoft.EntityFrameworkCore;
+using OlympicWords.Filters;
 using OlympicWords.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,35 +41,39 @@ services.AddSignalR(options =>
         options.AddFilter<BadUserInputFilter>();
         options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
     })
-    .AddAzureSignalR()
+    .AddAzureSignalR(opt => { opt.ServerStickyMode = ServerStickyMode.Preferred; })
     .AddJsonProtocol(options => { options.PayloadSerializerOptions.IncludeFields = true; });
 
 services.AddHttpContextAccessor();
 
-services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.IncludeFields = true);
+services.AddControllers(opt => { opt.Filters.Add<DefaultActionFilter>(); })
+    .AddJsonOptions(opt => opt.JsonSerializerOptions.IncludeFields = true);
+
+services.AddServerSentEvents();
 
 services.AddDbContext<MasterContext>(options =>
 {
-    options.UseSqlServer(configuration.GetConnectionString("Main"));
-});
+    NCacheConfiguration.Configure("default", DependencyType.SqlServer);
+    NCacheConfiguration.ConfigureLogger(logLevel: LogLevel.Information);
 
+    options.UseSqlServer(configuration.GetConnectionString("Main"));
+    options.EnableSensitiveDataLogging();
+});
 
 services.AddScoped<IGameplay, Gameplay>();
 services.AddScoped<IOfflineRepo, OfflineRepo>();
 services.AddScoped<IFinalizer, Finalizer>();
 services.AddScoped<ILobbyManager, LobbyManager>();
-services.AddScoped<IChatManager, ChatManager>();
+// services.AddScoped<IChatManager, ChatManager>();
 services.AddScoped<IMatchMaker, MatchMaker>();
 services.AddScoped<IScopeRepo, ScopeRepo>();
 services.AddScoped<SecurityManager>();
 
 services.AddSingleton(new PersistantData());
-services.AddSingleton(new MasterHub.MethodDomains());
 services.AddSingleton<IServerLoop, ServerLoop>();
 
-services.AddAuthentication(MasterAuthenticationHandler.PROVIDER_NAME)
-    .AddScheme<MasterAuthenticationSchemeOptions, MasterAuthenticationHandler>(
-        MasterAuthenticationHandler.PROVIDER_NAME, null);
+services.AddAuthentication(MasterAuthHandler.PROVIDER_NAME)
+    .AddScheme<MasterAuthSchemeOptions, MasterAuthHandler>(MasterAuthHandler.PROVIDER_NAME, null);
 
 services.AddHangfire(config =>
 {
@@ -82,6 +88,8 @@ services.AddHangfireServer();
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseAuthentication();
 app.MapControllers();
 
@@ -92,12 +100,11 @@ app.UseCors(corsPolicyBuilder => corsPolicyBuilder
 );
 
 app.MapGet("/weatherforecast", () => new List<int> { 1, 2, 3 });
+app.MapServerSentEvents("/updates");
 
 app.UseHttpsRedirection();
 
 app.UseEndpoints(endpoint => endpoint.MapHub<MasterHub>("/connect"));
-
-app.UseRouting();
 
 
 app.Run();

@@ -49,11 +49,11 @@ namespace OlympicWords.Services
             if (room.Started)
                 throw new BadUserInputException("the start room is called more than once");
 
-            room.SetUsersDomain<UserDomain.App.Room.ReadyGo>();
+            room.SetUsersDomain<UserDomain.Room.ReadyGo>();
             logger.LogInformation("all users are 321");
 
             foreach (var roomUser in room.RoomUsers)
-                await masterHub.SendOrderedAsync(roomUser.ActiveUser, "StartRoomRpc");
+                await masterHub.SendOrderedAsync(roomUser, "StartRoomRpc");
 
 #pragma warning disable CS4014
             Task.Delay(TimeSpan.FromSeconds(1.5f))

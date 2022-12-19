@@ -36,7 +36,6 @@ public abstract class EnvBase : MonoModule<EnvBase>
     public const int SMALL_JETS_COUNT = 2, MEGA_JETS_COUNT = 1;
 
     #region props
-
     [HideInInspector] public int MyTurn, BetChoice, CapacityChoice;
     [HideInInspector] protected List<string> Words;
     public List<FullUserInfo> UserInfos;
@@ -54,7 +53,6 @@ public abstract class EnvBase : MonoModule<EnvBase>
     //text
 
     public Transform Canvas;
-
     #endregion
 
 

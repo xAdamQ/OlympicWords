@@ -1,19 +1,14 @@
 using OlympicWords.Common;
-using OlympicWords.Services.Exceptions;
 using OlympicWords.Services.Extensions;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Common.Lobby;
 using OlympicWords.Services.Helpers;
 
 namespace OlympicWords.Services
 {
     public interface IMatchMaker
     {
-        Task RequestRandomRoom(int category, int capacityChoice, ActiveUser activeUser);
+        Task RequestRandomRoom(int category, int capacityChoice, string userId, string connId);
 
         /// <summary>
         /// called by timeout
@@ -22,11 +17,11 @@ namespace OlympicWords.Services
 
         Task MakeRoomUserReadyRpc();
         void RemovePendingDisconnectedUser(RoomUser roomUser);
-        Task<MatchMaker.MatchRequestResult> RequestMatch(ActiveUser activeUser, string oppoId);
-        void CancelChallengeRequest(ActiveUser activeUser);
 
-        Task<MatchMaker.ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
-            bool response, string sender);
+        // Task<MatchRequestResult> RequestMatch(ActiveUser activeUser, string oppoId);
+        // void CancelChallengeRequest(ActiveUser activeUser);
+        // Task<ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
+        // bool response, string sender);
     }
 
     public class MatchMaker : IMatchMaker
@@ -49,26 +44,34 @@ namespace OlympicWords.Services
             this.logger = logger;
         }
 
-        public async Task RequestRandomRoom(int category, int capacityChoice,
-            ActiveUser activeUser)
+        public async Task RequestRandomRoom(int category, int capacityChoice, string userId, string connId)
         {
-            if (!category.IsInRange(Room.Bets.Length) ||
-                !capacityChoice.IsInRange(Room.Capacities.Length))
-                throw new Exceptions.BadUserInputException();
+            //I set user domain fast because this will await sometime and enable the user to call
+            //twice this method without domain change
+            scopeRepo.MarkUserPending();
 
-            var dUser = await offlineRepo.GetUserByIdAsyc(activeUser.Id);
+            if (!category.IsInRange(Room.Bets.Length) || !capacityChoice.IsInRange(Room.Capacities.Length))
+            {
+                scopeRepo.RemovePendingUser();
+                throw new Exceptions.BadUserInputException();
+            }
+
+            var dUser = await offlineRepo.GetCurrentUserAsync();
 
             if (dUser.Money < Room.Bets[category])
+            {
+                scopeRepo.RemovePendingUser();
                 throw new Exceptions.BadUserInputException();
+            }
 
-            var room = TakeOrCreateAppropriateRoom(category, capacityChoice);
-            var roomUser = CreateRoomUser(activeUser, room);
+            var room = scopeRepo.TakePendingRoom(category, capacityChoice) ?? MakeRoom(category, capacityChoice);
+            var roomUser = CreateRoomUser(room, connId);
             room.RoomUsers.Add(roomUser);
             room.RoomActors.Add(roomUser);
 
-            var disconnectedUsers =
-                room.RoomUsers.Where(ru => ru.ActiveUser.IsDisconnected).ToList();
-            disconnectedUsers.ForEach(RemovePendingDisconnectedUser);
+            // foreach (var disconnectedUser in room.RoomUsers.Where(ru => ru.Active))
+            // RemovePendingDisconnectedUser(disconnectedUser);
+            //the only way to tell the user is not active is by OnDisconnectedAsync which calls this method
 
             if (room.IsFull)
             {
@@ -77,9 +80,25 @@ namespace OlympicWords.Services
             }
             else
             {
-                activeUser.Domain = typeof(UserDomain.App.Lobby.Pending);
+                scopeRepo.KeepPendingRoom(room); //so other users can see it
                 serverLoop.SetupPendingRoomTimeoutIfNotExist(room);
-                scopeRepo.KeepPendingRoom(room);
+
+                // const int timeout = 1000;
+                // const int checkInterval = 250;
+                // const int maxRetries = timeout / checkInterval;
+                //
+                // var retries = 0;
+                //
+                // while (!room.IsFull && retries < maxRetries)
+                // {
+                //     await Task.Delay(checkInterval * 1000);
+                //     retries++;
+                // }
+                //
+                // if (room.IsFull)
+                //     await PrepareRoom(room);
+                // else
+                //     await FillPendingRoomWithBots(room);
             }
         }
 
@@ -102,107 +121,92 @@ namespace OlympicWords.Services
             await PrepareRoom(room);
         }
 
-        public enum MatchRequestResult
-        {
-            Offline,
-            Playing,
-            NoMoney,
-            Available,
-        }
-
-        public async Task<MatchRequestResult> RequestMatch(ActiveUser activeUser,
-            string oppoId)
-        {
-            var dUser = await offlineRepo.GetUserByIdAsyc(activeUser.Id);
-
-            if (dUser.Money < Room.MinBet)
-                throw new Exceptions.BadUserInputException();
-
-            //BadUserInputException is thrown when something is wrong but should've been
-            //validated by the client 
-
-            var oppoUser = await offlineRepo.GetUserByIdAsyc(oppoId);
-            var friendship = await offlineRepo.GetFriendship(activeUser.Id, oppoId);
-
-            if (friendship is FriendShip.None or FriendShip.Follower && !oppoUser.EnableOpenMatches)
-                throw new Exceptions.BadUserInputException();
-
-            if (!scopeRepo.IsUserActive(oppoId))
-                return MatchRequestResult.Offline;
-
-            if (scopeRepo.DoesRoomUserExist(oppoId))
-                return MatchRequestResult.Playing;
-
-            if (oppoUser.Money < Room.MinBet)
-                return MatchRequestResult.NoMoney;
-
-            //can't call again because this fun domain is lobby.idle only
-            activeUser.Domain = typeof(UserDomain.App.Lobby.Pending);
-
-            activeUser.ChallengeRequestTarget = oppoId;
-
-            var oppoAu = scopeRepo.GetActiveUser(oppoId);
-            //oppo is 100% active at this satage
-
-            await masterHub.SendOrderedAsync(oppoAu, "ChallengeRequest",
-                Mapper.UserToMinUserInfoFunc(dUser));
-
-            return MatchRequestResult.Available;
-        }
-
-        public void CancelChallengeRequest(ActiveUser activeUser)
-        {
-            activeUser.ChallengeRequestTarget = null;
-            activeUser.Domain = typeof(UserDomain.App.Lobby.Idle);
-        }
-
-        public enum ChallengeResponseResult
-        {
-            Offline, //player is offline whatever the response
-            Canceled, //player is not interested anymore
-            Success, //successful whatever the response
-        }
-
-        public async Task<ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
-            bool response, string sender)
-        {
-            if (!scopeRepo.IsUserActive(sender))
-                return ChallengeResponseResult.Offline;
-
-            var senderActiveUser = scopeRepo.GetActiveUser(sender);
-
-            if (senderActiveUser.ChallengeRequestTarget != activeUser.Id)
-                //can be null or he sent to another user after
-                return ChallengeResponseResult.Canceled;
-
-            if (!response)
-            {
-                await masterHub.SendOrderedAsync(scopeRepo.GetActiveUser(sender),
-                    "RespondChallenge", false);
-                //otherwise start the room
-
-                CancelChallengeRequest(senderActiveUser);
-
-                return ChallengeResponseResult.Success;
-            }
-
-            //user domains are changed when prepare is called
-            senderActiveUser.ChallengeRequestTarget = null;
-
-            var room = MakeRoom(0, 0);
-
-            var roomUser = CreateRoomUser(activeUser, room);
-            var senderRoomUser = CreateRoomUser(senderActiveUser, room);
-
-            room.RoomUsers.Add(senderRoomUser);
-            room.RoomActors.Add(senderRoomUser);
-            room.RoomUsers.Add(roomUser);
-            room.RoomActors.Add(roomUser);
-
-            await PrepareRoom(room);
-
-            return ChallengeResponseResult.Success;
-        }
+        // public async Task<MatchRequestResult> RequestMatch(ActiveUser activeUser,
+        //     string oppoId)
+        // {
+        //     var dUser = await offlineRepo.GetUserByIdAsyc(activeUser.Id);
+        //
+        //     if (dUser.Money < Room.MinBet)
+        //         throw new Exceptions.BadUserInputException();
+        //
+        //     //BadUserInputException is thrown when something is wrong but should've been
+        //     //validated by the client 
+        //
+        //     var oppoUser = await offlineRepo.GetUserByIdAsyc(oppoId);
+        //     var friendship = await offlineRepo.GetFriendship(activeUser.Id, oppoId);
+        //
+        //     if (friendship is FriendShip.None or FriendShip.Follower && !oppoUser.EnableOpenMatches)
+        //         throw new Exceptions.BadUserInputException();
+        //
+        //     if (!scopeRepo.IsUserActive(oppoId))
+        //         return MatchRequestResult.Offline;
+        //
+        //     if (scopeRepo.DoesRoomUserExist(oppoId))
+        //         return MatchRequestResult.Playing;
+        //
+        //     if (oppoUser.Money < Room.MinBet)
+        //         return MatchRequestResult.NoMoney;
+        //
+        //     //can't call again because this fun domain is lobby.idle only
+        //     activeUser.Domain = typeof(UserDomain.Stateless.Pending);
+        //
+        //     activeUser.ChallengeRequestTarget = oppoId;
+        //
+        //     var oppoAu = scopeRepo.GetActiveUser(oppoId);
+        //     //oppo is 100% active at this satage
+        //
+        //     await masterHub.SendOrderedAsync(scopeRepo.GetRoomUser(oppoId), "ChallengeRequest",
+        //         Mapper.UserToMinUserInfoFunc(dUser));
+        //
+        //     return MatchRequestResult.Available;
+        // }
+        //
+        // public void CancelChallengeRequest(ActiveUser activeUser)
+        // {
+        //     activeUser.ChallengeRequestTarget = null;
+        //     activeUser.Domain = typeof(UserDomain.Stateless);
+        // }
+        //
+        // public async Task<ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
+        //     bool response, string sender)
+        // {
+        //     if (!scopeRepo.IsUserActive(sender))
+        //         return ChallengeResponseResult.Offline;
+        //
+        //     var senderActiveUser = scopeRepo.GetActiveUser(sender);
+        //
+        //     if (senderActiveUser.ChallengeRequestTarget != activeUser.Id)
+        //         //can be null or he sent to another user after
+        //         return ChallengeResponseResult.Canceled;
+        //
+        //     if (!response)
+        //     {
+        //         await masterHub.SendOrderedAsync(scopeRepo.GetRoomUser(sender),
+        //             "RespondChallenge", false);
+        //         //otherwise start the room
+        //
+        //         CancelChallengeRequest(senderActiveUser);
+        //
+        //         return ChallengeResponseResult.Success;
+        //     }
+        //
+        //     //user domains are changed when prepare is called
+        //     senderActiveUser.ChallengeRequestTarget = null;
+        //
+        //     var room = MakeRoom(0, 0);
+        //
+        //     var roomUser = CreateRoomUser(activeUser, room);
+        //     var senderRoomUser = CreateRoomUser(senderActiveUser, room);
+        //
+        //     room.RoomUsers.Add(senderRoomUser);
+        //     room.RoomActors.Add(senderRoomUser);
+        //     room.RoomUsers.Add(roomUser);
+        //     room.RoomActors.Add(roomUser);
+        //
+        //     await PrepareRoom(room);
+        //
+        //     return ChallengeResponseResult.Success;
+        // }
 
         private Room MakeRoom(int capacityChoice, int category)
         {
@@ -211,7 +215,7 @@ namespace OlympicWords.Services
 
         public async Task MakeRoomUserReadyRpc()
         {
-            scopeRepo.ActiveUser.Domain = typeof(UserDomain.App.Lobby.WaitingForOthers);
+            scopeRepo.RoomUser.Domain = typeof(UserDomain.Room.WaitingForOthers);
             scopeRepo.RoomUser.IsReady = true;
 
             await StartRoomIfAllReady(scopeRepo.Room);
@@ -219,7 +223,7 @@ namespace OlympicWords.Services
 
         private async Task PrepareRoom(Room room)
         {
-            room.SetUsersDomains(typeof(UserDomain.App.Lobby.GettingReady));
+            room.SetUsersDomain<UserDomain.Room.GettingReady>();
 
             room.RoomActors.Shuffle();
             for (var i = 0; i < room.RoomActors.Count; i++) room.RoomActors[i].TurnId = i;
@@ -230,15 +234,16 @@ namespace OlympicWords.Services
             SetFillers(room);
 
             var userIds = room.RoomActors.Select(ru => ru.Id).ToList();
-            var users = await offlineRepo.GetUsersByIdsAsync(userIds);
+            var users = await offlineRepo.GetUsersAsync(userIds);
 
             users.ForEach(u => u.Money -= room.Bet);
 
-
-            var fullUsersInfos = users.Select(Mapper.UserToFullUserInfoFunc).ToList();
+            var fullUsersInfos = users.Select(Mapper.UserToFullFunc).ToList();
 
             var turnSortedUsersInfo = room.RoomActors.Join(fullUsersInfos, actor => actor.Id,
                 info => info.Id, (_, info) => info).ToList();
+
+            room.RoomUsers.ForEach(ru => scopeRepo.RemovePendingUser(ru.Id));
 
             await offlineRepo.SaveChangesAsync();
             serverLoop.SetForceStartRoomTimeout(room);
@@ -328,7 +333,7 @@ namespace OlympicWords.Services
                 //actor id = index
                 var chosenPowerUps = room.RoomActors.Select(a => a.ChosenPowerUp);
 
-                var task = masterHub.SendOrderedAsync(ru.ActiveUser, "PrepareRequestedRoomRpc",
+                var task = masterHub.SendOrderedAsync(ru, "PrepareRequestedRoomRpc",
                     turnSortedUsersInfo, i, room.Text, seed, room.FillerWords, chosenPowerUps);
 
                 //changes in the same room when he disconnect
@@ -340,16 +345,10 @@ namespace OlympicWords.Services
             await Task.WhenAll(tasks);
         }
 
-        private Room TakeOrCreateAppropriateRoom(int category, int capacityChoice)
+        private RoomUser CreateRoomUser(Room room, string connectionId)
         {
-            return scopeRepo.TakePendingRoom(category, capacityChoice) ??
-                   MakeRoom(category, capacityChoice);
-        }
-
-        private RoomUser CreateRoomUser(ActiveUser activeUser, Room room)
-        {
-            var roomUser = new RoomUser(activeUser.Id, room, activeUser);
-            scopeRepo.AddRoomUser(roomUser);
+            var roomUser = new RoomUser(scopeRepo.UserId, room, connectionId);
+            scopeRepo.AddNewUser(roomUser);
             return roomUser;
         }
 
@@ -369,16 +368,15 @@ namespace OlympicWords.Services
 
             roomUser.Room.RoomActors.Remove(roomUser);
             roomUser.Room.RoomUsers.Remove(roomUser);
+            scopeRepo.RemovePendingUser();
 
             if (roomUser.Room.RoomUsers.Count == 0) //maybe the remaining are bots, or non
             {
-                serverLoop.CancelPendingRoomTimeout(roomUser.Room);
+                // serverLoop.CancelPendingRoomTimeout(roomUser.Room);
                 scopeRepo.DeleteRoom();
             }
 
             scopeRepo.RemoveRoomUser();
-
-            roomUser.InRoom = false;
         }
     }
 }

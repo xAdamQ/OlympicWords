@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using UnityEngine;
+using Shared;
 
 public static class FbManager
 {
@@ -41,7 +42,7 @@ public static class FbManager
 
     public static async UniTask<bool> IsTokenValid()
     {
-        var token = PlayerPrefs.GetString("fbToken");
+        var token = NetManager.I.GetToken(ProviderType.Facebook);
 
         const string clientToken = "468588098648394|CwbC4U-0WDoPAaeP79TTG7ELfD4";
         const string fbBaseAddress = "https://graph.facebook.com/v15.0/";
@@ -66,12 +67,6 @@ public static class FbManager
         }
     }
 
-    public static bool IsLoggedInBefore()
-    {
-        var cachedToken = PlayerPrefs.GetString("fbToken");
-        return !string.IsNullOrEmpty(cachedToken);
-    }
-
     public static void ShowButton()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -79,51 +74,61 @@ public static class FbManager
 #endif
     }
 
-    public static void CachedLogin()
-    {
-        var cachedToken = PlayerPrefs.GetString("fbToken");
-        NetManager.I.ConnectToServer(cachedToken, "Facebook");
-    }
+   
 
-    public static void Login(string responseStr)
+    private static LoginStatus LoginBase(string responseStr)
     {
         Debug.Log("fb login in unity called with data: " + responseStr);
 
         var response = JsonConvert.DeserializeObject<LoginStatus>(responseStr);
         if (response == null) throw new NullReferenceException("rb response is null");
 
-        PlayerPrefs.SetString("fbToken", response.AuthResponse.AccessToken);
+        // NetManager.I.SetToken(ProviderType.Facebook, response.AuthResponse.AccessToken);
 
-        var guestToken = PlayerPrefs.GetString("GuestGuid");
+        return response;
+    }
 
-        if (!string.IsNullOrEmpty(guestToken))
+    public static void Login(string responseStr)
+    {
+        var response = LoginBase(responseStr);
+
+        BlockingOperationManager.I.Forget
+            (NetManager.I.Login(response.AuthResponse.AccessToken, ProviderType.Facebook));
+    }
+
+    public static void UpgradeGuestToFb(string responseStr)
+    {
+        var response = LoginBase(responseStr);
+
+        const string message = "you will link your local progress to facebook, but in case facebook " +
+                               "profile has progress do you want to overwrite it with local?";
+
+        var choices = new List<(string, UniTask)>
         {
-            const string message = "you will link your local progress to facebook, but in case facebook " +
-                                   "profile has progress do you want to overwrite it with local?";
-            var choices = new List<(string, Action)>
-            {
-                ("YES", () => link(true)),
-                ("NO", () => link(false)),
-                ("login with facebook account separately", justLogin)
-            };
+            ("YES", link(true)),
+            ("NO", link(false)),
+            ("login with facebook account separately", justLogin())
+        };
 
-            Popup.Show(message, choices);
+        Popup.Show(message, choices);
+
+        async UniTask link(bool overwrite)
+        {
+            var guestToken = NetManager.I.GetToken(ProviderType.Guest);
+            //not that the last login token is now facebook because login base changed it
+
+            var linkOp = Controllers.User.LinkTo(guestToken, "Guest", "Facebook",
+                response.AuthResponse.AccessToken, overwrite);
+            //in case something rather than 2xx ok is returned, the exception will be thrown so we don't continue 
+            //to remove the guest guid
+
+            await BlockingOperationManager.I.Start(linkOp);
         }
-        else
-        {
-            justLogin();
-        }
 
-        void link(bool overwrite)
+        UniTask justLogin()
         {
-            NetManager.I.ConnectToServer
-                (response.AuthResponse.AccessToken, "Facebook", ("Guest", guestToken, overwrite));
-            NetManager.I.Connected += () => PlayerPrefs.DeleteKey("GuestGuid");
-        }
-
-        void justLogin()
-        {
-            NetManager.I.ConnectToServer(response.AuthResponse.AccessToken, "Facebook");
+            var op = NetManager.I.Login(response.AuthResponse.AccessToken, ProviderType.Facebook);
+            return BlockingOperationManager.I.Start(op);
         }
     }
 

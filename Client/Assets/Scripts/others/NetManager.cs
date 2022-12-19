@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,9 +12,8 @@ using UnityEngine;
 using BestHTTP.SignalRCore.Encoders;
 using BestHTTP.SignalRCore.Messages;
 using Cysharp.Threading.Tasks;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
-using TMPro;
+using Shared;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
@@ -31,13 +30,6 @@ public class NetManager : MonoModule<NetManager>
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
     };
-
-    [ContextMenu("tst")]
-    public void tst()
-    {
-        var res = PlayerPrefs.GetString("sfhjjksdfsd");
-        Debug.Log(string.IsNullOrEmpty(res));
-    }
 
     protected override void Awake()
     {
@@ -138,7 +130,7 @@ public class NetManager : MonoModule<NetManager>
 
     public string SelectedAddress;
 
-    private (string token, string provider) currentAuth;
+    // private (string token, string provider) currentAuth;
 
     public async UniTask<T> GetAsync<T>(string uri,
         (string key, string value)[] queryParams = null,
@@ -154,10 +146,14 @@ public class NetManager : MonoModule<NetManager>
             uriBuilder.Query += $"{queryParams.Last().key}={queryParams.Last().value}&";
         }
 
+        uriBuilder.Query += "access_token=531ecc3b-b99b-4aac-b364-680fda0afa8e&";
+        uriBuilder.Query += "provider=Guest&";
+
         var request = new HTTPRequest(uriBuilder.Uri);
 
         // request.AddHeader("Content-Type", "application/json");
-        request.AddHeader("Accept", "application/json");
+        // request.AddHeader("Accept", "application/json");
+
 
         if (json != null)
             request.AddField("data", json);
@@ -180,42 +176,118 @@ public class NetManager : MonoModule<NetManager>
         if (contentTypes == null)
             throw new Exception("the response doesn't have a content type header");
 
-        if (!contentTypes.Contains("application/json"))
-            throw new Exception(
-                $"the content types: {string.Join(", ", contentTypes)} for http requests is not supported");
+        // if (!contentTypes.Contains("application/json"))
+        //     throw new Exception(
+        //         $"the content types: {string.Join(", ", contentTypes)} for http requests is not supported");
 
         return JsonConvert.DeserializeObject<T>(response.DataAsText);
     }
 
+    public async UniTask<(HTTPRequest, HTTPResponse)> SendAsyncHTTP(string uri,
+        (string key, string value)[] queryParams = null,
+        string json = null,
+        HTTPMethods method = HTTPMethods.Get
+    )
+    {
+        var uriBuilder = new UriBuilder(uri);
+
+        if (queryParams is not null && queryParams.Length > 0)
+        {
+            for (var i = 0; i < queryParams.Length - 1; i++)
+                uriBuilder.Query += $"{queryParams[i].key}={queryParams[i].value}&";
+
+            uriBuilder.Query += $"{queryParams.Last().key}={queryParams.Last().value}&";
+        }
+
+        uriBuilder.Query += "access_token=531ecc3b-b99b-4aac-b364-680fda0afa8e&";
+        uriBuilder.Query += "provider=Guest&";
+
+        var request = new HTTPRequest(uriBuilder.Uri, method);
+
+        // request.AddHeader("Content-Type", "application/json");
+        // request.AddHeader("Accept", "application/json");
+
+
+        if (json != null)
+        {
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(json);
+            // request.FormUsage = HTTPFormUsage.UrlEncoded;
+            // request.AddField("data", json);
+        }
+
+        var response = await request.GetHTTPResponseAsync();
+
+        if (request.Exception is not null)
+            throw request.Exception;
+
+        if (!response.IsSuccess)
+            throw new ServerRequestException(
+                $"request didn't end successfully, " +
+                $"request is {JsonConvert.SerializeObject(request, serializationSettings)[..MAX_DEBUG_LENGTH]} \n" +
+                $"full response is {JsonConvert.SerializeObject(response, serializationSettings)[..MAX_DEBUG_LENGTH]}");
+
+        return (request, response);
+    }
 
     public NameValueCollection GetAuthQuery()
     {
         var query = HttpUtility.ParseQueryString(string.Empty);
 
-        query["access_token"] = currentAuth.token;
-        query["provider"] = currentAuth.provider;
+        var (p, t) = GetActiveAuth();
+        (query["provider"], query["access_token"]) = (p.ToString(), t);
 
         return query;
     }
 
+    public async UniTask Login(string token, ProviderType provider)
+    {
+        PlayerPrefs.SetString(provider + "token", token);
+
+        Repository.I = new();
+        Repository.I.PersonalFullInfo = await Controllers.User.Personal();
+        //current auth is then used to fetch the personal data
+
+        PlayerPrefs.SetString("activeToken", token);
+        PlayerPrefs.SetString("activeProvider", provider.ToString());
+
+        SetToken(provider, token);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        JsManager.HideFbButton();
+#endif
+
+        SceneManager.LoadScene("Lobby");
+    }
+
+    public (ProviderType, string) GetActiveAuth()
+    {
+        var t = PlayerPrefs.GetString("activeToken");
+        var pStr = PlayerPrefs.GetString("activeProvider");
+        var providerParsed = Enum.TryParse<ProviderType>(pStr, out var provider);
+
+        return string.IsNullOrEmpty(t) || !providerParsed ? (default, null) : (provider, t);
+    }
+
+    public string GetToken(ProviderType provider)
+    {
+        return PlayerPrefs.GetString(provider + "Token");
+    }
+    private void SetToken(ProviderType provider, string token)
+    {
+        PlayerPrefs.SetString(provider + "Token", token);
+    }
+
     //I use event functions because awaiting returns hub conn and this is useless
-    public void ConnectToServer(string accessToken, string provider,
-        (string provider, string accessToken, bool overwrite) original = default)
+    public UniTask StartRandomRoom(int betChoice, int capacityChoice)
     {
         SelectedAddress = GuestView.I.GetServerAddress();
-
-        currentAuth = (accessToken, provider);
 
         Debug.Log("connecting to server");
 
         var query = GetAuthQuery();
 
-        if (original != default)
-        {
-            query["original_provider"] = original.provider;
-            query["original_provider_token"] = original.accessToken;
-            query["link_overwrite"] = original.overwrite.ToString();
-        }
+        query["betChoice"] = betChoice.ToString();
+        query["capacityChoice"] = capacityChoice.ToString();
 
         var uriBuilder = new UriBuilder(Extensions.UriCombine(SelectedAddress, "/connect"))
         {
@@ -223,6 +295,8 @@ public class NetManager : MonoModule<NetManager>
         };
 
         Debug.Log($"connecting with url {uriBuilder}");
+
+        HTTPManager.Logger.Level = BestHTTP.Logger.Loglevels.All;
 
         var hubOptions = new HubOptions
         {
@@ -233,18 +307,18 @@ public class NetManager : MonoModule<NetManager>
         hubConnection = new HubConnection(uriBuilder.Uri, protocol, hubOptions)
         {
             ReconnectPolicy = myReconnectPolicy,
+            //I authenticate with a token as a query param
+            // AuthenticationProvider = null,
         };
 
         //I don't have this term "authentication" despite I make token authentication
-        // HubConnection.AuthenticationProvider = new DefaultAccessTokenAuthenticator(HubConnection);
-
         hubConnection.OnConnected += OnConnected;
         hubConnection.OnError += OnError;
         hubConnection.OnClosed += OnClosed;
         hubConnection.OnMessage += OnMessage;
         hubConnection.OnReconnecting += OnReconnecting;
 
-        BlockingOperationManager.I.Forget(hubConnection.ConnectAsync().AsUniTask());
+        return BlockingOperationManager.I.Start(hubConnection.ConnectAsync().AsUniTask());
     }
 
     private bool OnMessage(HubConnection arg1, Message msg)
@@ -264,24 +338,12 @@ public class NetManager : MonoModule<NetManager>
         return true;
     }
 
-    public Action Connected;
-    private void OnConnected(HubConnection obj)
+    public void OnConnected(HubConnection _)
     {
         IsConnected = true;
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-        JsManager.HideFbButton();
-#endif
-
         Debug.Log("connected to server");
-
-        SignInPanel.DestroyModule();
-        LangSelector.DestroyModule();
-
-        Destroy(FindObjectOfType<GuestView>()?.gameObject);
-
-        Connected?.Invoke();
     }
+
     private void OnClosed(HubConnection obj)
     {
         //don't restart game here because this is called only when the connection
@@ -321,7 +383,6 @@ public class NetManager : MonoModule<NetManager>
     }
 
     #region rpc with reflections
-
     private readonly Dictionary<string, (MethodInfo info, Type[] types)> rpcInfos = new();
 
     private void FetchRpcInfos()
@@ -407,7 +468,6 @@ public class NetManager : MonoModule<NetManager>
                     .First(m => (int)m.arguments[0] == messageIndex))
                 .Forget();
     }
-
     #endregion
 
     public void UpStreamCharTest()

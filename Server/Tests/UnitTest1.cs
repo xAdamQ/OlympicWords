@@ -36,26 +36,26 @@ public class UnitTest1
 
         var c = new MasterContext(options);
 
-        return new OfflineRepo(c, new Mock<IScopeRepo>().Object, GetLogger<IOfflineRepo>());
+        return new OfflineRepo(c, new Mock<IScopeRepo>().Object, GetLogger<OfflineRepo>());
     }
 
     [Fact]
     public async Task Test1()
     {
-        var repo = GetOfflineRepo();
-        var u = await repo.GetUserByIdAsyc("0");
-        var bot999 = await repo.GetUserByIdAsyc("999");
-        var u3 = await repo.GetUserByIdAsyc("9999");
-
-        var aa = u.FollowingRelations;
-        var bb = u.FollowerRelations;
-        var aa2 = bot999.FollowingRelations;
-        var bb2 = bot999.FollowerRelations;
-        var aa3 = u3.FollowingRelations;
-        var bb3 = u3.FollowerRelations;
-
-        u.Followings.Remove(bot999);
-        await repo.SaveChangesAsync();
+        // var repo = GetOfflineRepo();
+        // var u = await repo.GetUserByIdAsync("0");
+        // var bot999 = await repo.GetUserByIdAsync("999");
+        // var u3 = await repo.GetUserByIdAsync("9999");
+        //
+        // var aa = u.FollowingRelations;
+        // var bb = u.FollowerRelations;
+        // var aa2 = bot999.FollowingRelations;
+        // var bb2 = bot999.FollowerRelations;
+        // var aa3 = u3.FollowingRelations;
+        // var bb3 = u3.FollowerRelations;
+        //
+        // u.Followings.Remove(bot999);
+        // await repo.SaveChangesAsync();
     }
 
     [Fact]
@@ -66,15 +66,15 @@ public class UnitTest1
             "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes";
 
         room.Words = room.Text.Split(" ").ToList();
-        room.RoomActors.Add(new RoomUser("00", room, null)
+        room.RoomActors.Add(new RoomUser("00", room, "123")
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });
-        room.RoomActors.Add(new RoomUser("11", room, null)
+        room.RoomActors.Add(new RoomUser("11", room, "32321")
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });
-        room.RoomActors.Add(new RoomUser("11", room, null)
+        room.RoomActors.Add(new RoomUser("11", room, "23445")
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });

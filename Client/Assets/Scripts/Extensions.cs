@@ -230,7 +230,7 @@ public static partial class Extensions
             return null;
         }
 
-        Debug.Log($"img downloaded from: {url}");
+        // Debug.Log($"img downloaded from: {url}");
         return DownloadHandlerTexture.GetContent(request);
     }
 
