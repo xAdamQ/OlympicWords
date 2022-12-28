@@ -56,7 +56,7 @@ services.AddDbContext<MasterContext>(options =>
     NCacheConfiguration.Configure("default", DependencyType.SqlServer);
     NCacheConfiguration.ConfigureLogger(logLevel: LogLevel.Information);
 
-    options.UseSqlServer(configuration.GetConnectionString("Main"));
+    options.UseSqlServer(configuration.GetConnectionString("Azure"));
     options.EnableSensitiveDataLogging();
 });
 
