@@ -56,7 +56,7 @@ public class BlockingPanel : MonoBehaviour
     {
         if (i) Destroy(i.gameObject);
 
-        i = Instantiate(Controller.I.References.BlockingPanelPrefab, Controller.I.canvas)
+        i = Instantiate(Coordinator.I.References.BlockingPanelPrefab, Coordinator.I.canvas)
             .GetComponent<BlockingPanel>();
 
         i.messageText.text = message;

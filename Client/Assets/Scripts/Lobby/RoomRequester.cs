@@ -25,7 +25,7 @@ public class RoomRequester : MonoBehaviour
         if (betChoice > 0)
         {
             var handle = Addressables.DownloadDependenciesAsync("Env" + betChoice);
-            await BlockingOperationManager.I.Start(handle, "the level is downloading");
+            await BlockingOperationManager.Start(handle, "the level is downloading");
         }
 
         if (Repository.I.PersonalFullInfo.Money < EnvBase.Bets[betChoice])
@@ -34,14 +34,17 @@ public class RoomRequester : MonoBehaviour
             return;
         }
 
-        UniTask.Create(async () =>
-        {
-            await NetManager.I.StartRandomRoom(betChoice, capacityChoiceButton.CurrentChoice);
+        LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
+        await SwitchScene(betChoice);
 
-            LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
-
-            await SwitchScene(betChoice);
-        });
+        // UniTask.Create(async () =>
+        // {
+        //     await RoomNet.I.StartRandomRoom(betChoice, capacityChoiceButton.CurrentChoice);
+        //
+        //     LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
+        //
+        //     await SwitchScene(betChoice);
+        // });
 
         // BlockingPanel.Show("finding players")
         //     .Forget(e => throw e);

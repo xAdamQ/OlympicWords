@@ -19,7 +19,7 @@ public class Popup : MonoBehaviour
     {
         if (instance) Destroy(instance.gameObject);
 
-        instance = Instantiate(Controller.I.References.PopupPrefab, Controller.I.canvas)
+        instance = Instantiate(Coordinator.I.References.PopupPrefab, Coordinator.I.canvas)
             .GetComponent<Popup>();
     }
     public static void Show(string message, IEnumerable<(string, Action)> choices)

@@ -98,7 +98,7 @@ public class UnitTest1
         });
 
 
-        var mm = new MatchMaker(new Mock<IHubContext<MasterHub>>().Object, or.Object,
+        var mm = new MatchMaker(new Mock<IHubContext<RoomHub>>().Object, or.Object,
             sr.Object, new Mock<IGameplay>().Object, new Mock<IServerLoop>().Object,
             new Mock<ILogger<MatchMaker>>().Object);
 
@@ -150,10 +150,10 @@ public class UnitTest1
         var f = new Mock<IFinalizer>();
         f.Setup(x => x.FinalizeUser()).Callback(() => testOutputHelper.WriteLine("finalize"));
 
-        var gp = new Gameplay(new Mock<IHubContext<MasterHub>>().Object, new Mock<ILogger<Gameplay>>().Object,
+        var gp = new Gameplay(new Mock<IHubContext<RoomHub>>().Object, new Mock<ILogger<Gameplay>>().Object,
             f.Object, new Mock<IServerLoop>().Object, sr.Object);
 
-        var mm = new MatchMaker(new Mock<IHubContext<MasterHub>>().Object, or.Object,
+        var mm = new MatchMaker(new Mock<IHubContext<RoomHub>>().Object, or.Object,
             sr.Object, new Mock<IGameplay>().Object, new Mock<IServerLoop>().Object,
             new Mock<ILogger<MatchMaker>>().Object);
 

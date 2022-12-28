@@ -41,7 +41,7 @@ services.AddSignalR(options =>
         options.AddFilter<BadUserInputFilter>();
         options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
     })
-    .AddAzureSignalR(opt => { opt.ServerStickyMode = ServerStickyMode.Preferred; })
+    // .AddAzureSignalR(opt => { opt.ServerStickyMode = ServerStickyMode.Preferred; })
     .AddJsonProtocol(options => { options.PayloadSerializerOptions.IncludeFields = true; });
 
 services.AddHttpContextAccessor();
@@ -104,7 +104,7 @@ app.MapServerSentEvents("/updates");
 
 app.UseHttpsRedirection();
 
-app.UseEndpoints(endpoint => endpoint.MapHub<MasterHub>("/connect"));
+app.UseEndpoints(endpoint => endpoint.MapHub<RoomHub>("/connect"));
 
 
 app.Run();

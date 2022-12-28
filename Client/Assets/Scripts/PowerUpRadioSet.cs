@@ -6,7 +6,7 @@ public class PowerUpRadioSet : RadioSet
     {
         UniTask.Create(async () =>
         {
-            await MasterHub.I.SetPowerUp(choice);
+            await RoomNet.I.SetPowerUp(choice);
             base.Choose(choice);
         });
     }

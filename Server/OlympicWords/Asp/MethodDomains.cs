@@ -9,7 +9,7 @@ public static class MethodDomains
 {
     static MethodDomains()
     {
-        var rpcMethods = typeof(MasterHub).GetMethods(BindingFlags.Public | BindingFlags.Instance);
+        var rpcMethods = typeof(RoomHub).GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
         Rpcs = rpcMethods.Where(r => r.GetCustomAttribute<RpcDomainAttribute>() != null)
             .ToImmutableDictionary(r => r, r => r.GetCustomAttribute<RpcDomainAttribute>()!.Domain);

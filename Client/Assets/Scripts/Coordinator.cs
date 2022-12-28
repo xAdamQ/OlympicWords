@@ -3,14 +3,8 @@ using BestHTTP;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-#if !UNITY_WEBGL
-using Newtonsoft.Json;
-#endif
 
-
-[Rpc]
-public class Controller : MonoModule<Controller>
+public class Coordinator : MonoModule<Coordinator>
 {
     [Serializable]
     public class ScopeReferences
@@ -47,8 +41,6 @@ public class Controller : MonoModule<Controller>
         Application.targetFrameRate = targetFps;
 #endif
 
-        new BlockingOperationManager();
-
         HTTPManager.Logger = new MyBestHttpLogger();
     }
 
@@ -56,18 +48,14 @@ public class Controller : MonoModule<Controller>
     {
         Toast.Create().Forget();
 
-        NetManager.I.AddRpcContainer(this);
-
         References.SetSources();
     }
 
     private readonly Dictionary<string, object> transitionData = new();
-
     public void AddTransitionData(string name, object obj)
     {
         transitionData.Add(name, obj);
     }
-
     public object TakeTransitionData(string name)
     {
         var data = transitionData[name];

@@ -40,6 +40,7 @@ public abstract class MyPlayerBase : PlayerBase
     }
 
     [SerializeField] private float jumpZoomCoefficient;
+
     protected override void JumpToCurrent(Action onDone = null)
     {
         onDone += () => UniTask.Delay(300).ContinueWith(() => addedOffset = Vector3.zero).Forget();
@@ -65,6 +66,7 @@ public abstract class MyPlayerBase : PlayerBase
                 break;
         }
     }
+
     protected override void OnGameFinished()
     {
         canWrite = false;
@@ -73,7 +75,7 @@ public abstract class MyPlayerBase : PlayerBase
 
     private void OnTextInput(char c)
     {
-        NetManager.I.StreamChar(c);
+        RoomNet.I.StreamChar(c);
 
         Debug.Log("written: " + c);
 
@@ -131,6 +133,7 @@ public abstract class MyPlayerBase : PlayerBase
     }
 
     [SerializeField] private float cameraMoveSmoothing, cameraLookSmoothing;
+
     private IEnumerator FollowIEnumerator()
     {
         while (true)

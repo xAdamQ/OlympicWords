@@ -7,7 +7,7 @@ using static System.Threading.Tasks.Task;
 
 namespace OlympicWords.Services
 {
-    public interface IMasterHub
+    public interface IRoomHub
     {
         // Task OnConnectedAsync();
         // Task OnDisconnectedAsync(Exception exception);
@@ -40,14 +40,14 @@ namespace OlympicWords.Services
         // Task MegaJetJump();
     }
 
-    public class MasterHub : Hub, IMasterHub
+    public class RoomHub : Hub, IRoomHub
     {
         #region services
         private readonly IOfflineRepo offlineRepo;
         private readonly IScopeRepo scopeRepo;
         private readonly IGameplay gameplay;
         private readonly IMatchMaker matchMaker;
-        private readonly ILogger<MasterHub> logger;
+        private readonly ILogger<RoomHub> logger;
         // private readonly IChatManager chatManager;
         private readonly PersistantData persistantData;
         private readonly IFinalizer finalizer;
@@ -55,8 +55,8 @@ namespace OlympicWords.Services
         private readonly ILobbyManager lobbyManager;
 
 
-        public MasterHub(IOfflineRepo offlineRepo, ILobbyManager lobbyManager, IScopeRepo scopeRepo,
-            IGameplay gameplay, IMatchMaker matchMaker, ILogger<MasterHub> logger,
+        public RoomHub(IOfflineRepo offlineRepo, ILobbyManager lobbyManager, IScopeRepo scopeRepo,
+            IGameplay gameplay, IMatchMaker matchMaker, ILogger<RoomHub> logger,
             PersistantData persistantData, IFinalizer finalizer, IHttpContextAccessor contextAccessor)
         {
             this.offlineRepo = offlineRepo;
@@ -124,15 +124,14 @@ namespace OlympicWords.Services
             persistantData.FeedScope(scopeRepo);
             scopeRepo.SetRealOwner(Context.UserIdentifier);
 
+            await finalizer.Surrender();
+            //doesn't matter if you disconnected or got out by net issue
+
             scopeRepo.RoomUser.Disconnect();
             scopeRepo.RemoveRoomUser();
 
             if (scopeRepo.IsUserPending())
                 scopeRepo.RemovePendingUser();
-
-
-            await finalizer.Surrender();
-            //doesn't matter if you disconnected or got out by net issue
 
             //this means the room is pending
             if (!scopeRepo.RoomUser.Room.IsFull)
@@ -161,24 +160,14 @@ namespace OlympicWords.Services
         public async Task Surrender()
         {
             await finalizer.Surrender();
+            Context.Abort();
         }
-        //
-        // [RpcDomain(typeof(UserDomain.App.Room.Active))]
-        // public async Task SmallJetJump()
-        // {
-        //     await scopeRepo.RoomActor.SmallJetJump(finalizer);
-        // }
-        // [RpcDomain(typeof(UserDomain.App.Room.Active))]
-        // public async Task MegaJetJump()
-        // {
-        //     await scopeRepo.RoomActor.MegaJetJump(finalizer);
-        // }
 
         [RpcDomain(typeof(UserDomain.Room.Finished))]
         public void LeaveFinishedRoom()
         {
-            scopeRepo.RemoveRoomUser();
-            // scopeRepo.ActiveUser.Domain = typeof(UserDomain.Stateless);
+            Context.Abort();
+            //the room user is removed when you disconnect automatically by the abort call
         }
 
 

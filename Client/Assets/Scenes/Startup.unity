@@ -1439,7 +1439,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f47521c644a4314be3645a8ba74795c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsConnected: 0
   SelectedAddress: 
 --- !u!114 &746553005
 MonoBehaviour:
@@ -7029,7 +7028,7 @@ MonoBehaviour:
   accessTokenField: {fileID: 518938174}
   addresses:
   - https://localhost:5001
-  - https://tuxul.com
+  - https://wordwar3.azurewebsites.net
   serverAddressChoice: {fileID: 6403884855495890308}
   customAddress: {fileID: 656293057}
   chosenAddressText: {fileID: 244224311}

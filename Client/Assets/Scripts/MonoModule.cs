@@ -19,7 +19,7 @@ public abstract class MonoModule<T> : MonoBehaviour where T : MonoBehaviour
 
     private static Transform parent;
 
-    public static void SetSource(GameObject prefab, Transform parent)
+    protected static void SetSource(GameObject prefab, Transform parent)
     {
         MonoModule<T>.prefab = prefab;
         MonoModule<T>.parent = parent;

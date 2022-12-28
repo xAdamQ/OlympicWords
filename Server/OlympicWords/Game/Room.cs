@@ -79,7 +79,7 @@ public class Room
 
     // public string GroupName => "room" + Id;
 
-    public void Start(IHubContext<MasterHub> hub)
+    public void Start(IHubContext<RoomHub> hub)
     {
         Started = true;
 

@@ -92,7 +92,7 @@ public static class FbManager
     {
         var response = LoginBase(responseStr);
 
-        BlockingOperationManager.I.Forget
+        BlockingOperationManager.Forget
             (NetManager.I.Login(response.AuthResponse.AccessToken, ProviderType.Facebook));
     }
 
@@ -122,13 +122,13 @@ public static class FbManager
             //in case something rather than 2xx ok is returned, the exception will be thrown so we don't continue 
             //to remove the guest guid
 
-            await BlockingOperationManager.I.Start(linkOp);
+            await BlockingOperationManager.Start(linkOp);
         }
 
         UniTask justLogin()
         {
             var op = NetManager.I.Login(response.AuthResponse.AccessToken, ProviderType.Facebook);
-            return BlockingOperationManager.I.Start(op);
+            return BlockingOperationManager.Start(op);
         }
     }
 

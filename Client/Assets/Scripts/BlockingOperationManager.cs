@@ -3,28 +3,28 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class BlockingOperationManager : Singleton<BlockingOperationManager>
+public static class BlockingOperationManager
 {
     /// <summary>
     /// invoke, block, and forget
     /// </summary>
-    public void Forget(UniTask operation, Action onComplete = null)
+    public static void Forget(UniTask operation, Action onComplete = null)
     {
         Start(operation).Forget(e => throw e);
     }
     /// <summary>
     /// invoke, block, and forget
     /// </summary>
-    public void Forget(Task operation, Action onComplete = null)
+    public static void Forget(Task operation, Action onComplete = null)
     {
         Start(operation).Forget(e => throw e);
     }
-    public void Forget<T>(Task<T> operation, Action<T> onComplete)
+    public static void Forget<T>(Task<T> operation, Action<T> onComplete)
     {
         Start(operation).ContinueWith(onComplete)
             .Forget(e => throw e); //the error exception happens normally inside start
     }
-    public void Forget<T>(UniTask<T> operation, Action<T> onComplete)
+    public static void Forget<T>(UniTask<T> operation, Action<T> onComplete)
     {
         Start(operation).ContinueWith(onComplete)
             .Forget(e => throw e); //the error exception happens normally inside start
@@ -33,7 +33,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public async UniTask Start(Task operation)
+    public static async UniTask Start(Task operation)
     {
         BlockingPanel.Show();
 
@@ -60,7 +60,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public async UniTask Start(UniTask operation)
+    public static async UniTask Start(UniTask operation)
     {
         BlockingPanel.Show();
         try
@@ -85,7 +85,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public async UniTask Start(AsyncOperationHandle operation, string message = null)
+    public static async UniTask Start(AsyncOperationHandle operation, string message = null)
     {
         BlockingPanel.Show(operation, message);
         try
@@ -110,7 +110,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public async UniTask<T> Start<T>(UniTask<T> operation)
+    public static async UniTask<T> Start<T>(UniTask<T> operation)
     {
         BlockingPanel.Show();
         try
@@ -136,7 +136,7 @@ public class BlockingOperationManager : Singleton<BlockingOperationManager>
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public async UniTask<T> Start<T>(Task<T> operation)
+    public static async UniTask<T> Start<T>(Task<T> operation)
     {
         BlockingPanel.Show();
         try

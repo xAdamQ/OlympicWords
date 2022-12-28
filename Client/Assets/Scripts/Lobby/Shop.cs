@@ -126,7 +126,7 @@ public class Shop : MonoBehaviour
         if (Active) Active.HidePanel();
         Active = this;
 
-        await BlockingOperationManager.I.Start(LoadItems());
+        await BlockingOperationManager.Start(LoadItems());
         shopPanel.SetActive(true);
     }
     public void HidePanel()

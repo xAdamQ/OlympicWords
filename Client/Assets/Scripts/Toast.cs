@@ -33,7 +33,7 @@ public class Toast : MonoBehaviour, IToast
 
     public static async UniTask Create()
     {
-        I = Instantiate(Controller.I.References.ToastPrefab, Controller.I.canvas).GetComponent<Toast>();
+        I = Instantiate(Coordinator.I.References.ToastPrefab, Coordinator.I.canvas).GetComponent<Toast>();
     }
 
     [SerializeField] private TMP_Text messageText;

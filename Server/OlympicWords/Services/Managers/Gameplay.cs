@@ -26,13 +26,13 @@ namespace OlympicWords.Services
     /// </summary>
     public class Gameplay : IGameplay
     {
-        private readonly IHubContext<MasterHub> masterHub;
+        private readonly IHubContext<RoomHub> masterHub;
         private readonly ILogger<Gameplay> logger;
         private readonly IFinalizer finalizer;
         private readonly IServerLoop serverLoop;
         private readonly IScopeRepo scopeRepo;
 
-        public Gameplay(IHubContext<MasterHub> masterHub, ILogger<Gameplay> logger,
+        public Gameplay(IHubContext<RoomHub> masterHub, ILogger<Gameplay> logger,
             IFinalizer finalizer, IServerLoop serverLoop, IScopeRepo scopeRepo)
         {
             this.masterHub = masterHub;

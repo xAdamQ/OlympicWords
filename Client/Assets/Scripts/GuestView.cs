@@ -31,7 +31,7 @@ public class GuestView : MonoModule<GuestView>
 
     public void StartWithId()
     {
-        BlockingOperationManager.I.Forget(NetManager.I.Login(idInput.text, ProviderType.Guest));
+        BlockingOperationManager.Forget(NetManager.I.Login(idInput.text, ProviderType.Guest));
     }
 
     public void AddChar(string chr)
@@ -48,12 +48,12 @@ public class GuestView : MonoModule<GuestView>
 
     public void FacebookConnect()
     {
-        BlockingOperationManager.I.Forget(NetManager.I.Login(accessTokenField.text, ProviderType.Facebook));
+        BlockingOperationManager.Forget(NetManager.I.Login(accessTokenField.text, ProviderType.Facebook));
     }
 
     public void StartWithRandomId()
     {
         var id = Random.Range(10000, 99999).ToString();
-        BlockingOperationManager.I.Forget(NetManager.I.Login(id, ProviderType.Guest));
+        BlockingOperationManager.Forget(NetManager.I.Login(id, ProviderType.Guest));
     }
 }

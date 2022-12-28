@@ -26,14 +26,14 @@ namespace OlympicWords.Services
 
     public class MatchMaker : IMatchMaker
     {
-        private readonly IHubContext<MasterHub> masterHub;
+        private readonly IHubContext<RoomHub> masterHub;
         private readonly IGameplay gameplay;
         private readonly IServerLoop serverLoop;
         private readonly ILogger<MatchMaker> logger;
         private readonly IOfflineRepo offlineRepo;
         private readonly IScopeRepo scopeRepo;
 
-        public MatchMaker(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo,
+        public MatchMaker(IHubContext<RoomHub> masterHub, IOfflineRepo offlineRepo,
             IScopeRepo scopeRepo, IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger)
         {
             this.masterHub = masterHub;
@@ -325,8 +325,8 @@ namespace OlympicWords.Services
             {
                 var userInfo = turnSortedUsersInfo[i];
                 foreach (var otherUser in turnSortedUsersInfo.Where(u => u != userInfo))
-                    otherUser.Friendship =
-                        (int)await offlineRepo.GetFriendship(userInfo.Id, otherUser.Id);
+                    otherUser.Friendship = (int)await offlineRepo.GetFriendship(userInfo.Id, otherUser.Id);
+                //todo this operation is very expensive
 
                 if (room.RoomActors[i] is not RoomUser ru) continue;
 

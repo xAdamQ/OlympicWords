@@ -32,17 +32,17 @@ public class FullUserView : MinUserView
     public static void Show(FullUserInfo fullUserInfo)
     {
         var fuvPrefab = fullUserInfo is PersonalFullUserInfo
-            ? Controller.I.References.PersonalFuvPrefab
-            : Controller.I.References.FuvPrefab;
+            ? Coordinator.I.References.PersonalFuvPrefab
+            : Coordinator.I.References.FuvPrefab;
 
         if (!activeInstance)
         {
-            activeInstance = Instantiate(fuvPrefab, Controller.I.canvas).GetComponent<FullUserView>();
+            activeInstance = Instantiate(fuvPrefab, Coordinator.I.canvas).GetComponent<FullUserView>();
         }
         else if (activeInstance.FullUserInfo.GetType() != fullUserInfo.GetType())
         {
             activeInstance.Destroy();
-            activeInstance = Instantiate(fuvPrefab, Controller.I.canvas).GetComponent<FullUserView>();
+            activeInstance = Instantiate(fuvPrefab, Coordinator.I.canvas).GetComponent<FullUserView>();
         }
 
         activeInstance.Init(fullUserInfo);
@@ -99,7 +99,7 @@ public class FullUserView : MinUserView
 
             if (res == MatchRequestResult.Available)
                 BlockingPanel.Show("a challenge request is sent to the player",
-                    () => NetManager.I.Send("CancelChallengeRequest"));
+                    () => Controllers.Lobby.CancelChallengeRequest(Id));
             else
                 Toast.I.Show(res.ToString());
         });

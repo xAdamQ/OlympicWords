@@ -96,7 +96,7 @@ namespace OlympicWords.Services
             logger.LogInformation("all users are active");
 
             using var scope = serviceScopeFactory.CreateScope();
-            var masterHub = scope.ServiceProvider.GetService<IHubContext<MasterHub>>();
+            var masterHub = scope.ServiceProvider.GetService<IHubContext<RoomHub>>();
             room.Start(masterHub);
         }
 

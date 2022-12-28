@@ -47,7 +47,7 @@ public class SignInPanel : MonoModule<SignInPanel>
     }
     private void CachedLogin(ProviderType p, string t)
     {
-        BlockingOperationManager.I.Forget(NetManager.I.Login(t, p));
+        BlockingOperationManager.Forget(NetManager.I.Login(t, p));
     }
 
     private void ShowGuest()

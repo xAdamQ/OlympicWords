@@ -22,7 +22,7 @@ public class Finalizer : MonoModule<Finalizer>
     protected override void Awake()
     {
         base.Awake();
-        NetManager.I.AddRpcContainer(this);
+        RoomNet.I.AddRpcContainer(this);
     }
 
     [Rpc]
@@ -71,7 +71,7 @@ public class Finalizer : MonoModule<Finalizer>
     {
         UniTask.Create(async () =>
         {
-            await MasterHub.I.LeaveFinishedRoom();
+            await RoomNet.I.LeaveFinishedRoom();
             SceneManager.LoadScene("Lobby");
         }).Forget(e => throw e);
     }

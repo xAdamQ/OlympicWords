@@ -10,14 +10,14 @@ public class RoomBaseAdapter : MonoModule<RoomBaseAdapter>
 
     public void SetPowerUp(int powerUp)
     {
-        MasterHub.I.SetPowerUp(powerUp);
+        RoomNet.I.SetPowerUp(powerUp);
     }
 
     public void Surrender()
     {
         UniTask.Create(async () =>
         {
-            await MasterHub.I.Surrender();
+            await RoomNet.I.Surrender();
             SceneManager.LoadScene("Lobby");
         });
     }

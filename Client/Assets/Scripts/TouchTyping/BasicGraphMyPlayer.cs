@@ -1,9 +1,11 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class BasicGraphMyPlayer : MyPlayerBase
 {
     [SerializeField] private Material wordHighlightMat, digitHighlightMat, fadeMaterial;
+
     protected override void Start()
     {
         base.Start();
@@ -24,7 +26,6 @@ public class BasicGraphMyPlayer : MyPlayerBase
 
         MinimizeChar(TextPointer);
     }
-
 
     private void ColorChar(int charIndex)
     {

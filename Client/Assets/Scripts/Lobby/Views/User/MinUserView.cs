@@ -18,7 +18,7 @@ public class MinUserView : MonoBehaviour
 
     public static MinUserView Create(MinUserInfo info, Transform parent)
     {
-        var muv = Instantiate(Controller.I.References.MuvPrefab, parent).GetComponent<MinUserView>();
+        var muv = Instantiate(Coordinator.I.References.MuvPrefab, parent).GetComponent<MinUserView>();
         muv.Init(info);
         return muv;
     }
@@ -65,7 +65,7 @@ public class MinUserView : MonoBehaviour
     {
         UniTask.Create(async () =>
         {
-            var fullInfo = await BlockingOperationManager.I.Start(Controllers.User.Public(Id));
+            var fullInfo = await BlockingOperationManager.Start(Controllers.User.Public(Id));
             fullInfo.PictureSprite = MinUserInfo.PictureSprite;
             FullUserView.Show(fullInfo);
         });

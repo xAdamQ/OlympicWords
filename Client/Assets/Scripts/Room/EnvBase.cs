@@ -42,10 +42,12 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     public int Bet => Bets[BetChoice];
     public static int[] Bets { get; } = { 55, 110, 220, 550, 1100, 5500 };
+
     public static int MinBet => Bets[0];
     //bet
 
     public int Capacity => Capacities[CapacityChoice];
+
     public static int[] Capacities { get; } = { 2, 3, 4 };
     //capacity
 
@@ -83,7 +85,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
     protected override void Awake()
     {
         base.Awake();
-        NetManager.I.AddRpcContainer(this, typeof(EnvBase));
+        RoomNet.I.AddRpcContainer(this, typeof(EnvBase));
         Initiated?.Invoke();
         //the type is sent manually, otherwise it will be sent with the type of the chile
     }
@@ -92,7 +94,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
     {
         UniTask.Create(async () =>
         {
-            await MasterHub.I.Surrender();
+            await RoomNet.I.Surrender();
             SceneManager.LoadScene("Lobby");
         }).Forget(e => throw e);
     }
@@ -138,20 +140,18 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
         MakePlayersColorPalette();
 
-        CreatePlayers(fillerWords, chosenPowerUps, userInfos);
-
         var random = new System.Random(randomSeed);
         GenerateDigits(random);
 
         ColorFillers(fillerWords);
 
+        CreatePlayers(fillerWords, chosenPowerUps, userInfos);
         SetPlayersStartPoz();
-
         SetCameraFollow();
 
         GamePrepared?.Invoke();
 
-        MasterHub.I.Ready();
+        RoomNet.I.Ready();
     }
 
     private void SetCameraFollow()
@@ -244,7 +244,7 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
     private void OnGameStarted()
     {
-        NetManager.I.StartStreaming();
+        RoomNet.I.StartStreaming();
     }
 
     private IEnumerator ThreeTwoOne()

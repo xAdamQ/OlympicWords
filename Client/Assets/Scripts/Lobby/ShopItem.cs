@@ -54,10 +54,10 @@ public class ShopItem : MonoBehaviour
         switch (State)
         {
             case ShopItemState.Locked:
-                BlockingOperationManager.I.Forget(TryUnlock());
+                BlockingOperationManager.Forget(TryUnlock());
                 break;
             case ShopItemState.Unlocked:
-                BlockingOperationManager.I.Forget(TrySet());
+                BlockingOperationManager.Forget(TrySet());
                 break;
         }
     }

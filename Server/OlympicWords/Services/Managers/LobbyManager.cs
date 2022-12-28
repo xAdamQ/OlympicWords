@@ -26,12 +26,12 @@ namespace OlympicWords.Services
     {
         private readonly IOfflineRepo offlineRepo;
         private readonly IBackgroundJobClient backgroundJobClient;
-        private readonly IHubContext<MasterHub> masterHub;
+        private readonly IHubContext<RoomHub> masterHub;
         private readonly IScopeRepo scopeRepo;
         // private readonly IRequestCache _requestCache;
 
         public LobbyManager(IOfflineRepo offlineRepo, IBackgroundJobClient backgroundJobClient,
-            IHubContext<MasterHub> masterHub, IScopeRepo scopeRepo)
+            IHubContext<RoomHub> masterHub, IScopeRepo scopeRepo)
         {
             this.offlineRepo = offlineRepo;
             this.backgroundJobClient = backgroundJobClient;

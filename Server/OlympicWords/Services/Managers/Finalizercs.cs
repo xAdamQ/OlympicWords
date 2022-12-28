@@ -20,12 +20,12 @@ namespace OlympicWords.Services
 
     public class Finalizer : IFinalizer
     {
-        private readonly IHubContext<MasterHub> masterHub;
+        private readonly IHubContext<RoomHub> masterHub;
         private readonly IOfflineRepo offlineRepo;
         private readonly IScopeRepo scopeRepo;
         private readonly ILogger<Finalizer> logger;
 
-        public Finalizer(IHubContext<MasterHub> masterHub, IOfflineRepo offlineRepo,
+        public Finalizer(IHubContext<RoomHub> masterHub, IOfflineRepo offlineRepo,
             IScopeRepo scopeRepo, ILogger<Finalizer> logger)
         {
             this.masterHub = masterHub;
@@ -36,7 +36,8 @@ namespace OlympicWords.Services
 
         public async Task Surrender()
         {
-            scopeRepo.RemoveRoomUser();
+            //the room user is removed when you disconnect automatically
+
             scopeRepo.RoomUser.Domain = typeof(UserDomain.Stateless);
 
             var room = scopeRepo.Room;
@@ -52,7 +53,7 @@ namespace OlympicWords.Services
             foreach (var ru in room.InRoomUsers.Where(ru => ru != roomUser))
                 await masterHub.SendOrderedAsync(ru, "UserSurrender", roomUser.Id);
 
-            // masterHub.Clients.Client(scopeRepo.UserId).
+            masterHub.Clients.Client(roomUser.ConnectionId);
         }
 
         public async Task FinalizeUser()
