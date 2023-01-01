@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="@wordwar.database.windows.net">
+  <database-model serializer="dbm" dbms="AZURE" family-id="AZURE" format-version="4.45">
+    <root id="1">
+      <Dbms>AZURE</Dbms>
+      <ServerVersion>12.0.816</ServerVersion>
+    </root>
+    <database id="2" parent="1" name="master">
+      <Current>1</Current>
+    </database>
+    <database id="3" parent="1" name="wc"/>
+  </database-model>
+</dataSource>
