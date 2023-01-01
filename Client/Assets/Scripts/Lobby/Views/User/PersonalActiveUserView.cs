@@ -26,7 +26,8 @@ public class PersonalActiveUserView : MinUserView
 
     private void OnDestroy()
     {
-        Repository.I.PersonalFullInfo.PropertyChanged -= OnInfoChanged;
+        if (Repository.I != null)
+            Repository.I.PersonalFullInfo.PropertyChanged -= OnInfoChanged;
     }
 
     public override void ShowFullInfo()

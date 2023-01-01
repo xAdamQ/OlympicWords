@@ -42,9 +42,9 @@ public class MinUserInfo
     private string PictureAddress { get; } =
         Extensions.UriCombine(NetManager.I.SelectedAddress, "Picture", "GetUserPicture");
 
-    public async UniTask DownloadPicture()
+    public async UniTask<bool> DownloadPicture()
     {
-        if (string.IsNullOrEmpty(PictureAddress)) return;
+        if (string.IsNullOrEmpty(PictureAddress)) return false;
 
         var query = NetManager.I.GetAuthQuery();
         query["userId"] = Id;
@@ -55,12 +55,20 @@ public class MinUserInfo
                 Query = query.ToString(),
             };
 
-        var texture2D = await Extensions.GetRemoteTexture(uriBuilder.Uri.ToString());
+        Texture2D texture2D;
+        try
+        {
+            texture2D = await Extensions.GetRemoteTexture(uriBuilder.Uri.ToString());
+        }
+        catch (Exception)
+        {
+            return false;
+        }
 
         IsPictureLoaded = true;
         PictureSprite = Sprite.Create(texture2D,
             new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
 
-        // Debug.Log($"picture for player {Name} downloaded");
+        return true;
     }
 }

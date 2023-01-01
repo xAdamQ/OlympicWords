@@ -14,13 +14,12 @@ public class MinUserView : MonoBehaviour
 
     [SerializeField] protected Image picture;
 
-    public MinUserInfo MinUserInfo { get; set; }
+    public MinUserInfo MinUserInfo { get; private set; }
 
-    public static MinUserView Create(MinUserInfo info, Transform parent)
+    public static void Create(MinUserInfo info, Transform parent)
     {
         var muv = Instantiate(Coordinator.I.References.MuvPrefab, parent).GetComponent<MinUserView>();
         muv.Init(info);
-        return muv;
     }
 
     public void Init(MinUserInfo minUserInfo)
@@ -38,25 +37,12 @@ public class MinUserView : MonoBehaviour
 
     private async UniTaskVoid SetPicture(MinUserInfo info)
     {
-        if (info.IsPictureLoaded)
-        {
-            if (destroyed || info.PictureSprite is null)
-                return;
-        }
-        else
-        {
-            await info.DownloadPicture();
-        }
+        if (!info.IsPictureLoaded && !await info.DownloadPicture()) return;
+        if (picture == null || info.PictureSprite is null) return;
 
         picture.sprite = info.PictureSprite;
     }
 
-    private bool destroyed;
-
-    private void OnDestroy()
-    {
-        destroyed = true;
-    }
 
     /// <summary>
     /// personal, room and final overrides this 

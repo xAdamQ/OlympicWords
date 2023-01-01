@@ -30,10 +30,9 @@ public class BasicGraphEnv : EnvBase
         I = this;
     }
 
-    public override void PrepareRequestedRoomRpc(List<FullUserInfo> userInfos, int myTurn, string text, int randomSeed,
-        List<(int index, int player)> fillerWords, List<int> chosenPowerUps)
+    public override void PrepareRequestedRoomRpc(RoomPrepareResponse response)
     {
-        base.PrepareRequestedRoomRpc(userInfos, myTurn, text, randomSeed, fillerWords, chosenPowerUps);
+        base.PrepareRequestedRoomRpc(response);
         Debug.Log("prepare child called");
     }
 

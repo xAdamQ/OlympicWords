@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class RoomBaseAdapter : MonoModule<RoomBaseAdapter>
 {
     public TMP_Text ReadyText;
-    public GameObject PowerUpPanel;
+    public GameObject PowerUpPanel, WaitingPanel;
 
     public void SetPowerUp(int powerUp)
     {

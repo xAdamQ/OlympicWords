@@ -11,6 +11,16 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = System.Random;
 
+public class RoomPrepareResponse
+{
+    public List<FullUserInfo> TurnSortedUsersInfo { get; set; }
+    public int TurnIndex { get; set; }
+    public string Text { get; set; }
+    public int Seed { get; set; }
+    public List<(int index, int player)> FillerWords { get; set; }
+    public List<int> ChosenPowerUps { get; set; }
+}
+
 [Serializable]
 public class Kvp<TKey, TValue>
 {
@@ -85,9 +95,16 @@ public abstract class EnvBase : MonoModule<EnvBase>
     protected override void Awake()
     {
         base.Awake();
+
         RoomNet.I.AddRpcContainer(this, typeof(EnvBase));
+        //the type is sent manually, otherwise it will be sent with the type of the child
+
+        RoomBaseAdapter.I.PowerUpPanel.SetActive(false);
+        RoomBaseAdapter.I.WaitingPanel.SetActive(true);
+
+        RoomNet.I.Connected += () => RoomBaseAdapter.I.PowerUpPanel.SetActive(true);
+
         Initiated?.Invoke();
-        //the type is sent manually, otherwise it will be sent with the type of the chile
     }
 
     public void Surrender()
@@ -102,8 +119,6 @@ public abstract class EnvBase : MonoModule<EnvBase>
     [Rpc]
     public void StartRoomRpc()
     {
-        Destroy(RoomBaseAdapter.I.PowerUpPanel);
-
         StartCoroutine(ReadyGo());
 
         GameStarted += OnGameStarted;
@@ -116,15 +131,16 @@ public abstract class EnvBase : MonoModule<EnvBase>
     public int[] WordMap;
 
     [Rpc]
-    public virtual void PrepareRequestedRoomRpc
-    (List<FullUserInfo> userInfos, int myTurn, string text, int randomSeed,
-        List<(int index, int player)> fillerWords, List<int> chosenPowerUps)
+    public virtual void PrepareRequestedRoomRpc(RoomPrepareResponse response)
     {
         BetChoice = RoomRequester.LastRequest.betChoice;
         CapacityChoice = RoomRequester.LastRequest.capacityChoice;
-        UserInfos = userInfos;
-        MyTurn = myTurn;
-        Text = text;
+        UserInfos = response.TurnSortedUsersInfo;
+        MyTurn = response.TurnIndex;
+        Text = response.Text;
+
+        Destroy(RoomBaseAdapter.I.PowerUpPanel);
+        Destroy(RoomBaseAdapter.I.WaitingPanel);
 
         var trimmedWords = Text.Split(' ');
         Words = trimmedWords.Select(w => ' ' + w).ToList(); //each word has space before it
@@ -140,12 +156,12 @@ public abstract class EnvBase : MonoModule<EnvBase>
 
         MakePlayersColorPalette();
 
-        var random = new System.Random(randomSeed);
+        var random = new System.Random(response.Seed);
         GenerateDigits(random);
 
-        ColorFillers(fillerWords);
+        ColorFillers(response.FillerWords);
 
-        CreatePlayers(fillerWords, chosenPowerUps, userInfos);
+        CreatePlayers(response.FillerWords, response.ChosenPowerUps, response.TurnSortedUsersInfo);
         SetPlayersStartPoz();
         SetCameraFollow();
 

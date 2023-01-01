@@ -2,6 +2,7 @@
 using System.Linq;
 using Basra.Common;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -57,6 +58,7 @@ public class Finalizer : MonoModule<Finalizer>
     [Rpc]
     public void TakeOppoUserRoomStatus(int userIndex, UserRoomStatus userRoomStatus)
     {
+        Debug.Log($"taking status of: {userIndex} with {JsonConvert.SerializeObject(userRoomStatus)}");
         if (finalized)
             FinalMuvs[userIndex].SetFinal(userRoomStatus);
         else

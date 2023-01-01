@@ -7,6 +7,18 @@ using Common.Lobby;
 
 public interface IRoomHub
 {
+    Task<string> UpStreamChar(IAsyncEnumerable<char> stream);
+
+    IAsyncEnumerable<string[]> DownStreamCharBuffer(
+        [EnumeratorCancellation] CancellationToken cancellationToken);
+
+    IAsyncEnumerable<int> DownStreamTest(
+        [EnumeratorCancellation] CancellationToken cancellationToken);
+
+    Task Surrender();
+    Task LeaveFinishedRoom();
+    Task SetPowerUp(int powerUp);
+    
     // Task<PersonalFullUserInfo> GetPersonalUserData();
     // /// <summary>
     // /// get public user data by his id
@@ -28,17 +40,7 @@ public interface IRoomHub
     // Task SelectCardback(int cardbackId);
     // Task SelectBackground(int backgroundId);
     // Task ShowMessage(string msgId);
-    Task<string> UpStreamChar(IAsyncEnumerable<char> stream);
-
-    IAsyncEnumerable<string[]> DownStreamCharBuffer(
-        [EnumeratorCancellation] CancellationToken cancellationToken);
-
-    IAsyncEnumerable<int> DownStreamTest(
-        [EnumeratorCancellation] CancellationToken cancellationToken);
-
-    Task Surrender();
-    Task LeaveFinishedRoom();
-    Task SetPowerUp(int powerUp);
+  
 }
 
 //

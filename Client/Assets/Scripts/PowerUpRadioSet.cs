@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 public class PowerUpRadioSet : RadioSet
 {
@@ -7,6 +8,7 @@ public class PowerUpRadioSet : RadioSet
         UniTask.Create(async () =>
         {
             await RoomNet.I.SetPowerUp(choice);
+            Debug.Log("set power up done");
             base.Choose(choice);
         });
     }

@@ -11,8 +11,6 @@ public abstract class MyPlayerBase : PlayerBase
     {
         base.Awake();
 
-        RoomBaseAdapter.I.PowerUpPanel.SetActive(true);
-
         if (TestController.I.UseTest)
             cameraOffset = TestController.I.cameraPlayerOffset;
 

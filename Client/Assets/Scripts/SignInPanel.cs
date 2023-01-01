@@ -77,6 +77,6 @@ public class SignInPanel : MonoModule<SignInPanel>
         if (string.IsNullOrEmpty(guestToken))
             guestToken = Guid.NewGuid().ToString();
 
-        NetManager.I.Login(guestToken, ProviderType.Guest).Forget(e => throw e);
+        BlockingOperationManager.Forget(NetManager.I.Login(guestToken, ProviderType.Guest));
     }
 }

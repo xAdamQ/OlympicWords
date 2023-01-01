@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -24,11 +25,11 @@ public abstract class ControllerBase
 
     protected Task<T> GetAsync<T>(string methodName, params (string name, string value)[] queryParams)
     {
-        return NetManager.I.GetAsync<T>(Address + methodName, queryParams);
+        return NetManager.I.GetAsync<T>(Address + methodName, queryParams.ToList());
     }
 
     protected Task SendAsync(string methodName, params (string name, string value)[] queryParams)
     {
-        return NetManager.I.SendAsyncHTTP(Address + methodName, queryParams);
+        return NetManager.I.SendAsyncHTTP(Address + methodName, queryParams.ToList());
     }
 }

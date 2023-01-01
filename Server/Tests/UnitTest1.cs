@@ -66,15 +66,15 @@ public class UnitTest1
             "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes";
 
         room.Words = room.Text.Split(" ").ToList();
-        room.RoomActors.Add(new RoomUser("00", room, "123")
+        room.RoomActors.Add(new RoomUser("00", room)
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });
-        room.RoomActors.Add(new RoomUser("11", room, "32321")
+        room.RoomActors.Add(new RoomUser("11", room)
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });
-        room.RoomActors.Add(new RoomUser("11", room, "23445")
+        room.RoomActors.Add(new RoomUser("11", room)
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });
@@ -114,15 +114,15 @@ public class UnitTest1
         // "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes";
 
         room.Words = room.Text.Split(" ").ToList();
-        room.RoomActors.Add(new RoomUser("00", room, null)
+        room.RoomActors.Add(new RoomUser("00", room)
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });
-        room.RoomActors.Add(new RoomUser("11", room, null)
+        room.RoomActors.Add(new RoomUser("11", room)
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });
-        room.RoomActors.Add(new RoomUser("11", room, null)
+        room.RoomActors.Add(new RoomUser("11", room)
         {
             ChosenPowerUp = (int)PowerUp.Filler,
         });

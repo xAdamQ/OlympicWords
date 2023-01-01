@@ -11,7 +11,8 @@ public class MoneyAidButton : MonoBehaviour
 
     private void Start()
     {
-        Repository.I.PersonalFullInfo.PropertyChanged += OnInfoChanged;
+        if (Repository.I != null)
+            Repository.I.PersonalFullInfo.PropertyChanged += OnInfoChanged;
     }
 
     public void UpdateState()

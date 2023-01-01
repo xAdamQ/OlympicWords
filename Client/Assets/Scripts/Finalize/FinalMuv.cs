@@ -44,7 +44,7 @@ public class FinalMuv : MinUserView
         earnedMoneyText.text = userRoomStatus.EarnedMoney.ToString();
         WpmText.text = userRoomStatus.Wpm.ToString("f2");
         scoreText.text = userRoomStatus.Score.ToString();
-        finalPositionText.text = userRoomStatus.FinalPosition.ToString();
+        finalPositionText.text = (userRoomStatus.FinalPosition + 1).ToString();
         transform.parent.SetSiblingIndex(userRoomStatus.FinalPosition);
     }
 

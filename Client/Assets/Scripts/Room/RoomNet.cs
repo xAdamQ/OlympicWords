@@ -8,6 +8,7 @@ using BestHTTP.SignalRCore;
 using BestHTTP.SignalRCore.Encoders;
 using BestHTTP.SignalRCore.Messages;
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using Random = UnityEngine.Random;
 public class RoomNet : MonoModule<RoomNet>, IRoomHub
@@ -69,7 +70,9 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
 
     private void StartRandomRoom(int betChoice, int capacityChoice)
     {
-        NetManager.I.SelectedAddress = GuestView.I.GetServerAddress();
+        if (GuestView.I)
+            NetManager.I.SelectedAddress = GuestView.I.GetServerAddress();
+
         Debug.Log("connecting to server");
 
         var query = NetManager.I.GetAuthQuery();
@@ -105,15 +108,12 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
         BlockingOperationManager.Forget(hubConnection.ConnectAsync());
     }
 
+    public event Action Connected;
+
     private bool OnMessage(HubConnection arg1, Message msg)
     {
         if (msg.type != MessageTypes.Invocation) return true;
-#if !UNITY_WEBGL
-            Debug.Log(
-                $"msg is {msg.target} {JsonConvert.SerializeObject(msg, Formatting.Indented)}");
-#else
-        Debug.Log($"msg is {JsonUtility.ToJson(msg)}");
-#endif
+        Debug.Log($"msg is {JsonConvert.SerializeObject(msg)}");
         HandleInvocationMessage(msg).Forget();
         return false;
     }
@@ -121,6 +121,11 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
     {
         IsConnected = true;
         Debug.Log("connected to server");
+        Connected?.Invoke();
+
+        hubConnection.Send("Test", 2);
+        hubConnection.Send("Test", 4);
+        hubConnection.Send("Test", 5);
     }
     private void OnClosed(HubConnection obj)
     {

@@ -36,24 +36,26 @@ public class NetManager : MonoModule<NetManager>
 
     public string SelectedAddress;
 
-    // private (string token, string provider) currentAuth;
-
     public async Task<T> GetAsync<T>(string uri,
-        (string key, string value)[] queryParams = null,
-        string json = null)
+        List<(string key, string value)> queryParams = null,
+        string json = null, bool auth = true)
     {
+        if (auth)
+        {
+            var activeAuth = GetActiveAuth();
+            queryParams.Add(("provider", activeAuth.provider.ToString()));
+            queryParams.Add(("access_token", activeAuth.token));
+        }
+
         var uriBuilder = new UriBuilder(uri);
 
-        if (queryParams?.Length > 0)
+        if (queryParams?.Count > 0)
         {
-            for (var i = 0; i < queryParams.Length - 1; i++)
+            for (var i = 0; i < queryParams.Count - 1; i++)
                 uriBuilder.Query += $"{queryParams[i].key}={queryParams[i].value}&";
 
             uriBuilder.Query += $"{queryParams.Last().key}={queryParams.Last().value}&";
         }
-
-        uriBuilder.Query += "access_token=531ecc3b-b99b-4aac-b364-680fda0afa8e&";
-        uriBuilder.Query += "provider=Guest&";
 
         var request = new HTTPRequest(uriBuilder.Uri);
 
@@ -90,23 +92,26 @@ public class NetManager : MonoModule<NetManager>
     }
 
     public async Task<(HTTPRequest, HTTPResponse)> SendAsyncHTTP(string uri,
-        (string key, string value)[] queryParams = null,
-        string json = null,
-        HTTPMethods method = HTTPMethods.Get
+        List<(string key, string value)> queryParams = null,
+        string json = null, bool auth = true, HTTPMethods method = HTTPMethods.Get
     )
     {
+        if (auth)
+        {
+            var activeAuth = GetActiveAuth();
+            queryParams.Add(("provider", activeAuth.provider.ToString()));
+            queryParams.Add(("access_token", activeAuth.token));
+        }
+
         var uriBuilder = new UriBuilder(uri);
 
-        if (queryParams is not null && queryParams.Length > 0)
+        if (queryParams is not null && queryParams.Count > 0)
         {
-            for (var i = 0; i < queryParams.Length - 1; i++)
+            for (var i = 0; i < queryParams.Count - 1; i++)
                 uriBuilder.Query += $"{queryParams[i].key}={queryParams[i].value}&";
 
             uriBuilder.Query += $"{queryParams.Last().key}={queryParams.Last().value}&";
         }
-
-        uriBuilder.Query += "access_token=531ecc3b-b99b-4aac-b364-680fda0afa8e&";
-        uriBuilder.Query += "provider=Guest&";
 
         var request = new HTTPRequest(uriBuilder.Uri, method);
 
@@ -149,11 +154,11 @@ public class NetManager : MonoModule<NetManager>
     {
         PlayerPrefs.SetString(provider + "token", token);
 
-        Repository.I.PersonalFullInfo = await Controllers.User.Personal();
-        //current auth is then used to fetch the personal data
-
         PlayerPrefs.SetString("activeToken", token);
         PlayerPrefs.SetString("activeProvider", provider.ToString());
+
+        Repository.I.PersonalFullInfo = await Controllers.User.Personal();
+        //current auth is then used to fetch the personal data
 
         SetToken(provider, token);
 
@@ -164,7 +169,7 @@ public class NetManager : MonoModule<NetManager>
         SceneManager.LoadScene("Lobby");
     }
 
-    public (ProviderType, string) GetActiveAuth()
+    public (ProviderType provider, string token) GetActiveAuth()
     {
         var t = PlayerPrefs.GetString("activeToken");
         var pStr = PlayerPrefs.GetString("activeProvider");

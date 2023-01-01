@@ -8,8 +8,28 @@ Touch typing is a way that enables you to type on the keyboard without looking a
 ## how can I play
 The game is available on a free/dev server that takes time to warm up so you may need to refresh the first couple of times. Try here: https://tuxul.com
 Everything was hosted on a Linux VM, but I put everything under the corresponding Azure services.
-## Technical details
-### 1. player scopes
+# Technical details
+## A. Unity Client
+### 1. Graphs
+![graphs overview.png](Screenshots/graphs%20all.png)
+In order for the players to move in the environments, a path is chosen for them to move in. The graphs edges have some properties like the direction and the group, it can be walkable or jumper. Nodes also have different types. <br />
+A traverse algorithm tries to get the max possible path for the player from a random start, making the player discover more of the environment. Graph directions prevent wrong views, for example:
+
+| right direction, English left to right <br /> the arrow on the edge specifies the direction  | wrong direction |
+|-------------|-------------|
+| ![graphs dir right.png](Screenshots/graphs%20dir%20right.png) | ![graphs dir wrong.png](Screenshots/graphs%20dir%20wrong.png) |
+
+The second feature is grouping(by color), edges of the same group can't come after each others in the path. The reason for this is the path angle, despite a smoothing process happens, if the angle it's too narrow, it will render overlapping characters. The magenta node means edge grouping is used.
+
+| small angles exit, use different groups only   | no grouping is needed, no small angles |
+|-------------|-------------|
+| ![graphs all.png](Screenshots/graphs%20all.png) | ![Screenshot from 2023-01-01 18-30-57.png](Screenshots/Screenshot%20from%202023-01-01%2018-30-57.png) |
+
+There are several other features, like the algorithm mode, which visualizes the chosen path, view mode, which removes the controls, etc..
+Algo mode:
+![graphs algo.png](Screenshots/graphs%20algo.png)
+## B. The Server
+###  1. player scopes
 When you create a multiplayer game, you have to make a lot of validations to the user inputs, so the server won't break with unexpected inputs, this can come from client bugs or malicious users. I found a way to make fewer validations using Player Scopes/Domains.
 ```C#
 [RpcDomain(typeof(UserDomain.Room.Finished))]
