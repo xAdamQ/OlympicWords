@@ -6,8 +6,7 @@ I chose ASP.NET Core SignalR for the backend because I wanted to make use of Web
 ## what is this game?
 Touch typing is a way that enables you to type on the keyboard without looking at it, this enables you to focus on what you are doing and let your brain automate the keystrokes with your muscle memory, so you can offload the typing part. This is similar to speaking while walking, you don't think of how to move your legs.
 ## how can I play
-The game is available on a free/dev server that takes time to warm up so you may need to refresh the first couple of times. Try here: https://tuxul.com
-Everything was hosted on a Linux VM, but I put everything under the corresponding Azure services.
+The game is available on a free/dev server that takes time to warm up so you may need to refresh the first couple of times. And it gives timeout errors and false CORS errors sometime. Try here: https://tuxul.com. Everything was hosted on a Linux VM and it was as fast as running locally, but I put everything under the corresponding Azure services.
 ## Technical details
 ### 1. player scopes
 When you create a multiplayer game, you have to make a lot of validations to the user inputs, so the server won't break with unexpected inputs, this can come from client bugs or malicious users. I found a way to make fewer validations using Player Scopes/Domains.
