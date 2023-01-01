@@ -73,8 +73,6 @@ namespace OlympicWords.Services
             {
                 await foreach (var chr in stream.WithCancellation(roomUser.Cancellation.Token))
                 {
-                    // logger.LogInformation("received {Chr}", chr);
-
                     await ProcessChar(chr);
                 }
             }
@@ -112,10 +110,10 @@ namespace OlympicWords.Services
             }
             else
             {
-                if (roomActor is RoomUser)
-                    logger.LogInformation(
-                        "received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}, text size {TextSize}",
-                        chr, room.Text[roomActor.TextPointer], roomActor.TextPointer, room.Text.Length);
+                // if (roomActor is RoomUser)
+                //     logger.LogInformation(
+                //         "received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}, text size {TextSize}",
+                //         chr, room.Text[roomActor.TextPointer], roomActor.TextPointer, room.Text.Length);
 
                 if (room.Text[roomActor.TextPointer] == chr)
                 {
@@ -172,12 +170,7 @@ namespace OlympicWords.Services
                 }
 
                 if (!updateBuffer.All(string.IsNullOrEmpty))
-                {
-                    // logger.LogInformation("received digits {SerializeObject}",
-                    //     JsonConvert.SerializeObject(updateBuffer, Formatting.None));
-
                     yield return updateBuffer;
-                }
 
                 // Use the cancellationToken in other APIs that accept cancellation
                 // tokens so the cancellation can flow down to them.

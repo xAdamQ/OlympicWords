@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
-
 namespace OlympicWords.Services
 {
     public enum PowerUp
@@ -43,32 +39,6 @@ namespace OlympicWords.Services
         public int UsedJets { get; set; }
 
         public List<int> FillersWords { get; set; }
-        // public async Task ProcessDigit(char chr, IFinalizer finalizer, ILogger logger)
-        // {
-        //     if (TextPointer == Room.Text.Length) return;
-        //     //in case the last input was string not char, and the finalization was already done
-        //
-        //     CharBuffer[BufferPointer] = chr;
-        //     BufferPointer++;
-        //
-        //     if (BufferPointer > MAX_BUFFER - 1)
-        //     {
-        //         await finalizer.SurrenderFinalization();
-        //         logger.LogInformation(
-        //             "user has surrendered because of exceeding the possible amount of inputs");
-        //         return;
-        //     }
-        //
-        //     // logger.LogInformation(
-        //     //     "received: {Chr}, expected: {Exp} == chr, current pointer: {Pointer}, text size {TextSize}",
-        //     //     chr, Room.Text[TextPointer], TextPointer, Room.Text.Length);
-        //
-        //     if (Room.Text[TextPointer] == chr)
-        //         TextPointer++;
-        //
-        //     if (TextPointer == Room.Text.Length)
-        //         await finalizer.FinalizeUser();
-        // }
 
         public void JumpWords(int count)
         {
@@ -97,23 +67,6 @@ namespace OlympicWords.Services
             if (ChosenPowerUp == 1 && UsedJets < 1)
                 JumpWords(4);
         }
-
-        // public async Task SmallJetJump(IFinalizer finalizer)
-        // {
-        //     if (ChosenPowerUp != 0 || UsedJets >= 2)
-        //         throw new BadUserInputException();
-        //     //the reason for adding this exception despite returning silently has a better
-        //     //performance is I want to notify the client
-        //
-        //     await JetJump(1, finalizer);
-        // }
-        // public async Task MegaJetJump(IFinalizer finalizer)
-        // {
-        //     if (ChosenPowerUp != 1 || UsedJets >= 1)
-        //         throw new BadUserInputException();
-        //
-        //     await JetJump(4, finalizer);
-        // }
 
         //todo index is subject to removal because it is not known at creating time,
         //so it may be linked to startGame function here to set these props or the creation process is changed

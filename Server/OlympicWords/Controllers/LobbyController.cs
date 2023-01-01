@@ -5,7 +5,6 @@ using OlympicWords.Services;
 using Shared.Controllers;
 
 namespace OlympicWords.Controllers;
-
 [Route("[controller]/[action]")]
 [ApiController]
 public class LobbyController : ControllerBase, ILobbyController
@@ -20,18 +19,11 @@ public class LobbyController : ControllerBase, ILobbyController
         this.scopeRepo = scopeRepo;
     }
 
-
-    [ActionDomain(typeof(UserDomain.Stateless.Pending))]
-    public void SetPowerUp(int powerUp)
+    [ActionDomain(typeof(UserDomain.Stateless.Free))]
+    public async Task RequestRandomRoom(int betChoice, int capChoice)
     {
-        scopeRepo.RoomActor.ChosenPowerUp = powerUp;
+        await matchMaker.RequestRandomRoom(betChoice, capChoice);
     }
-
-    // [ActionDomain(typeof(UserDomain.Room.GettingReady))]
-    // public async Task Ready()
-    // {
-    //     await matchMaker.MakeRoomUserReadyRpc();
-    // }
 
     #region not used
     [ActionDomain(typeof(UserDomain.Stateless))]

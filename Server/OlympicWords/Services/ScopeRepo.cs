@@ -28,18 +28,11 @@ namespace OlympicWords.Services
 
 
         RoomActor RoomActor { get; }
-        // ActiveUser ActiveUser { get; }
         Room Room { get; }
         RoomUser RoomUser { get; }
         RoomBot RoomBot { get; }
 
-        // ActiveUser GetActiveUser(string id);
-        // bool IsUserActive(string id);
-        // void RemoveActiveUser(string id);
-        // void AddActiveUser(ActiveUser activeUser);
-
         void Init(ConcurrentDictionary<int, Room> rooms,
-            // ConcurrentDictionary<string, ActiveUser> activeUsers,
             ConcurrentDictionary<string, RoomUser> activeRoomUsers,
             ConcurrentDictionary<(int, int), ConcurrentBag<Room>> pendingRooms,
             HashSet<string> pendingUsers, ref int lastRoomId);
@@ -55,7 +48,6 @@ namespace OlympicWords.Services
     public class PersistantData
     {
         private readonly ConcurrentDictionary<int, Room> rooms = new();
-        // private readonly ConcurrentDictionary<string, ActiveUser> activeRoomUsers = new();
         private readonly ConcurrentDictionary<string, RoomUser> roomUsers = new();
         private readonly ConcurrentDictionary<(int, int), ConcurrentBag<Room>> pendingRooms = new();
         private readonly HashSet<string> pendingUsers = new();
@@ -83,18 +75,13 @@ namespace OlympicWords.Services
     {
         #region props
         /// <summary>
-        /// decides if the owner is roomBot or roomUser
-        /// </summary>
-        private bool realOwner;
-
-        /// <summary>
         /// called only if the user inside the room, otherwise it will be null
         /// </summary>
         public RoomActor RoomActor
         {
             get
             {
-                if (realOwner)
+                if (IsRealOwner)
                     return RoomUser;
 
                 return RoomBot;
@@ -106,13 +93,13 @@ namespace OlympicWords.Services
         {
             get
             {
-                if (!realOwner)
+                if (!IsRealOwner)
                     throw new Exception("RoomBot is the owner, but you need a room user");
 
                 if (roomUser != null)
                     return roomUser;
 
-                return roomUser = GetRoomUserWithId(userId);
+                return roomUser = GetRoomUserWithId(UserId);
             }
         }
         private RoomUser roomUser;
@@ -135,8 +122,7 @@ namespace OlympicWords.Services
         private ConcurrentDictionary<(int, int), ConcurrentBag<Room>> pendingRooms;
         private HashSet<string> pendingUsers;
         private int lastRoomId;
-        private string userId;
-        public string UserId => userId;
+        public string UserId { get; private set; }
         #endregion
 
         public ScopeRepo(ILogger<ScopeRepo> logger)
@@ -160,15 +146,20 @@ namespace OlympicWords.Services
 
         public void SetRealOwner(string userId)
         {
-            this.userId = userId;
-            realOwner = true;
+            this.UserId = userId;
+            IsRealOwner = true;
         }
-        public bool IsRealOwner => realOwner;
+
+        /// <summary>
+        /// decides if the owner is roomBot or roomUser
+        /// </summary>
+        public bool IsRealOwner { get; private set; }
 
         public void SetBotOwner(RoomBot roomBot)
         {
             this.RoomBot = roomBot;
-            realOwner = false;
+            UserId = roomBot.Id;
+            IsRealOwner = false;
         }
 
         public void DeleteRoom()
@@ -233,15 +224,15 @@ namespace OlympicWords.Services
         }
         public void MarkUserPending()
         {
-            pendingUsers.Add(userId);
+            pendingUsers.Add(UserId);
         }
         public bool IsUserPending()
         {
-            return pendingUsers.Contains(userId);
+            return pendingUsers.Contains(UserId);
         }
         public void RemovePendingUser()
         {
-            pendingUsers.Remove(userId);
+            pendingUsers.Remove(UserId);
         }
         public void RemovePendingUser(string uid)
         {

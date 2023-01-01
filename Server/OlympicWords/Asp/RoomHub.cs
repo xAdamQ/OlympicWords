@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using OlympicWords.Common;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol;
 using OlympicWords.Services.Helpers;
 using static System.Threading.Tasks.Task;
@@ -48,6 +49,7 @@ namespace OlympicWords.Services
             SetPowerUp(int powerUp);
     }
 
+    [Authorize]
     public class RoomHub : Hub, IRoomHub
     {
         #region services
@@ -82,9 +84,6 @@ namespace OlympicWords.Services
         #region on dis/connceted
         public override async Task OnConnectedAsync()
         {
-            // if (contextAccessor.HttpContext == null)
-            // return;
-
             await base.OnConnectedAsync();
 
             logger.LogInformation("connection established: {ContextUserIdentifier}, connId {ConnId}",
@@ -186,47 +185,13 @@ namespace OlympicWords.Services
 
         //you can set the power up whether you're ready or not yet
         [RpcDomain(typeof(UserDomain.Room.Init))]
-        public void SetPowerUp(int powerUp)
+        public void SetPowerUp([ValidRange(3)] int powerUp)
         {
             scopeRepo.RoomActor.ChosenPowerUp = powerUp;
         }
 
-        #region tests
-        // [RpcDomain(typeof(UserDomain.App))]
-        // public void BuieTest()
-        // {
-        //     throw new Exceptions.BadUserInputException("this the exc message");
-        // }
-        //
-        // [RpcDomain(typeof(UserDomain.App))]
-        // public void ThrowExc()
-        // {
-        //     throw new Exception("a test general exc is thrown");
-        // }
-        //
-        // [RpcDomain(typeof(UserDomain.App))]
-        // public async Task<MinUserInfo> TestReturnObject()
-        // {
-        //     await Delay(5000);
-        //     return new MinUserInfo { Name = "some data to test" };
-        // }
-        //
-        // [RpcDomain(typeof(UserDomain.App))]
-        // public async Task TestWaitAlot()
-        // {
-        //     await Delay(5000);
-        // }
-        //
-        // [RpcDomain(typeof(UserDomain.App))]
-        // public async Task<string> UpStreamCharTest(IAsyncEnumerable<char> stream)
-        // {
-        //     // await foreach (var chr in stream)
-        //     // logger.LogInformation("received {Chr}", chr);
-        //
-        //     logger.LogInformation("test stream done");
-        //     return "done";
-        // }
 
+        #region tests
         [RpcDomain(typeof(UserDomain.Stateless))]
         public void TestMessage()
         {

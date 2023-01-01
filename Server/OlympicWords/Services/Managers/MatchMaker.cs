@@ -1,14 +1,13 @@
 using OlympicWords.Common;
 using OlympicWords.Services.Extensions;
 using Microsoft.AspNetCore.SignalR;
-using Common.Lobby;
 using OlympicWords.Services.Helpers;
 
 namespace OlympicWords.Services
 {
     public interface IMatchMaker
     {
-        Task RequestRandomRoom(int category, int capacityChoice, string userId, string connId);
+        Task RequestRandomRoom(int category, int capacityChoice);
 
         /// <summary>
         /// called by timeout
@@ -22,6 +21,16 @@ namespace OlympicWords.Services
         // void CancelChallengeRequest(ActiveUser activeUser);
         // Task<ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
         // bool response, string sender);
+    }
+
+    public class RoomPrepareResponse
+    {
+        public List<FullUserInfo> TurnSortedUsersInfo { get; set; }
+        public int TurnIndex { get; set; }
+        public string Text { get; set; }
+        public int Seed { get; set; }
+        public List<(int index, int player)> FillerWords { get; set; }
+        public List<int> ChosenPowerUps { get; set; }
     }
 
     public class MatchMaker : IMatchMaker
@@ -44,7 +53,7 @@ namespace OlympicWords.Services
             this.logger = logger;
         }
 
-        public async Task RequestRandomRoom(int category, int capacityChoice, string userId, string connId)
+        public async Task RequestRandomRoom(int category, int capacityChoice)
         {
             //I set user domain fast because this will await sometime and enable the user to call
             //twice this method without domain change
@@ -65,7 +74,7 @@ namespace OlympicWords.Services
             }
 
             var room = scopeRepo.TakePendingRoom(category, capacityChoice) ?? MakeRoom(category, capacityChoice);
-            var roomUser = CreateRoomUser(room, connId);
+            var roomUser = CreateRoomUser(room);
             room.RoomUsers.Add(roomUser);
             room.RoomActors.Add(roomUser);
 
@@ -121,93 +130,6 @@ namespace OlympicWords.Services
             await PrepareRoom(room);
         }
 
-        // public async Task<MatchRequestResult> RequestMatch(ActiveUser activeUser,
-        //     string oppoId)
-        // {
-        //     var dUser = await offlineRepo.GetUserByIdAsyc(activeUser.Id);
-        //
-        //     if (dUser.Money < Room.MinBet)
-        //         throw new Exceptions.BadUserInputException();
-        //
-        //     //BadUserInputException is thrown when something is wrong but should've been
-        //     //validated by the client 
-        //
-        //     var oppoUser = await offlineRepo.GetUserByIdAsyc(oppoId);
-        //     var friendship = await offlineRepo.GetFriendship(activeUser.Id, oppoId);
-        //
-        //     if (friendship is FriendShip.None or FriendShip.Follower && !oppoUser.EnableOpenMatches)
-        //         throw new Exceptions.BadUserInputException();
-        //
-        //     if (!scopeRepo.IsUserActive(oppoId))
-        //         return MatchRequestResult.Offline;
-        //
-        //     if (scopeRepo.DoesRoomUserExist(oppoId))
-        //         return MatchRequestResult.Playing;
-        //
-        //     if (oppoUser.Money < Room.MinBet)
-        //         return MatchRequestResult.NoMoney;
-        //
-        //     //can't call again because this fun domain is lobby.idle only
-        //     activeUser.Domain = typeof(UserDomain.Stateless.Pending);
-        //
-        //     activeUser.ChallengeRequestTarget = oppoId;
-        //
-        //     var oppoAu = scopeRepo.GetActiveUser(oppoId);
-        //     //oppo is 100% active at this satage
-        //
-        //     await masterHub.SendOrderedAsync(scopeRepo.GetRoomUser(oppoId), "ChallengeRequest",
-        //         Mapper.UserToMinUserInfoFunc(dUser));
-        //
-        //     return MatchRequestResult.Available;
-        // }
-        //
-        // public void CancelChallengeRequest(ActiveUser activeUser)
-        // {
-        //     activeUser.ChallengeRequestTarget = null;
-        //     activeUser.Domain = typeof(UserDomain.Stateless);
-        // }
-        //
-        // public async Task<ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
-        //     bool response, string sender)
-        // {
-        //     if (!scopeRepo.IsUserActive(sender))
-        //         return ChallengeResponseResult.Offline;
-        //
-        //     var senderActiveUser = scopeRepo.GetActiveUser(sender);
-        //
-        //     if (senderActiveUser.ChallengeRequestTarget != activeUser.Id)
-        //         //can be null or he sent to another user after
-        //         return ChallengeResponseResult.Canceled;
-        //
-        //     if (!response)
-        //     {
-        //         await masterHub.SendOrderedAsync(scopeRepo.GetRoomUser(sender),
-        //             "RespondChallenge", false);
-        //         //otherwise start the room
-        //
-        //         CancelChallengeRequest(senderActiveUser);
-        //
-        //         return ChallengeResponseResult.Success;
-        //     }
-        //
-        //     //user domains are changed when prepare is called
-        //     senderActiveUser.ChallengeRequestTarget = null;
-        //
-        //     var room = MakeRoom(0, 0);
-        //
-        //     var roomUser = CreateRoomUser(activeUser, room);
-        //     var senderRoomUser = CreateRoomUser(senderActiveUser, room);
-        //
-        //     room.RoomUsers.Add(senderRoomUser);
-        //     room.RoomActors.Add(senderRoomUser);
-        //     room.RoomUsers.Add(roomUser);
-        //     room.RoomActors.Add(roomUser);
-        //
-        //     await PrepareRoom(room);
-        //
-        //     return ChallengeResponseResult.Success;
-        // }
-
         private Room MakeRoom(int capacityChoice, int category)
         {
             return scopeRepo.AddRoom(new Room(capacityChoice, category));
@@ -215,7 +137,7 @@ namespace OlympicWords.Services
 
         public async Task MakeRoomUserReadyRpc()
         {
-            scopeRepo.RoomUser.Domain = typeof(UserDomain.Room.WaitingForOthers);
+            scopeRepo.RoomUser.Domain = typeof(UserDomain.Room.Init.WaitingForOthers);
             scopeRepo.RoomUser.IsReady = true;
 
             await StartRoomIfAllReady(scopeRepo.Room);
@@ -223,7 +145,7 @@ namespace OlympicWords.Services
 
         private async Task PrepareRoom(Room room)
         {
-            room.SetUsersDomain<UserDomain.Room.GettingReady>();
+            room.SetUsersDomain<UserDomain.Room.Init.GettingReady>();
 
             room.RoomActors.Shuffle();
             for (var i = 0; i < room.RoomActors.Count; i++) room.RoomActors[i].TurnId = i;
@@ -330,14 +252,19 @@ namespace OlympicWords.Services
 
                 if (room.RoomActors[i] is not RoomUser ru) continue;
 
-                //actor id = index
-                var chosenPowerUps = room.RoomActors.Select(a => a.ChosenPowerUp);
+                var chosenPowerUps = room.RoomActors.Select(a => a.ChosenPowerUp).ToList();
 
-                var task = masterHub.SendOrderedAsync(ru, "PrepareRequestedRoomRpc",
-                    turnSortedUsersInfo, i, room.Text, seed, room.FillerWords, chosenPowerUps);
+                var response = new RoomPrepareResponse
+                {
+                    TurnSortedUsersInfo = turnSortedUsersInfo,
+                    TurnIndex = i,
+                    Text = room.Text,
+                    FillerWords = room.FillerWords,
+                    ChosenPowerUps = chosenPowerUps,
+                    Seed = seed
+                };
 
-                //changes in the same room when he disconnect
-                logger.LogInformation("prepare sent");
+                var task = masterHub.SendOrderedAsync(ru, "PrepareRequestedRoomRpc", response);
 
                 tasks.Add(task);
             }
@@ -345,9 +272,9 @@ namespace OlympicWords.Services
             await Task.WhenAll(tasks);
         }
 
-        private RoomUser CreateRoomUser(Room room, string connectionId)
+        private RoomUser CreateRoomUser(Room room)
         {
-            var roomUser = new RoomUser(scopeRepo.UserId, room, connectionId);
+            var roomUser = new RoomUser(scopeRepo.UserId, room);
             scopeRepo.AddNewUser(roomUser);
             return roomUser;
         }

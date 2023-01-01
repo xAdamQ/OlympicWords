@@ -2,7 +2,7 @@
 {
     public class RoomUser : RoomActor
     {
-        public string ConnectionId { get; }
+        public string ConnectionId { get; set; }
         public Type Domain { get; set; }
         public int MessageIndex { get; set; }
 
@@ -22,11 +22,9 @@
         public bool Active { get; private set; }
 
 
-        public RoomUser(string id, Room room, string connectionId) : base(id, room)
+        public RoomUser(string id, Room room) : base(id, room)
         {
-            // ActiveUser = activeUser;
-            ConnectionId = connectionId;
-            Domain = typeof(UserDomain.Room);
+            Domain = typeof(UserDomain.Room.Init);
             BufferSyncPointers = new int[room.Capacity];
         }
 

@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 
 namespace OlympicWords.Services;
-
 /// <summary>
 /// methods are service independent
 /// </summary>
@@ -12,6 +11,7 @@ public class Room
 {
     public bool Started;
 
+    public const int POWERUPS_COUNT = 3;
     private const int MAX_LEVEL = 999;
     private const float EXPO = .55f, DIVIDER = 10;
 

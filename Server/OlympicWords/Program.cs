@@ -4,42 +4,23 @@ using Hangfire.MemoryStorage;
 using Lib.AspNetCore.ServerSentEvents;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.SignalR;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using OlympicWords.Filters;
 using OlympicWords.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 //services
 var configuration = builder.Configuration;
 
-// var hostAddress = Dns.GetHostAddresses("").First();
-
-// builder.WebHost.UseUrls("http://*:5112");
-
-// builder.WebHost.ConfigureKestrel(serverOptions =>
-// {
-//     serverOptions.Listen(hostAddress, 5112,
-//         listenOptions =>
-//         {
-//             listenOptions.UseHttps(options =>
-//             {
-//                 
-//             });
-//         });
-// });
-
-//how to enable the tls?
-
-// builder.Services.AddCors();
 var services = builder.Services;
-
 
 services.AddSignalR(options =>
     {
         options.AddFilter<BadUserInputFilter>();
         options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+        options.MaximumParallelInvocationsPerClient = 2;
     })
     // .AddAzureSignalR(opt => { opt.ServerStickyMode = ServerStickyMode.Preferred; })
     .AddJsonProtocol(options => { options.PayloadSerializerOptions.IncludeFields = true; });
@@ -55,8 +36,11 @@ services.AddDbContext<MasterContext>(options =>
 {
     NCacheConfiguration.Configure("default", DependencyType.SqlServer);
     NCacheConfiguration.ConfigureLogger(logLevel: LogLevel.Information);
-
-    options.UseSqlServer(configuration.GetConnectionString("Azure"));
+    var connection = new SqlConnection(configuration.GetConnectionString("Azure"));
+    // var credential = new DefaultAzureCredential();
+    // var token = credential.GetToken(new TokenRequestContext(new[] { "https://wordwar.database.windows.net/.default" }));
+    // connection.AccessToken = token.Token;
+    options.UseSqlServer(connection, opt => { opt.CommandTimeout(30); });
     options.EnableSensitiveDataLogging();
 });
 
@@ -64,7 +48,6 @@ services.AddScoped<IGameplay, Gameplay>();
 services.AddScoped<IOfflineRepo, OfflineRepo>();
 services.AddScoped<IFinalizer, Finalizer>();
 services.AddScoped<ILobbyManager, LobbyManager>();
-// services.AddScoped<IChatManager, ChatManager>();
 services.AddScoped<IMatchMaker, MatchMaker>();
 services.AddScoped<IScopeRepo, ScopeRepo>();
 services.AddScoped<SecurityManager>();
@@ -74,6 +57,7 @@ services.AddSingleton<IServerLoop, ServerLoop>();
 
 services.AddAuthentication(MasterAuthHandler.PROVIDER_NAME)
     .AddScheme<MasterAuthSchemeOptions, MasterAuthHandler>(MasterAuthHandler.PROVIDER_NAME, null);
+services.AddAuthorization();
 
 services.AddHangfire(config =>
 {
@@ -88,23 +72,21 @@ services.AddHangfireServer();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
 app.UseRouting();
-
-app.UseAuthentication();
-app.MapControllers();
-
 app.UseCors(corsPolicyBuilder => corsPolicyBuilder
     .AllowAnyOrigin()
     .AllowAnyHeader()
     .AllowAnyMethod()
 );
 
-app.MapGet("/weatherforecast", () => new List<int> { 1, 2, 3 });
-app.MapServerSentEvents("/updates");
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.UseHttpsRedirection();
-
+app.MapControllers();
 app.UseEndpoints(endpoint => endpoint.MapHub<RoomHub>("/connect"));
+
+app.MapServerSentEvents("/updates");
 
 
 app.Run();

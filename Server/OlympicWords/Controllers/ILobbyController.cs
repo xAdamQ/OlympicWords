@@ -11,13 +11,6 @@ namespace Shared.Controllers
         // Task RequestRandomRoom(int betChoice, int capacityChoice);
         // Task Ready();
 
-#if UNITY
-        Task
-#else
-        void
-#endif
-            SetPowerUp(int powerUp);
-
         Task MakePurchase(string purchaseData, string sign);
         Task<MatchRequestResult> RequestMatch(string oppoId);
         void CancelChallengeRequest(string oppoId);

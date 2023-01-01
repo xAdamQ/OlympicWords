@@ -7,9 +7,9 @@ using Shared;
 using Shared.Controllers;
 
 namespace OlympicWords.Controllers;
-
 [Route("[controller]/[action]")]
 [ApiController]
+[Authorize]
 public class UserController : ControllerBase, IUserController
 {
     private readonly ILogger<UserController> logger;
@@ -58,11 +58,7 @@ public class UserController : ControllerBase, IUserController
         await offlineRepo.SaveChangesAsync();
     }
 
-    [AllowAnonymous]
-    public IActionResult Test(string someData)
-    {
-        return Ok();
-    }
+
 
     [AllowAnonymous]
     public async Task<IActionResult> LinkTo([FromServices] SecurityManager securityManager, string originalToken,

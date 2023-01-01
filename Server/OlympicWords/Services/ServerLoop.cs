@@ -27,7 +27,7 @@ namespace OlympicWords.Services
 
         #region pending room timout
         private Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
-        private const int PENDING_ROOM_TIMEOUT = 4 * 1000;
+        private const int PENDING_ROOM_TIMEOUT = 4000;
         public void SetupPendingRoomTimeoutIfNotExist(Room room)
         {
             if (PendingRoomCancellations.ContainsKey(room)) return;

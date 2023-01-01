@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using OlympicWords.Services.Exceptions;
 using Microsoft.AspNetCore.SignalR;
@@ -56,6 +57,18 @@ namespace OlympicWords.Services
                     $"the called function with domain {domain} is not valid in the current user domain {roomUser.Domain}");
             }
 
+            var rangeAttributes = invocationContext.HubMethod.GetParameters()
+                .Where(p => p.ParameterType == typeof(int))
+                .Select(p => (SequencePosition: p.Position, Attribute: p.GetCustomAttribute<ValidRange>()))
+                .Where(p => p.Attribute != null);
+
+            foreach (var (pos, att) in rangeAttributes)
+            {
+                var arg = (int)invocationContext.HubMethodArguments[pos];
+                if (arg > att.Max || arg < att.Min)
+                    throw new BadUserInputException(" out of range");
+            }
+
             try
             {
                 return await next(invocationContext);
@@ -69,19 +82,6 @@ namespace OlympicWords.Services
                 // return new ValueTask<int>(1);
                 // return new ValueTask<User>(new User {Name = "test name on the returned user"});
                 // return new ValueTask<object>($"there's a buie exc on the server {e.Message}");
-            }
-            // catch (Exception ex)
-            // {
-            //     _logger.LogInformation($"Exception calling '{invocationContext.HubMethodName}': {ex}");
-            //     throw;
-            // }
-            finally
-            {
-                //check againest the called funtion if it's a trigger
-                //is it throw?
-                //call the serverloop to create new scope to check for distribute or finalize
-                //my issue is the place
-                //so create a trigger system
             }
         }
 

@@ -87,13 +87,10 @@ namespace OlympicWords.Services
             await offlineRepo.SaveChangesAsync();
 
             if (realUser is not null)
-                await masterHub.SendOrderedAsync(scopeRepo.RoomUser, "FinalizeRoom",
-                    userRoomStatus);
+                await masterHub.SendOrderedAsync(scopeRepo.RoomUser, "FinalizeRoom", userRoomStatus);
 
             foreach (var oppo in room.InRoomUsers.Where(ru => ru != roomActor))
-                await masterHub.SendOrderedAsync(oppo, "TakeOppoUserRoomStatus",
-                    roomActor.TurnId,
-                    userRoomStatus);
+                await masterHub.SendOrderedAsync(oppo, "TakeOppoUserRoomStatus", roomActor.TurnId, userRoomStatus);
 
             if (room.RoomUsers.All(ru => ru.Cancellation.IsCancellationRequested))
                 scopeRepo.DeleteRoom();

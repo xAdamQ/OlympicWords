@@ -160,24 +160,21 @@ namespace OlympicWords.Services
         private User currentUser;
         public async Task<User> GetCurrentUserAsync()
         {
-            if (currentUser != null)
-                return currentUser;
+            if (currentUser != null) return currentUser;
 
             currentUser = await context.Users.FirstAsync(u => u.Id == scopeRepo.UserId);
 
             return currentUser;
         }
 
-        public async Task<User> GetCurrentFullUserAsync()
+        public async Task SetCurrentFullUserAsync()
         {
-            if (currentUser is { Followers: not null, Followings: not null }) return currentUser;
+            if (currentUser is { Followers: not null, Followings: not null }) return;
 
             currentUser = await context.Users
                 .Include(u => u.Followings)
                 .Include(u => u.Followers)
                 .FirstAsync(u => u.Id == scopeRepo.UserId);
-
-            return currentUser;
         }
 
 
@@ -216,25 +213,25 @@ namespace OlympicWords.Services
         }
         public async Task<PersonalFullUserInfo> GetPersonalInfo()
         {
-            // return await context.Users
+            return await context.Users
+                .Where(u => u.Id == scopeRepo.UserId)
+                .ProjectTo<PersonalFullUserInfo>(mapperConfig)
+                // .AsSplitQuery()
+                .SingleAsync();
+
+            // var a = (await context.Users
+            //         .Where(u => u.Id == scopeRepo.UserId)
+            //         // .AsSplitQuery()
+            //         .FromCacheAsync(cacheOptions))
+            //     .Single();
+            //
+            // return Mapper.UserToClientUserFunc(a);
+
+            // var q = await context.Users
             //     .Where(u => u.Id == scopeRepo.UserId)
             //     .ProjectTo<PersonalFullUserInfo>(mapperConfig)
             //     .AsSplitQuery()
-            //     .SingleAsync();
-
-            var a = (await context.Users
-                    .Where(u => u.Id == scopeRepo.UserId)
-                    // .AsSplitQuery()
-                    .FromCacheAsync(cacheOptions))
-                .Single();
-
-            return Mapper.UserToClientUserFunc(a);
-
-            var q = await context.Users
-                .Where(u => u.Id == scopeRepo.UserId)
-                .ProjectTo<PersonalFullUserInfo>(mapperConfig)
-                .AsSplitQuery()
-                .FromCacheAsync(cacheOptions);
+            //     .FromCacheAsync(cacheOptions);
 
             //I split the query because the projection was causing a join and making cartesian explosion
 
@@ -247,7 +244,7 @@ namespace OlympicWords.Services
             // logger.LogInformation(q2.ToQueryString());
             // //both queries are almost identical, I want to know why both automapper and microsoft are complaining
 
-            return q.Single();
+            // return q.Single();
         }
 
         public async Task<User> GetUserAsync(string providerId, ProviderType providerType)
@@ -281,7 +278,7 @@ namespace OlympicWords.Services
         #region user relation
         public async Task ToggleFollow(string targetId)
         {
-            await GetCurrentFullUserAsync();
+            await SetCurrentFullUserAsync();
 
             currentUser.Followings ??= new List<User>();
 
