@@ -4,7 +4,6 @@ using Basra.Common;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
 [Rpc]
@@ -43,12 +42,12 @@ public class Finalizer : MonoModule<Finalizer>
 
         Repository.I.PersonalFullInfo.DecreaseMoneyAimTimeLeft().Forget();
 
-        FinalMuvs = new FinalMuv[EnvBase.I.Capacity];
+        FinalMuvs = new FinalMuv[RootEnv.I.Capacity];
 
-        for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
-            FinalMuvs[i] = FinalMuv.Create(EnvBase.I.UserInfos[i], EnvBase.I.Players[i], muvParent);
+        for (var i = 0; i < RootEnv.I.UserInfos.Count; i++)
+            FinalMuvs[i] = FinalMuv.Create(RootEnv.I.UserInfos[i], RootEnv.I.Players[i], muvParent);
 
-        FinalMuvs[EnvBase.I.MyTurn].SetFinal(myUserRoomStatus);
+        FinalMuvs[RootEnv.I.MyTurn].SetFinal(myUserRoomStatus);
         FinishedUsersStatus.ForEach(rs => FinalMuvs[rs.index].SetFinal(rs.status));
 
         foreach (var finalMuv in FinalMuvs.Where(fm => !fm.Finished))

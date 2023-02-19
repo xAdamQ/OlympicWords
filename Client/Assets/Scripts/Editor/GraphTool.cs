@@ -151,8 +151,8 @@ internal class GraphTool : EditorTool
 
         var digitNormal = Vector3.Lerp(n1.Normal, n2.Normal, .5f);
 
-        var digitStartProjection = BasicGraphEnv.GetProjectedPoz(n1.Position, n2.Normal);
-        var digitEndProjection = BasicGraphEnv.GetProjectedPoz(n2.Position, n2.Normal);
+        var digitStartProjection = GraphEnv.GetProjectedPoz(n1.Position, n2.Normal);
+        var digitEndProjection = GraphEnv.GetProjectedPoz(n2.Position, n2.Normal);
         var digitPoz = Vector3.Lerp(digitStartProjection.poz, digitEndProjection.poz, .5f);
 
         Handles.DrawLine(digitPoz, digitPoz + digitNormal * 2, 3f);

@@ -1,7 +1,5 @@
-using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 public class ChallengeResponsePanel : MonoBehaviour
 {
@@ -9,13 +7,13 @@ public class ChallengeResponsePanel : MonoBehaviour
 
     public static void Show(MinUserInfo senderInfo)
     {
-        UniTask.Create(async () =>
-        {
-            var panel = (await Addressables.InstantiateAsync("challengeResponsePanel",
-                LobbyController.I.Canvas)).GetComponent<ChallengeResponsePanel>();
-
-            panel.minUserView.Init(senderInfo);
-        });
+        // UniTask.Create(async () =>
+        // {
+        //     var panel = (await Addressables.InstantiateAsync("challengeResponsePanel",
+        //         LobbyController.I.Canvas)).GetComponent<ChallengeResponsePanel>();
+        //
+        //     panel.minUserView.Init(senderInfo);
+        // });
     }
 
     public void Respond(int response)

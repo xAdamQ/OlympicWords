@@ -46,7 +46,8 @@ public class AudioManager : MonoModule<AudioManager>
         var newState = state == 0 ? 1 : 0;
 
         PlayerPrefs.SetInt("enableSound", newState);
-
+        PlayerPrefs.Save();
+        
         if (newState == 0)
             backgroundSource.Play();
         else

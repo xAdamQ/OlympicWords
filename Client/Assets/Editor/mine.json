@@ -1,0 +1,28 @@
+{
+    "m_Id": "mine",
+    "m_ParentId": "",
+    "m_Entries": [
+        {
+            "identifier": {
+                "path": "Main Menu/MyTools/ServerHelper"
+            },
+            "combinations": [
+                {
+                    "m_KeyCode": 108,
+                    "m_Modifiers": 2
+                }
+            ]
+        },
+        {
+            "identifier": {
+                "path": "Main Menu/MyTools/HelperEditorUI"
+            },
+            "combinations": [
+                {
+                    "m_KeyCode": 108,
+                    "m_Modifiers": 2
+                }
+            ]
+        }
+    ]
+}

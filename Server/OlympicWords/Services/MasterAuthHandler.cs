@@ -70,12 +70,11 @@ namespace OlympicWords.Services
             var user = await offlineRepo.GetUserAsync(accessToken, provider);
 
             if (user == null)
-                user = await securityManager.SignUpAndInAsync(profile);
+                user = await securityManager.SignUpAsync(profile);
             else
-                user = await securityManager.SignInAsync(profile, user);
+                await securityManager.SignInAsync(profile, user);
 
             scopeRepo.SetRealOwner(user.Id);
-            offlineRepo.SetCurrentUser(user);
             persistantData.FeedScope(scopeRepo);
 
             if (Request.Path == CONNECT_ENDPOINT &&

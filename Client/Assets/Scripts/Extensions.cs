@@ -6,10 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using Wintellect.PowerCollections;
 using Random = UnityEngine.Random;
@@ -52,6 +52,7 @@ public static partial class Extensions
         foreach (var item in array) action(item);
     }
 
+#if ADDRESSABLES
     public static async UniTask LoadAndReleaseAsset<T>(string key, Action<T> onComplete)
     {
         var handle = Addressables.LoadAssetAsync<T>(key);
@@ -61,6 +62,7 @@ public static partial class Extensions
         onComplete(handle.Result);
         Addressables.Release(handle);
     }
+#endif
 
     public static Vector3 SetY(this Vector3 vector3, float y)
     {
@@ -103,10 +105,10 @@ public static partial class Extensions
         return new Vector3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
     }
 
-    public static void SkipTween(this Tweener tweener)
+    public static void SkipTween(this Tween tween)
     {
-        if (tweener is { active: true })
-            tweener.Goto(1);
+        if (tween is { active: true })
+            tween.Goto(1);
     }
 
     public static List<List<T>> EmptyList<T>(int count)
@@ -164,16 +166,16 @@ public static partial class Extensions
         return adj;
     }
 
-    public static KeyValuePair<T, T> DirectUpperAndLower<T>(this OrderedSet<T> set, T NewItem)
+    public static KeyValuePair<T, T> DirectUpperAndLower<T>(this OrderedSet<T> set, T newItem)
     {
-        var exists = set.Add(NewItem);
+        var exists = set.Add(newItem);
 
-        var myIndex = set.IndexOf(NewItem);
+        var myIndex = set.IndexOf(newItem);
 
         var v = myIndex - 1 < 0 ? default : set[myIndex - 1];
         var k = myIndex + 1 > set.Count - 1 ? default : set[myIndex + 1];
 
-        if (!exists) set.Remove(NewItem);
+        if (!exists) set.Remove(newItem);
 
         return new KeyValuePair<T, T>(k, v);
     }
@@ -257,6 +259,27 @@ public static partial class Extensions
 
         var texture = DownloadHandlerTexture.GetContent(request);
         callback?.Invoke(texture);
+    }
+
+    public static IEnumerable<Type> GetParentTypes(this Type type)
+    {
+        // return all implemented or inherited interfaces
+        // foreach (var i in type.GetInterfaces())
+        // yield return i;
+
+        var currentBaseType = type;
+        //start from current type so it will be returned as well
+
+        while (currentBaseType != null)
+        {
+            yield return currentBaseType;
+            currentBaseType = currentBaseType.BaseType;
+        }
+    }
+
+    public static string[] SplitCamelCase(this string input)
+    {
+        return Regex.Split(input, @"(?<!^)(?=[A-Z])");
     }
 }
 

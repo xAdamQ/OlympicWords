@@ -17,24 +17,24 @@ public class MiniMapManager : MonoBehaviour
 
     private void Start()
     {
-        EnvBase.Initiated += OnEnvInitiated;
+        RootEnv.Initiated += OnEnvInitiated;
     }
 
     private void OnDestroy()
     {
-        EnvBase.Initiated -= OnEnvInitiated;
+        RootEnv.Initiated -= OnEnvInitiated;
     }
 
     private void OnEnvInitiated()
     {
-        EnvBase.I.GamePrepared += () => StartCoroutine(Begin());
+        RootEnv.I.GamePrepared += () => StartCoroutine(Begin());
     }
 
     private IEnumerator Begin()
     {
         yield return new WaitForFixedUpdate();
 
-        foreach (var playerBase in EnvBase.I.Players)
+        foreach (var playerBase in RootEnv.I.Players)
         {
             var miniMap = Instantiate(miniMapPrefab, transform).GetComponent<MiniMap>();
             miniMaps.Add(miniMap);
@@ -46,9 +46,9 @@ public class MiniMapManager : MonoBehaviour
         }
     }
 
-    private void OnMovedADigit(MiniMap miniMap, PlayerBase playerBase)
+    private void OnMovedADigit(MiniMap miniMap, Player player)
     {
-        SetFill(miniMap, (float)playerBase.TextPointer / (EnvBase.I.Text.Length - 1));
+        SetFill(miniMap, (float)player.TextPointer / (RootEnv.I.Text.Length - 1));
     }
 
     private void SetFill(MiniMap miniMap, float percent)

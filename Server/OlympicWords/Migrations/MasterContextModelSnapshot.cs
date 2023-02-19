@@ -17,10 +17,13 @@ namespace OlympicWords.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("OlympicWords.Data.User", b =>
                 {
@@ -28,6 +31,9 @@ namespace OlympicWords.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
+
+                    b.Property<float>("AverageWpm")
+                        .HasColumnType("real");
 
                     b.Property<int>("EatenCardsCount")
                         .HasColumnType("int");
@@ -64,6 +70,9 @@ namespace OlympicWords.Migrations
                     b.Property<string>("OwnedCardBackIds")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OwnedItemPlayers")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OwnedTitleIds")
                         .HasColumnType("nvarchar(max)");
 
@@ -82,6 +91,9 @@ namespace OlympicWords.Migrations
 
                     b.Property<int>("SelectedCardback")
                         .HasColumnType("int");
+
+                    b.Property<string>("SelectedItemPlayer")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SelectedTitleId")
                         .HasColumnType("int");
@@ -105,31 +117,8 @@ namespace OlympicWords.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0",
-                            EatenCardsCount = 0,
-                            EnableOpenMatches = false,
-                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Level = 13,
-                            MaxWinStreak = 0,
-                            Money = 22250,
-                            Name = "hany",
-                            OwnedBackgroundIds = "[1,3]",
-                            OwnedCardBackIds = "[0,2]",
-                            OwnedTitleIds = "[2,4]",
-                            PictureUrl = "https://pbs.twimg.com/profile_images/592734306725933057/s4-h_LQC.jpg",
-                            PlayedRoomsCount = 3,
-                            RequestedMoneyAidToday = 2,
-                            SelectedBackground = 0,
-                            SelectedCardback = 2,
-                            SelectedTitleId = 0,
-                            TotalEarnedMoney = 0,
-                            WinStreak = 0,
-                            WonRoomsCount = 4,
-                            Xp = 806
-                        },
-                        new
-                        {
                             Id = "999",
+                            AverageWpm = 0f,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -139,12 +128,14 @@ namespace OlympicWords.Migrations
                             Name = "botA",
                             OwnedBackgroundIds = "[0,3]",
                             OwnedCardBackIds = "[8]",
+                            OwnedItemPlayers = "[\"criminal\"]",
                             OwnedTitleIds = "[1]",
                             PictureUrl = "https://pbs.twimg.com/profile_images/723902674970750978/p8JWhWxP_400x400.jpg",
                             PlayedRoomsCount = 9,
                             RequestedMoneyAidToday = 0,
                             SelectedBackground = 0,
                             SelectedCardback = 1,
+                            SelectedItemPlayer = "{\"Base\":\"criminal\"}",
                             SelectedTitleId = 0,
                             TotalEarnedMoney = 0,
                             WinStreak = 0,
@@ -154,6 +145,7 @@ namespace OlympicWords.Migrations
                         new
                         {
                             Id = "9999",
+                            AverageWpm = 0f,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -163,12 +155,14 @@ namespace OlympicWords.Migrations
                             Name = "botB",
                             OwnedBackgroundIds = "[3]",
                             OwnedCardBackIds = "[0,8]",
+                            OwnedItemPlayers = "[\"criminal\"]",
                             OwnedTitleIds = "[0,1]",
                             PictureUrl = "https://pbs.twimg.com/profile_images/592734306725933057/s4-h_LQC.jpg",
                             PlayedRoomsCount = 11,
                             RequestedMoneyAidToday = 0,
                             SelectedBackground = 0,
                             SelectedCardback = 2,
+                            SelectedItemPlayer = "{\"Base\":\"criminal\"}",
                             SelectedTitleId = 0,
                             TotalEarnedMoney = 0,
                             WinStreak = 0,
@@ -178,6 +172,7 @@ namespace OlympicWords.Migrations
                         new
                         {
                             Id = "99999",
+                            AverageWpm = 0f,
                             EatenCardsCount = 0,
                             EnableOpenMatches = false,
                             LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -187,89 +182,19 @@ namespace OlympicWords.Migrations
                             Name = "botC",
                             OwnedBackgroundIds = "[3]",
                             OwnedCardBackIds = "[0,8]",
+                            OwnedItemPlayers = "[\"criminal\"]",
                             OwnedTitleIds = "[0,1]",
                             PictureUrl = "https://d3g9pb5nvr3u7.cloudfront.net/authors/57ea8955d8de1e1602f67ca0/1902081322/256.jpg",
                             PlayedRoomsCount = 11,
                             RequestedMoneyAidToday = 0,
                             SelectedBackground = 0,
                             SelectedCardback = 2,
+                            SelectedItemPlayer = "{\"Base\":\"criminal\"}",
                             SelectedTitleId = 0,
                             TotalEarnedMoney = 0,
                             WinStreak = 0,
                             WonRoomsCount = 3,
                             Xp = 44
-                        },
-                        new
-                        {
-                            Id = "1",
-                            EatenCardsCount = 0,
-                            EnableOpenMatches = false,
-                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Level = 43,
-                            MaxWinStreak = 0,
-                            Money = 89000,
-                            Name = "samy",
-                            OwnedBackgroundIds = "[0,9]",
-                            OwnedCardBackIds = "[0,1,2]",
-                            OwnedTitleIds = "[11,6]",
-                            PictureUrl = "https://d3g9pb5nvr3u7.cloudfront.net/authors/57ea8955d8de1e1602f67ca0/1902081322/256.jpg",
-                            PlayedRoomsCount = 7,
-                            RequestedMoneyAidToday = 0,
-                            SelectedBackground = 0,
-                            SelectedCardback = 1,
-                            SelectedTitleId = 0,
-                            TotalEarnedMoney = 0,
-                            WinStreak = 0,
-                            WonRoomsCount = 11,
-                            Xp = 1983
-                        },
-                        new
-                        {
-                            Id = "2",
-                            EatenCardsCount = 0,
-                            EnableOpenMatches = false,
-                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Level = 139,
-                            MaxWinStreak = 0,
-                            Money = 8500,
-                            Name = "anni",
-                            OwnedBackgroundIds = "[10,8]",
-                            OwnedCardBackIds = "[4,9]",
-                            OwnedTitleIds = "[1,3]",
-                            PictureUrl = "https://pbs.twimg.com/profile_images/633661532350623745/8U1sJUc8_400x400.png",
-                            PlayedRoomsCount = 973,
-                            RequestedMoneyAidToday = 4,
-                            SelectedBackground = 0,
-                            SelectedCardback = 4,
-                            SelectedTitleId = 0,
-                            TotalEarnedMoney = 0,
-                            WinStreak = 0,
-                            WonRoomsCount = 192,
-                            Xp = 8062
-                        },
-                        new
-                        {
-                            Id = "3",
-                            EatenCardsCount = 0,
-                            EnableOpenMatches = false,
-                            LastLogin = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Level = 4,
-                            MaxWinStreak = 0,
-                            Money = 3,
-                            Name = "ali",
-                            OwnedBackgroundIds = "[10,8]",
-                            OwnedCardBackIds = "[2,4,8]",
-                            OwnedTitleIds = "[1,3]",
-                            PictureUrl = "https://pbs.twimg.com/profile_images/723902674970750978/p8JWhWxP_400x400.jpg",
-                            PlayedRoomsCount = 6,
-                            RequestedMoneyAidToday = 3,
-                            SelectedBackground = 0,
-                            SelectedCardback = 2,
-                            SelectedTitleId = 0,
-                            TotalEarnedMoney = 0,
-                            WinStreak = 0,
-                            WonRoomsCount = 2,
-                            Xp = 12
                         });
                 });
 
@@ -342,23 +267,6 @@ namespace OlympicWords.Migrations
                     b.HasIndex("FollowingId");
 
                     b.ToTable("UserRelation");
-
-                    b.HasData(
-                        new
-                        {
-                            FollowerId = "0",
-                            FollowingId = "999"
-                        },
-                        new
-                        {
-                            FollowerId = "0",
-                            FollowingId = "9999"
-                        },
-                        new
-                        {
-                            FollowerId = "0",
-                            FollowingId = "99999"
-                        });
                 });
 
             modelBuilder.Entity("OlympicWords.Services.ProviderLink", b =>

@@ -1,0 +1,69 @@
+[
+  {
+    "Name": "Root",
+    "Children": [
+      "Graph",
+      "Thread"
+    ],
+    "Parent": null,
+    "ItemPlayers": [],
+    "Playable": false
+  },
+  {
+    "Name": "Graph",
+    "Children": [
+      "GraphJump"
+    ],
+    "Parent": "Root",
+    "ItemPlayers": [],
+    "Playable": false
+  },
+  {
+    "Name": "GraphJumpCity",
+    "Children": [],
+    "Parent": "GraphJump",
+    "ItemPlayers": [],
+    "Playable": true
+  },
+  {
+    "Name": "GraphJump",
+    "Children": [
+      "GraphJumpCity"
+    ],
+    "Parent": "Graph",
+    "ItemPlayers": [
+      {
+        "Environment": null,
+        "Price": 100,
+        "Id": "criminal",
+        "Level": 0
+      },
+      {
+        "Environment": null,
+        "Price": 300,
+        "Id": "cyborg",
+        "Level": 3
+      },
+      {
+        "Environment": null,
+        "Price": 500,
+        "Id": "skaterFemale",
+        "Level": 6
+      },
+      {
+        "Environment": null,
+        "Price": 500,
+        "Id": "skaterMale",
+        "Level": 7
+      }
+    ],
+    "Playable": false
+  },
+  {
+    "Name": "Thread",
+    "Children": [],
+    "Parent": "Root",
+    "ItemPlayers": [],
+    "Playable": false
+  }
+]

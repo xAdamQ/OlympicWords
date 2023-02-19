@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 public class FillBar : MonoBehaviour
@@ -15,6 +14,7 @@ public class FillBar : MonoBehaviour
         text.text = $"{(int)(percent * 100)}%";
     }
 
+#if ADDRESSABLES
     public void SetHandle(AsyncOperationHandle handle)
     {
         SetFill(0);
@@ -29,4 +29,5 @@ public class FillBar : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
     }
+#endif
 }

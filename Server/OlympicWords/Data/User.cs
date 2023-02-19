@@ -15,6 +15,8 @@ namespace OlympicWords.Data
         public int PlayedRoomsCount { get; set; }
         public int WonRoomsCount { get; set; }
 
+        public float AverageWpm { get; set; }
+
         public int Money { get; set; }
 
         public string Name { get; set; }
@@ -53,6 +55,9 @@ namespace OlympicWords.Data
         public List<int> OwnedCardBackIds { get; set; } = new();
         public List<int> OwnedTitleIds { get; set; } = new();
 
+        public HashSet<String> OwnedItemPlayers { get; set; }
+        public Dictionary<string, string> SelectedItemPlayer { get; set; }
+
         public int SelectedTitleId { get; set; }
         public int SelectedCardback { get; set; }
         public int SelectedBackground { get; set; }
@@ -77,10 +82,33 @@ namespace OlympicWords.Data
         public virtual List<User> Followings { get; set; }
         public virtual List<User> Followers { get; set; }
         //you can't add following somewhere, without follower??
-        
+
         public virtual UserPicture Picture { get; set; }
     }
 }
+
+#region owned classed for json columns
+//they are totally useless, because collections of primitives are not supported by EF
+//you must represent them in the form of entities
+
+public class UserItemPlayers
+{
+    //the fact that these are not hashset/dictionary doesn't matter because they are so small
+    //there are 2 issues: the conversion in the client side, and the memory allocation of the classes
+    public List<StringEntity> Owned { get; set; }
+    public List<StringKvpEntity> Selected { get; set; }
+}
+
+public class StringEntity
+{
+    public required string Value { get; set; }
+}
+public class StringKvpEntity
+{
+    public required string Key { get; set; }
+    public required string Value { get; set; }
+}
+#endregion
 
 namespace OlympicWords.Services
 {

@@ -16,7 +16,7 @@ namespace Shared.Controllers
         /// </summary>
         Task<FullUserInfo> Public(string id);
         Task ToggleFollow(string targetId);
-        Task ToggleOpenMatches();
+        Task SetOpenMatches(bool value);
         Task
 #if !UNITY
             <IActionResult>

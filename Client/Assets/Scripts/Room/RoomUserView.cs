@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 /// <summary>
@@ -33,38 +32,38 @@ public class RoomUserView : MinUserView
             FullUserView.Show(Repository.I.PersonalFullInfo);
         else
         {
-            var oppoFullInfo = EnvBase.I.UserInfos.FirstOrDefault(_ => _.Id == Id);
+            var oppoFullInfo = RootEnv.I.UserInfos.FirstOrDefault(_ => _.Id == Id);
             FullUserView.Show(oppoFullInfo);
         }
     }
 
-    public class Manager : Singleton<Manager>
-    {
-        private async UniTask<RoomUserView> Create(int place, MinUserInfo minUserInfo)
-        {
-            var view =
-                (await Addressables.InstantiateAsync($"roomUserView{place}",
-                    EnvBase.I.Canvas)).GetComponent<RoomUserView>();
+    // public class Manager : Singleton<Manager>
+    // {
+    // private async UniTask<RoomUserView> Create(int place, MinUserInfo minUserInfo)
+    // {
+    //     var view =
+    //         (await Addressables.InstantiateAsync($"roomUserView{place}",
+    //             EnvBase.I.Canvas)).GetComponent<RoomUserView>();
+    //
+    //     view.Init(minUserInfo);
+    //
+    //     return view;
+    // }
 
-            view.Init(minUserInfo);
+    // public List<RoomUserView> RoomUserViews { get; set; }
 
-            return view;
-        }
-
-        public List<RoomUserView> RoomUserViews { get; set; }
-
-        public async void Init()
-        {
-            RoomUserViews = new List<RoomUserView>();
-
-            var oppoPlaceCounter = 1;
-
-            for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
-            {
-                var placeIndex = i == EnvBase.I.MyTurn ? 0 : oppoPlaceCounter++;
-
-                RoomUserViews.Add(await Create(placeIndex, EnvBase.I.UserInfos[i]));
-            }
-        }
-    }
+    // public async void Init()
+    // {
+    //     RoomUserViews = new List<RoomUserView>();
+    //
+    //     var oppoPlaceCounter = 1;
+    //
+    //     for (var i = 0; i < EnvBase.I.UserInfos.Count; i++)
+    //     {
+    //         var placeIndex = i == EnvBase.I.MyTurn ? 0 : oppoPlaceCounter++;
+    //
+    //         RoomUserViews.Add(await Create(placeIndex, EnvBase.I.UserInfos[i]));
+    //     }
+    // }
+    // }
 }

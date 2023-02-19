@@ -9,13 +9,14 @@ namespace OlympicWords.Common
 
         public int RequestedMoneyAidToday { get; set; }
 
-        public int FlipWinCount { get; set; }
-
         public List<int> OwnedTitleIds { get; set; }
 
         public DateTime? LastMoneyAimRequestTime { get; set; }
 
         public List<MinUserInfo> Followers { get; set; }
         public List<MinUserInfo> Followings { get; set; }
+
+        public HashSet<string> OwnedItemPlayers { get; set; }
+        public Dictionary<string, string> SelectedItemPlayer { get; set; }
     }
 }

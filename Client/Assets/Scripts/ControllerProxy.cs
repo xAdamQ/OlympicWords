@@ -38,11 +38,11 @@ public class ControllerProxy<T> : DispatchProxyAsync where T : class, IControlle
         return await NetManager.I.GetAsync<TResult>(address + method.Name, GetQueryParams(method, args));
     }
 
-    private List<(string key, string value)> GetQueryParams(MethodInfo method, object[] args)
+    private static List<(string key, string value)> GetQueryParams(MethodInfo method, IReadOnlyList<object> args)
     {
-        var qParams = new List<(string key, string value)>(args.Length);
+        var qParams = new List<(string key, string value)>(args.Count);
         var methodParams = method.GetParameters();
-        for (var i = 0; i < args.Length; i++)
+        for (var i = 0; i < args.Count; i++)
             qParams[i] = (methodParams[i].Name, args[i].ToString());
 
         return qParams;

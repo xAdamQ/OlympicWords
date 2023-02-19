@@ -42,13 +42,13 @@ namespace OlympicWords.Services
 
             var room = scopeRepo.Room;
             var roomUser = scopeRepo.RoomUser;
+
+            //don't put money penalty, entrance fee is enough
+
             var dataUser = await offlineRepo.GetCurrentUserAsync();
-
-            //dataUser.Money -= room.SurrenderPenalty;
-            //bet money is enough penalty for preventing enter and leave misuse
-
             dataUser.PlayedRoomsCount++;
             await offlineRepo.SaveChangesAsync();
+            //you should get the value first, you can't track empty user
 
             foreach (var ru in room.InRoomUsers.Where(ru => ru != roomUser))
                 await masterHub.SendOrderedAsync(ru, "UserSurrender", roomUser.Id);
@@ -76,10 +76,13 @@ namespace OlympicWords.Services
             userRoomStatus.Wpm = room.Words.Count / finishInterval;
             userRoomStatus.Score = (int)(room.CategoryScoreMultiplier * userRoomStatus.Wpm);
 
+            // var totalWords = dataUser.AverageWpm * dataUser.PlayedRoomsCount;
+
+            dataUser.PlayedRoomsCount++;
+            dataUser.AverageWpm = (dataUser.AverageWpm + userRoomStatus.Wpm) / 2f;
             dataUser.Money += userRoomStatus.EarnedMoney;
             dataUser.Xp += userRoomStatus.Score;
             dataUser.TotalEarnedMoney += userRoomStatus.EarnedMoney;
-            dataUser.PlayedRoomsCount++;
             //todo add long term statistics like top 3 positions count, max and average wpm(no need for graph)
 
             await LevelUp(dataUser);

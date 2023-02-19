@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using OlympicWords.Services.Extensions;
 // using Microsoft.VisualStudio.Threading;
 using Newtonsoft.Json;
+using OlympicWords.Services.Exceptions;
 
 namespace OlympicWords.Services
 {
@@ -14,9 +15,9 @@ namespace OlympicWords.Services
         /// <summary>
         /// after ready, change domain, initial distribute, start 0 player turn
         /// </summary>
-        Task StartRoom();
+        Task ReadyGo();
 
-        IAsyncEnumerable<string[]> DownStreamCharBuffer(CancellationToken cancellationToken);
+        IAsyncEnumerable<string[]> DownStreamCharBuffer(CancellationToken clientCancellationToken);
 
         Task ProcessChar(char chr);
     }
@@ -31,18 +32,20 @@ namespace OlympicWords.Services
         private readonly IFinalizer finalizer;
         private readonly IServerLoop serverLoop;
         private readonly IScopeRepo scopeRepo;
+        private readonly IOfflineRepo offlineRepo;
 
         public Gameplay(IHubContext<RoomHub> masterHub, ILogger<Gameplay> logger,
-            IFinalizer finalizer, IServerLoop serverLoop, IScopeRepo scopeRepo)
+            IFinalizer finalizer, IServerLoop serverLoop, IScopeRepo scopeRepo, IOfflineRepo offlineRepo)
         {
             this.masterHub = masterHub;
             this.logger = logger;
             this.finalizer = finalizer;
             this.serverLoop = serverLoop;
             this.scopeRepo = scopeRepo;
+            this.offlineRepo = offlineRepo;
         }
 
-        public async Task StartRoom()
+        public async Task ReadyGo()
         {
             var room = scopeRepo.Room;
 
@@ -55,13 +58,24 @@ namespace OlympicWords.Services
             foreach (var roomUser in room.RoomUsers)
                 await masterHub.SendOrderedAsync(roomUser, "StartRoomRpc");
 
-#pragma warning disable CS4014
-            Task.Delay(TimeSpan.FromSeconds(1.5f))
-                .ContinueWith(_ => serverLoop.StartGame(room));
-#pragma warning restore CS4014
+            await Task.Delay(TimeSpan.FromSeconds(1.5f));
+            await StartGame();
 
             logger.LogInformation("awaited successfully");
         }
+
+        private async Task StartGame()
+        {
+            var room = scopeRepo.Room;
+
+            room.SetUsersDomain<UserDomain.Room.Active>();
+            logger.LogInformation("all users are active");
+
+            await room.Start(offlineRepo);
+
+            serverLoop.StartGame(room);
+        }
+
 
         //todo limit the sent chars count
         //todo check make sure they are only basic chars, no special ones, you can insert unsupported instead for every char 
@@ -135,16 +149,17 @@ namespace OlympicWords.Services
             }
         }
 
-        public async IAsyncEnumerable<string[]> DownStreamCharBuffer
-            ([EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<string[]> DownStreamCharBuffer(
+            [EnumeratorCancellation] CancellationToken clientCancellationToken)
         {
             var roomUser = scopeRepo.RoomUser;
             var room = scopeRepo.Room;
 
             //send as long as the channel is opened
-            //this token is set by the server, second token is set by the client
-            while (!roomUser.Cancellation.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+            //the first token is set by the server, the second token is set by the client
+            while (!roomUser.Cancellation.IsCancellationRequested && !clientCancellationToken.IsCancellationRequested)
             {
+                // logger.LogInformation("downstream for the player {rooUserId}", roomUser.Id);
                 // Check the cancellation token regularly so that the server will stop
                 // producing items if the client disconnects.
 
@@ -172,10 +187,13 @@ namespace OlympicWords.Services
                 if (!updateBuffer.All(string.IsNullOrEmpty))
                     yield return updateBuffer;
 
-                // Use the cancellationToken in other APIs that accept cancellation
-                // tokens so the cancellation can flow down to them.
-                await Task.Delay(100, cancellationToken);
+                await Task.Delay(100);
             }
+
+            //we don't reach here, probably some silent exception happen above when we close the connection
+            logger.LogInformation
+            ("downstream finished, is server cancelled: {serverCancelled}, is client cancelled {clientCancelled}",
+                roomUser.Cancellation.IsCancellationRequested, clientCancellationToken.IsCancellationRequested);
         }
     }
 }

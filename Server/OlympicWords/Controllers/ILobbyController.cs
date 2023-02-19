@@ -8,8 +8,8 @@ namespace Shared.Controllers
 {
     public interface ILobbyController : IController
     {
-        // Task RequestRandomRoom(int betChoice, int capacityChoice);
-        // Task Ready();
+        Task BuyPlayer(string itemId);
+        Task SelectPlayer(string itemId, string env);
 
         Task MakePurchase(string purchaseData, string sign);
         Task<MatchRequestResult> RequestMatch(string oppoId);
@@ -18,9 +18,5 @@ namespace Shared.Controllers
             (string senderId, bool response);
         Task AskForMoneyAid();
         Task ClaimMoneyAid();
-        Task BuyCardback(int cardbackId);
-        Task BuyBackground(int backgroundId);
-        Task SelectCardback(int cardbackId);
-        Task SelectBackground(int backgroundId);
     }
 }

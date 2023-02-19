@@ -11,23 +11,21 @@ namespace Shared.Controllers
         // Task RequestRandomRoom(int betChoice, int capacityChoice);
         // Task Ready();
 
-#if UNITY
-        Task
-#else
-        void
-#endif
-            SetPowerUp(int powerUp);
+        Task BuyPlayer(string itemId);
+        Task SelectPlayer(string itemId, string env);
 
-        Task MakePurchase(string purchaseData, string sign);
+// #if UNITY
+//         Task
+// #else
+//         void
+// #endif
+//             SetPowerUp(int powerUp);
+
         Task<MatchRequestResult> RequestMatch(string oppoId);
         void CancelChallengeRequest(string oppoId);
         Task<ChallengeResponseResult> RespondChallengeRequest
             (string senderId, bool response);
         Task AskForMoneyAid();
         Task ClaimMoneyAid();
-        Task BuyCardback(int cardbackId);
-        Task BuyBackground(int backgroundId);
-        Task SelectCardback(int cardbackId);
-        Task SelectBackground(int backgroundId);
     }
 }

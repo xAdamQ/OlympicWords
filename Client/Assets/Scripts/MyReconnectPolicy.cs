@@ -3,16 +3,15 @@ using BestHTTP.SignalRCore;
 
 public class MyReconnectPolicy : IRetryPolicy
 {
-    static int MaxRetries = 20;
+    static int MaxRetries = 0;
     int Retries;
 
     public TimeSpan? GetNextRetryDelay(RetryContext context)
     {
         Retries++;
 
-        if (Retries > MaxRetries)
-            return null;
-        else
-            return TimeSpan.FromSeconds(2);
+        if (Retries > MaxRetries) return null;
+
+        return TimeSpan.FromSeconds(2);
     }
 }

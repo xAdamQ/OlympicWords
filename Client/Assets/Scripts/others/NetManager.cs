@@ -32,6 +32,10 @@ public class NetManager : MonoModule<NetManager>
         DontDestroyOnLoad(this);
 
         base.Awake();
+
+#if !UNITY_EDITOR
+        SelectedAddress = "https://wordwar3.azurewebsites.net";
+#endif
     }
 
     public string SelectedAddress;
@@ -157,6 +161,8 @@ public class NetManager : MonoModule<NetManager>
         PlayerPrefs.SetString("activeToken", token);
         PlayerPrefs.SetString("activeProvider", provider.ToString());
 
+        PlayerPrefs.Save();
+
         Repository.I.PersonalFullInfo = await Controllers.User.Personal();
         //current auth is then used to fetch the personal data
 
@@ -186,6 +192,7 @@ public class NetManager : MonoModule<NetManager>
     private void SetToken(ProviderType provider, string token)
     {
         PlayerPrefs.SetString(provider + "Token", token);
+        PlayerPrefs.Save();
     }
 
     [ContextMenu("restart")]

@@ -17,8 +17,8 @@ public class MiniMap : MonoBehaviour
         //todo there is room for performance improvement here
     }
 
-    public void Init(PlayerBase playerBase)
+    public void Init(Player player)
     {
-        playerName.text = EnvBase.I.UserInfos[playerBase.Index].Name;
+        playerName.text = RootEnv.I.UserInfos[player.Index].Name;
     }
 }

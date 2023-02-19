@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.SignalR;
-
 namespace OlympicWords.Services
 {
     public interface IServerLoop
@@ -27,7 +25,7 @@ namespace OlympicWords.Services
 
         #region pending room timout
         private Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
-        private const int PENDING_ROOM_TIMEOUT = 4000;
+        private const int PENDING_ROOM_TIMEOUT = 1 * 1000;
         public void SetupPendingRoomTimeoutIfNotExist(Room room)
         {
             if (PendingRoomCancellations.ContainsKey(room)) return;
@@ -78,7 +76,7 @@ namespace OlympicWords.Services
             using var scope = serviceScopeFactory.CreateScope();
             //this will fail because you don't have scope
             var roomManager = scope.ServiceProvider.GetService<IGameplay>();
-            await roomManager!.StartRoom();
+            await roomManager!.ReadyGo();
         }
         public void CancelForceStart(Room room)
         {
@@ -91,13 +89,6 @@ namespace OlympicWords.Services
         {
             foreach (var roomBot in room.Bots)
                 BotLoop(roomBot, room.CancellationTokenSource.Token);
-
-            room.SetUsersDomain<UserDomain.Room.Active>();
-            logger.LogInformation("all users are active");
-
-            using var scope = serviceScopeFactory.CreateScope();
-            var masterHub = scope.ServiceProvider.GetService<IHubContext<RoomHub>>();
-            room.Start(masterHub);
         }
 
         /// <summary>
@@ -105,7 +96,7 @@ namespace OlympicWords.Services
         /// </summary>
         public void BotLoop(RoomBot roomBot, CancellationToken cancellationToken)
         {
-            const string allChars = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
+            const string ALL_CHARS = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
 
             Task.Factory.StartNew(async () =>
             {
@@ -130,11 +121,11 @@ namespace OlympicWords.Services
                     else
                         chr = StaticRandom.GetRandom(100) > Room.WRONG_CHAR_PROB
                             ? room.Text[roomBot.TextPointer]
-                            : allChars[StaticRandom.GetRandom(allChars.Length)];
+                            : ALL_CHARS[StaticRandom.GetRandom(ALL_CHARS.Length)];
 
                     await gameplay.ProcessChar(chr);
 
-                    await Task.Delay(StaticRandom.GetRandom(Room.BOT_TIME_MIN, Room.BOT_TIME_MAX), cancellationToken);
+                    await Task.Delay(StaticRandom.GetRandom(roomBot.BotTimeMin, roomBot.BotTimeMax), cancellationToken);
                 }
             });
         }

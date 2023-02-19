@@ -11,6 +11,7 @@ public static class Controllers
         Lobby = ControllerProxy<ILobbyController>.CreateProxy();
 #else
         User = new UserController();
+        Lobby = new LobbyController();
 #endif
     }
 

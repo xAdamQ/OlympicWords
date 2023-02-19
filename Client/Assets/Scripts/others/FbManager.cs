@@ -137,6 +137,7 @@ public static class FbManager
         if (PlayerPrefs.HasKey("fbToken"))
         {
             PlayerPrefs.DeleteKey("fbToken");
+            PlayerPrefs.Save();
             return true;
         }
 

@@ -1,9 +1,8 @@
-using Alachisoft.NCache.EntityFrameworkCore;
+using EFCoreSecondLevelCacheInterceptor;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Lib.AspNetCore.ServerSentEvents;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Azure.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using OlympicWords.Filters;
@@ -11,7 +10,6 @@ using OlympicWords.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//services
 var configuration = builder.Configuration;
 
 var services = builder.Services;
@@ -32,18 +30,40 @@ services.AddControllers(opt => { opt.Filters.Add<DefaultActionFilter>(); })
 
 services.AddServerSentEvents();
 
-services.AddDbContext<MasterContext>(options =>
-{
-    NCacheConfiguration.Configure("default", DependencyType.SqlServer);
-    NCacheConfiguration.ConfigureLogger(logLevel: LogLevel.Information);
-    var connection = new SqlConnection(configuration.GetConnectionString("Azure"));
-    // var credential = new DefaultAzureCredential();
-    // var token = credential.GetToken(new TokenRequestContext(new[] { "https://wordwar.database.windows.net/.default" }));
-    // connection.AccessToken = token.Token;
-    options.UseSqlServer(connection, opt => { opt.CommandTimeout(30); });
-    options.EnableSensitiveDataLogging();
-});
+#region databse
+const string PROVIDER_NAME = "InMemoryDefault";
 
+// services.AddEFSecondLevelCache(options =>
+// {
+//     // options.UseEasyCachingCoreProvider(PROVIDER_NAME, isHybridCache: false);
+//     options.UseMemoryCacheProvider();
+//     options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
+//     options.DisableLogging(false);
+// });
+
+services.AddEFSecondLevelCache(opt => opt
+    .UseEasyCachingCoreProvider(PROVIDER_NAME, isHybridCache: false)
+    .DisableLogging()
+    .CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30)));
+
+// More info: https://easycaching.readthedocs.io/en/latest/In-Memory/
+services.AddEasyCaching(options => options.UseInMemory(configuration, PROVIDER_NAME));
+
+services.AddDbContext<MasterContext>((serviceProvider, options) =>
+{
+    var connection = new SqlConnection(configuration.GetConnectionString("Azure"));
+
+    options.UseSqlServer(connection, opt => opt
+        .CommandTimeout(30)
+        .EnableRetryOnFailure());
+
+    options.EnableSensitiveDataLogging();
+
+    options.AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>());
+});
+#endregion
+
+#region app services
 services.AddScoped<IGameplay, Gameplay>();
 services.AddScoped<IOfflineRepo, OfflineRepo>();
 services.AddScoped<IFinalizer, Finalizer>();
@@ -54,6 +74,7 @@ services.AddScoped<SecurityManager>();
 
 services.AddSingleton(new PersistantData());
 services.AddSingleton<IServerLoop, ServerLoop>();
+#endregion
 
 services.AddAuthentication(MasterAuthHandler.PROVIDER_NAME)
     .AddScheme<MasterAuthSchemeOptions, MasterAuthHandler>(MasterAuthHandler.PROVIDER_NAME, null);
@@ -84,7 +105,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseEndpoints(endpoint => endpoint.MapHub<RoomHub>("/connect"));
+
+app.MapHub<RoomHub>("/connect");
 
 app.MapServerSentEvents("/updates");
 

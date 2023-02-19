@@ -3,6 +3,7 @@ using OlympicWords.Common;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol;
+using OlympicWords.Services.Exceptions;
 using OlympicWords.Services.Helpers;
 using static System.Threading.Tasks.Task;
 
@@ -110,11 +111,10 @@ namespace OlympicWords.Services
             // }
 
             var betChoiceString = Context.GetHttpContext()!.Request.Query["betChoice"];
-            var capacityChoiceString = Context.GetHttpContext()!.Request.Query["capacityChoice"];
+            var env = Context.GetHttpContext()!.Request.Query["env"];
 
-            if (int.TryParse(betChoiceString, out var betChoice) &&
-                int.TryParse(capacityChoiceString, out var capacityChoice))
-                await matchMaker.RequestRandomRoom(betChoice, capacityChoice);
+            if (int.TryParse(betChoiceString, out var betChoice))
+                await matchMaker.RequestRandomRoom(betChoice, env);
             else
             {
                 Context.Abort();
@@ -157,8 +157,7 @@ namespace OlympicWords.Services
         public async IAsyncEnumerable<string[]> DownStreamCharBuffer
             ([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var asyncCoroutine = gameplay.DownStreamCharBuffer(cancellationToken);
-            await foreach (var item in asyncCoroutine.WithCancellation(cancellationToken))
+            await foreach (var item in gameplay.DownStreamCharBuffer(cancellationToken))
                 yield return item;
         }
 

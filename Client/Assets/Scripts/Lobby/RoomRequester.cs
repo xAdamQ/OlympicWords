@@ -4,38 +4,41 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
-public class RoomRequester : MonoBehaviour
+public abstract class RoomRequester : EnvObject
 {
     [SerializeField] private ChoiceButton capacityChoiceButton;
     [SerializeField] private TMP_Text betText, ticketText;
 
     private void Awake()
     {
-        var bet = EnvBase.Bets[transform.GetSiblingIndex()];
+        var bet = RootEnv.Bets[transform.GetSiblingIndex()];
 
         betText.text = bet.ToString();
-        ticketText.text = (bet / 11f).ToString();
+        ticketText.text = (bet / 11f).ToString(CultureInfo.InvariantCulture);
     }
 
-    public async void RequestRandomRoom(int betChoice)
+    public async void RequestRandomRoom()
     {
+        var betChoice = RootEnv.GetEnvIndex(GenericEnvType);
+
+#if ADDRESSABLES
         if (betChoice > 0)
         {
-            var handle = Addressables.DownloadDependenciesAsync("Env" + betChoice);
+            var handle = Addressables.DownloadDependenciesAsync(EnvName);
             await BlockingOperationManager.Start(handle, "the level is downloading");
         }
+#endif
 
-        if (Repository.I.PersonalFullInfo.Money < EnvBase.Bets[betChoice])
+        if (Repository.I.PersonalFullInfo.Money < RootEnv.Bets[betChoice])
         {
             Toast.I.Show(Translatable.GetText("no_money"));
             return;
         }
 
-        LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
-        await SwitchScene(betChoice);
+        LastRequest = (GenericEnvName, betChoice);
+        await SwitchScene();
 
         // UniTask.Create(async () =>
         // {
@@ -51,16 +54,32 @@ public class RoomRequester : MonoBehaviour
         //this is shown even if the room is started, it's removed before game start directly
     }
 
-    private async UniTask SwitchScene(int betChoice)
+    private async UniTask SwitchScene()
     {
-        LobbyController.DestroyModule();
+        LobbyCoordinator.DestroyModule();
 
         BlockingPanel.Show("loading");
+
         await SceneManager.LoadSceneAsync("RoomBase");
-        var envName = "Env" + betChoice;
-        await SceneManager.LoadSceneAsync(envName, LoadSceneMode.Additive);
+        await SceneManager.LoadSceneAsync(GenericEnvName, LoadSceneMode.Additive);
+
         BlockingPanel.Hide();
     }
 
-    public static (int capacityChoice, int betChoice) LastRequest;
+    public static (string env, int betChoice) LastRequest;
+
+    public void OpenShop()
+    {
+        UniTask.Create(async () =>
+        {
+            var shop = await Addressables.InstantiateAsync(AddressManager.I.GetShop(GenericEnvName),
+                GameObject.FindWithTag("WorldCanvas").transform);
+            shop.GetComponent<Shop>().Init(GenericEnvName);
+        });
+    }
+}
+
+public abstract class RoomRequester<TEnv> : RoomRequester where TEnv : RootEnv
+{
+    protected override Type GenericEnvType { get; } = typeof(TEnv);
 }

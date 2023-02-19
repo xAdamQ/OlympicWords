@@ -1,11 +1,10 @@
+#if ADDRESSABLES
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
-public class Background : MonoModule<Background>
+vpublic class Background : MonoModule<Background>
 {
     /// <summary>
     /// uses RoomController
@@ -27,3 +26,4 @@ public class Background : MonoModule<Background>
             .Forget(e => throw e);
     }
 }
+#endif

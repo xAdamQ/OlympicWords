@@ -11,14 +11,14 @@ public class MyBestHttpLogger : ILogger
 
     public ILogOutput Output
     {
-        get { return this._output; }
+        get { return _output; }
         set
         {
-            if (this._output != value)
+            if (_output != value)
             {
-                if (this._output != null)
-                    this._output.Dispose();
-                this._output = value;
+                if (_output != null)
+                    _output.Dispose();
+                _output = value;
             }
         }
     }
@@ -39,7 +39,7 @@ public class MyBestHttpLogger : ILogger
         FormatEx = "[{0}] \n\nEx [{1}]: {2} - \n\nMessage: {3}  \n\nStackTrace: {4}";
 
         Level = UnityEngine.Debug.isDebugBuild ? Loglevels.Warning : Loglevels.Error;
-        this.Output = new UnityOutput();
+        Output = new UnityOutput();
     }
 
     public void Verbose(string division, string msg, LoggingContext context1 = null, LoggingContext context2 = null,
@@ -49,7 +49,7 @@ public class MyBestHttpLogger : ILogger
         {
             try
             {
-                this.Output.Write(Loglevels.All, string.Format(FormatVerbose, GetFormattedTime(), division, msg));
+                Output.Write(Loglevels.All, string.Format(FormatVerbose, GetFormattedTime(), division, msg));
             }
             catch
             {
@@ -64,7 +64,7 @@ public class MyBestHttpLogger : ILogger
         {
             try
             {
-                this.Output.Write(Loglevels.Information, string.Format(FormatInfo, GetFormattedTime(), division, msg));
+                Output.Write(Loglevels.Information, string.Format(FormatInfo, GetFormattedTime(), division, msg));
             }
             catch
             {
@@ -79,7 +79,7 @@ public class MyBestHttpLogger : ILogger
         {
             try
             {
-                this.Output.Write(Loglevels.Warning, string.Format(FormatWarn, GetFormattedTime(), division, msg));
+                Output.Write(Loglevels.Warning, string.Format(FormatWarn, GetFormattedTime(), division, msg));
             }
             catch
             {
@@ -94,7 +94,7 @@ public class MyBestHttpLogger : ILogger
         {
             try
             {
-                this.Output.Write(Loglevels.Error, string.Format(FormatErr, GetFormattedTime(), division, msg));
+                Output.Write(Loglevels.Error, string.Format(FormatErr, GetFormattedTime(), division, msg));
             }
             catch
             {
@@ -132,7 +132,7 @@ public class MyBestHttpLogger : ILogger
                     exceptionMessage = sb.ToString();
                 }
 
-                this.Output.Write(Loglevels.Exception, string.Format(FormatEx,
+                Output.Write(Loglevels.Exception, string.Format(FormatEx,
                     GetFormattedTime(),
                     division,
                     msg,

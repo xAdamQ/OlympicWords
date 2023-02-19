@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OlympicWords.Data;
 using OlympicWords.Services;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Tests;
-
 public class UnitTest1
 {
     private readonly ITestOutputHelper testOutputHelper;
@@ -61,7 +61,7 @@ public class UnitTest1
     [Fact]
     public async Task TestCreateFillers()
     {
-        var room = new Room(0, 0);
+        var room = new Room(0, OfflineRepo.GameConfig.OrderedEnvs.First());
         room.Text =
             "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes";
 
@@ -108,7 +108,7 @@ public class UnitTest1
     [Fact]
     public async Task TestProcessChar()
     {
-        var room = new Room(0, 0);
+        var room = new Room(0, OfflineRepo.GameConfig.OrderedEnvs.First());
         room.Text = "i do well in school and people think i am smart";
 
         // "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes";
@@ -151,7 +151,7 @@ public class UnitTest1
         f.Setup(x => x.FinalizeUser()).Callback(() => testOutputHelper.WriteLine("finalize"));
 
         var gp = new Gameplay(new Mock<IHubContext<RoomHub>>().Object, new Mock<ILogger<Gameplay>>().Object,
-            f.Object, new Mock<IServerLoop>().Object, sr.Object);
+            f.Object, new Mock<IServerLoop>().Object, sr.Object, new Mock<IOfflineRepo>().Object);
 
         var mm = new MatchMaker(new Mock<IHubContext<RoomHub>>().Object, or.Object,
             sr.Object, new Mock<IGameplay>().Object, new Mock<IServerLoop>().Object,
@@ -163,5 +163,27 @@ public class UnitTest1
             await gp.ProcessChar(chr);
 
         f.Verify(mock => mock.FinalizeUser(), Times.Once());
+    }
+
+    [Fact]
+    public void TestBotSpeed()
+    {
+        var users = new List<User>
+        {
+            new()
+            {
+                AverageWpm = 33,
+            },
+            new()
+            {
+                AverageWpm = 50,
+            },
+        };
+
+        var room = new Room(0, OfflineRepo.GameConfig.OrderedEnvs.First());
+        // room.SetBotSpeed(users);
+
+        // Assert.Equal(room.BotTimeMin, 222);
+        // Assert.Equal(room.BotTimeMax, 413);
     }
 }

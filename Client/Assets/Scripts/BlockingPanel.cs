@@ -1,13 +1,9 @@
 using System;
-using System.Collections;
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 public class BlockingPanel : MonoBehaviour
@@ -21,14 +17,16 @@ public class BlockingPanel : MonoBehaviour
 
     private static TweenerCore<Quaternion, Vector3, QuaternionOptions> animTween;
 
+#if ADDRESSABLES
     public static void Show(AsyncOperationHandle handle, string message = null)
     {
         ShowBase(message);
         i.fillBar.SetHandle(handle);
-
+    
         i.waitImage.gameObject.SetActive(false);
         i.fillBar.gameObject.SetActive(true);
     }
+#endif
 
     public static void Show(string message = null, Action dismissButtonAction = null)
     {

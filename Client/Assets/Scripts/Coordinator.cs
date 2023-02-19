@@ -3,6 +3,7 @@ using BestHTTP;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class Coordinator : MonoModule<Coordinator>
 {
@@ -24,6 +25,31 @@ public class Coordinator : MonoModule<Coordinator>
         }
     }
 
+
+    [ContextMenu("TestLocators")]
+    private async UniTask TestLocators()
+    {
+        // var l = await Addressables.LoadResourceLocationsAsync("GraphJump");
+        // foreach (var resourceLocation in l)
+        // {
+        //     Debug.Log(JsonConvert.SerializeObject(resourceLocation, Formatting.Indented));
+        // }
+
+        // Debug.Log(JsonUtility.ToJson(Settings));
+
+        // Debug.Log(JsonConvert.SerializeObject(Settings,
+        // new JsonSerializerSettings
+        // {
+        // ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        // }));
+
+
+        // Settings.OnDataBuilderComplete += (settings, builder, arg3) => { Debug.Log("builder complete"); };
+
+        // List<AddressableAssetEntry> entries = new();
+        // Settings.GetAllAssets(entries, true);
+    }
+
     public ScopeReferences References;
 
     public Transform canvas;
@@ -42,6 +68,8 @@ public class Coordinator : MonoModule<Coordinator>
 #endif
 
         HTTPManager.Logger = new MyBestHttpLogger();
+
+        TestLocators().Forget(e => throw e);
     }
 
     public void Start()

@@ -20,7 +20,8 @@ public class LangSelector : MonoModule<LangSelector>
         langText.text = choice == 0 ? "عربي" : "Enlgish";
         
         PlayerPrefs.SetInt("lang", choice);
-        
+        PlayerPrefs.Save();
+
         Translatable.CurrentLanguage = (Language)choice;
     }
 }

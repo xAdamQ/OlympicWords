@@ -1,11 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 using System.Linq.Expressions;
 using System.Text.Json;
 using OlympicWords.Data;
@@ -20,7 +16,6 @@ namespace OlympicWords.Services
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserPicture> UserPictures { get; set; }
-        // public DbSet<UserRelation> UserRelations { get; set; }
         public DbSet<ProviderLink> ExternalIds { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -31,8 +26,125 @@ namespace OlympicWords.Services
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            #region learning notes
+            modelBuilder.Entity<User>()
+                .Property(b => b.OwnedItemPlayers)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                    v => JsonSerializer.Deserialize<HashSet<string>>(v, JsonSerializerOptions.Default));
 
+            modelBuilder.Entity<User>()
+                .Property(b => b.SelectedItemPlayer)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                    v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, JsonSerializerOptions.Default));
+
+            SetMaxLength(modelBuilder);
+
+            modelBuilder.Entity<ProviderLink>()
+                .HasOne(u => u.User)
+                .WithMany(u => u.Providers)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserPicture>()
+                .HasOne(u => u.User)
+                .WithOne(u => u.Picture)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<UserPicture>()
+                .HasKey(p => p.UserId);
+
+            //user relations
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Followers)
+                .WithMany(u => u.Followings)
+                .UsingEntity<UserRelation>(
+                    userRelation => userRelation
+                        .HasOne(r => r.Follower)
+                        .WithMany(u => u.FollowingRelations)
+                        .HasForeignKey(r => r.FollowerId),
+                    userRelation => userRelation
+                        .HasOne(r => r.Following)
+                        .WithMany(u => u.FollowerRelations)
+                        .HasForeignKey(r => r.FollowingId),
+                    userRelation =>
+                        userRelation.HasKey(r => new { r.FollowerId, r.FollowingId }));
+
+            IntListConversion(modelBuilder);
+
+            Seeder.SeedData(modelBuilder);
+
+            #region owned types tries
+            //this is bad practically and performance wise
+            // modelBuilder.Entity<User>()
+            //     .OwnsOne(u => u.ItemPlayers, navBuilder =>
+            //     {
+            //         navBuilder.ToJson();
+            //         navBuilder.OwnsMany(i => i.Owned);
+            //         navBuilder.OwnsMany(i => i.Selected);
+            //     });
+
+            //this is not supported!
+            // modelBuilder.Entity<User>().OwnsOne(u => u.OwnedPlayers, navBuilder => navBuilder.ToJson());
+            // modelBuilder.Entity<User>().OwnsOne(u => u.SelectedPlayers, navBuilder => navBuilder.ToJson());
+
+            // modelBuilder.Entity<UserItemPlayers>().HasData(
+            //     new
+            //     {
+            //         OwnerId = "999",
+            //         Owned = new HashSet<string> { "criminal" },
+            //         Selected = new Dictionary<string, string> { { "GraphCityJump", "criminal" } },
+            //     },
+            //     new
+            //     {
+            //         OwnerId = "9999",
+            //         Owned = new HashSet<string> { "criminal" },
+            //         Selected = new Dictionary<string, string> { { "GraphCityJump", "criminal" } },
+            //     },
+            //     new
+            //     {
+            //         OwnerId = "9999",
+            //         Owned = new HashSet<string> { "criminal" },
+            //         Selected = new Dictionary<string, string> { { "GraphCityJump", "criminal" } },
+            //     }
+            // );
+
+
+            // modelBuilder.Entity<User>().OwnsOne(u => u.SelectedPlayers,
+            // ownedNavigationBuilder => { ownedNavigationBuilder.ToJson(); });
+
+            // .HasData(
+            //     new
+            //     {
+            //         Id = "999",
+            //         SelectedPlayers = new Dictionary<string, string>
+            //             { { "GraphCityJump", OfflineRepo.ItemPlayers[0].Id } }
+            //     },
+            // new
+            // {
+            //     Id = "9999",
+            //     SelectedPlayers = new Dictionary<string, string>
+            //         { { "GraphCityJump", OfflineRepo.ItemPlayers[0].Id } }
+            // },
+            // new
+            // {
+            //     Id = "99999",
+            //     SelectedPlayers = new Dictionary<string, string>
+            //         { { "GraphCityJump", OfflineRepo.ItemPlayers[0].Id } }
+            // }
+            // );
+
+            // modelBuilder.Entity<User>(u =>
+            // {
+            //     u.HasData(Seeder.bot999);
+            //
+            //     u.OwnsOne(uu => uu.OwnedPlayers, navBuilder => { navBuilder.ToJson(); })
+            //         .HasData(
+            //             new { Id = "999", OwnedPlayers = new List<string> { OfflineRepo.ItemPlayers[0].Id } },
+            //             new { Id = "9999", OwnedPlayers = new List<string> { OfflineRepo.ItemPlayers[0].Id } },
+            //             new { Id = "99999", OwnedPlayers = new List<string> { OfflineRepo.ItemPlayers[0].Id } }
+            //         );
+            // });
+            #endregion
+            #region learning notes
             // modelBuilder.Entity<DisplayUser>(); this meas that I included this type in the database creation
             //despite it's not mentioned in a DbSet or explored by nav prop
 
@@ -60,100 +172,7 @@ namespace OlympicWords.Services
             //it's the opposite of the ignored prop
 
             //I will use the value converter to create the comma separated id I want!
-
             #endregion
-
-            SetMaxLength(modelBuilder);
-
-            // modelBuilder.Entity<UserRelation>()
-            // .HasKey(r => new { r.FollowerId, r.FollowingId });
-
-            modelBuilder.Entity<ProviderLink>()
-                .HasOne(u => u.User)
-                .WithMany(u => u.Providers)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<UserPicture>()
-                .HasOne(u => u.User)
-                .WithOne(u => u.Picture)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<UserPicture>()
-                .HasKey(p => p.UserId);
-
-            // .OnDelete(DeleteBehavior.Cascade);
-
-            #region pathetic tries
-
-            // modelBuilder.Entity<UserRelation>().Property(u => u.FollowerId).HasMaxLength(64);
-            // modelBuilder.Entity<UserRelation>().Property(u => u.FollowingId).HasMaxLength(64);
-            //
-            // modelBuilder.Entity<UserRelation>().HasKey(_ => new { _.FollowerId, _.FollowingId });
-
-            // modelBuilder.Entity<UserRelation>()
-            //     .HasOne(u => u.Follower)
-            //     .WithMany(u => u.Followers)
-            //     .HasForeignKey(u => u.FollowerId)
-            //     .OnDelete(DeleteBehavior.Restrict);
-            // // fluent api is harder then explicit sql?
-            //
-            // modelBuilder.Entity<UserRelation>()
-            //     .HasOne(u => u.Following)
-            //     .WithMany()
-            //     .HasForeignKey(u => u.FollowingId);
-            //
-            // modelBuilder.Entity<UserRelation>()
-            //     .HasKey(u => new { u.FollowerId, u.FollowingId });
-
-
-            // modelBuilder.Entity<User>()
-            //     .HasMany(u => u.Followers)
-            //     .WithMany(u => u.Following)
-            //     .UsingEntity<UserRelation>();
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Followers)
-                .WithMany(u => u.Followings)
-                .UsingEntity<UserRelation>(
-                    userRelation => userRelation
-                        .HasOne(r => r.Follower)
-                        .WithMany(u => u.FollowingRelations)
-                        .HasForeignKey(r => r.FollowerId),
-                    userRelation => userRelation
-                        .HasOne(r => r.Following)
-                        .WithMany(u => u.FollowerRelations)
-                        .HasForeignKey(r => r.FollowingId),
-                    userRelation =>
-                        userRelation.HasKey(r => new { r.FollowerId, r.FollowingId }));
-
-            //many to many with no 
-            // modelBuilder.Entity<User>().Property(u => u.XP).HasConversion(
-            //     v => v + "xp",
-            //     v => int.Parse(v.Remove(v.Length - 2)));
-            //store xp as string formatted 123xp and deserialize it
-
-            // modelBuilder.Entity<User>().Property(u => u.Wins).HasConversion<string>();
-            //predefined conversion
-            //or change column type
-
-            // var c = new ValueConverter<int, char>(
-            //     v => (char) v,
-            //     v => (int) v
-            // );
-            //for converter reuse
-
-            // var c = new ValueConverter<int, string>(
-            //     v => v.ToString(),
-            //     v => int.Parse(v),
-            //     new ConverterMappingHints(size: 12, precision: 7) //you can override these on the property 
-            // );
-            //mapping hints
-
-            #endregion
-
-            IntListConversion(modelBuilder);
-
-            Seeder.SeedData(modelBuilder);
         }
 
         private void SetMaxLength(ModelBuilder modelBuilder)
@@ -164,10 +183,6 @@ namespace OlympicWords.Services
             foreach (var property in stringProps)
                 property.SetMaxLength(128);
             //todo check if this is right set the string max length for all properties globally
-
-            // foreach (var property in stringProps)
-            //     property.AsProperty().Builder.HasMaxLength(128, ConfigurationSource.Convention);
-            // //set string props maxlength as 128
 
             modelBuilder.Entity<User>().Property(u => u.PictureUrl).HasMaxLength(256);
 
@@ -213,6 +228,56 @@ namespace OlympicWords.Services
 
             modelBuilder.Entity<User>().Property(u => u.OwnedTitleIds)
                 .HasConversion(intListConverter, intListToStringComparer);
+        }
+        private void StringListConversion(ModelBuilder modelBuilder)
+        {
+            Expression<Func<List<string>, List<string>, bool>> equalsExpression =
+                (c1, c2) => c1.SequenceEqual(c2);
+            Expression<Func<List<string>, int>> hashCodeExpression = arr =>
+                ((IStructuralEquatable)arr).GetHashCode(EqualityComparer<string>.Default);
+
+            var stringListToStringComparer = new ValueComparer<List<string>>(
+                equalsExpression,
+                hashCodeExpression,
+                c => c.ToList() //this is not used, because taking the snapshot doesn't have anything customized 
+            );
+
+            Expression<Func<List<string>, string>> serializeStringListExpression =
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null);
+            Expression<Func<string, List<string>>> deserializeStringListExpression =
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null);
+
+            var intListConverter = new ValueConverter<List<string>, string>(serializeStringListExpression,
+                deserializeStringListExpression);
+
+            // modelBuilder.Entity<User>().Property(u => u.OwnedPlayers)
+            // .HasConversion(intListConverter, stringListToStringComparer);
+        }
+        private void StringStringDicConversion(ModelBuilder modelBuilder)
+        {
+            Expression<Func<Dictionary<string, string>, Dictionary<string, string>, bool>> equalsExpression =
+                (c1, c2) => c1.SequenceEqual(c2);
+            Expression<Func<Dictionary<string, string>, int>> hashCodeExpression =
+                dic => JsonSerializer.Serialize(dic, (JsonSerializerOptions)null).GetHashCode();
+
+            var comparer = new ValueComparer<Dictionary<string, string>>(
+                equalsExpression,
+                hashCodeExpression,
+                c => c.ToDictionary(x => x.Key, x => x.Value)
+                //this is not used, because taking the snapshot doesn't have anything customized 
+            );
+
+            
+            Expression<Func<Dictionary<string, string>, string>> serializeExpression =
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null);
+            Expression<Func<string, Dictionary<string, string>>> deserializeExpression =
+                v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions)null);
+
+            var converter = new ValueConverter<Dictionary<string, string>, string>(serializeExpression,
+                deserializeExpression);
+         
+            // modelBuilder.Entity<User>().Property(u => u.SelectedPlayers)
+            // .HasConversion(converter, comparer);
         }
     }
 }

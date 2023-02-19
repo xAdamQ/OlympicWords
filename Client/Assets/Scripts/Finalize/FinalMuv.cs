@@ -2,12 +2,11 @@ using Basra.Common;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class FinalMuv : MinUserView
 {
-    private PlayerBase player;
+    private Player player;
 
     [SerializeField] protected TMP_Text
         earnedMoneyText,
@@ -19,14 +18,14 @@ public class FinalMuv : MinUserView
 
     private FullUserInfo fullUserInfo;
 
-    public static FinalMuv Create(FullUserInfo fullUserInfo, PlayerBase player, Transform parent)
+    public static FinalMuv Create(FullUserInfo fullUserInfo, Player player, Transform parent)
     {
         var finalMuv = Instantiate(Finalizer.I.FinalMuvPrefab, parent).GetComponent<FinalMuv>();
         finalMuv.Init(fullUserInfo, player);
         return finalMuv;
     }
 
-    private void Init(FullUserInfo fullUserInfo, PlayerBase player)
+    private void Init(FullUserInfo fullUserInfo, Player player)
     {
         this.player = player;
         Init((MinUserInfo)fullUserInfo);
@@ -56,7 +55,7 @@ public class FinalMuv : MinUserView
 
     private void UpdateWpm()
     {
-        var timeInterval = (Time.time - player.startTime) / 60f;
+        var timeInterval = (Time.time - player.StartTime) / 60f;
         WpmText.text = (player.WordIndex / timeInterval).ToString("f2");
     }
 

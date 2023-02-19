@@ -16,6 +16,7 @@ namespace OlympicWords.Services.Helpers
                 Name = u.Name,
                 PictureUrl = u.PictureUrl,
                 WonRoomsCount = u.WonRoomsCount,
+                AverageWpm = u.AverageWpm,
                 LastMoneyAimRequestTime = u.LastMoneyAimRequestTime,
                 MoneyAimTimePassed = u.LastMoneyAimRequestTime == null
                     ? null
@@ -32,6 +33,7 @@ namespace OlympicWords.Services.Helpers
                 Xp = u.Xp,
                 MaxWinStreak = u.MaxWinStreak,
                 RequestedMoneyAidToday = u.RequestedMoneyAidToday,
+                // OwnedPlayers = u.OwnedPlayers,
                 EnableOpenMatches = u.EnableOpenMatches,
                 Followers = u.Followers.Select(f => new MinUserInfo
                 {
@@ -50,6 +52,7 @@ namespace OlympicWords.Services.Helpers
                 Name = u.Name,
                 PlayedRoomsCount = u.PlayedRoomsCount,
                 WonRoomsCount = u.WonRoomsCount,
+                AverageWpm = u.AverageWpm,
                 EatenCardsCount = u.EatenCardsCount,
                 WinStreak = u.WinStreak,
                 OwnedBackgroundsIds = u.OwnedBackgroundIds,

@@ -62,7 +62,7 @@ public class FullUserView : MinUserView
 
     private void Init(FullUserInfo fullUserInfo)
     {
-        this.FullUserInfo = fullUserInfo;
+        FullUserInfo = fullUserInfo;
 
         if (fullUserInfo is PersonalFullUserInfo)
         {
@@ -72,7 +72,7 @@ public class FullUserView : MinUserView
         {
             UpdateFriendShipView();
             challengeButton.GetComponent<Button>().interactable = fullUserInfo
-                .EnableOpenMatches && EnvBase.I == null;
+                .EnableOpenMatches && RootEnv.I == null;
         }
 
         base.Init(fullUserInfo);
@@ -90,7 +90,7 @@ public class FullUserView : MinUserView
 
     public void Challenge()
     {
-        if (Repository.I.PersonalFullInfo.Money < EnvBase.MinBet)
+        if (Repository.I.PersonalFullInfo.Money < RootEnv.MinBet)
             Toast.I.Show(Translatable.GetText("no_money"));
 
         UniTask.Create(async () =>

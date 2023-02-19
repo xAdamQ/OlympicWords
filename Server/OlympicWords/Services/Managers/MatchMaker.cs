@@ -7,7 +7,7 @@ namespace OlympicWords.Services
 {
     public interface IMatchMaker
     {
-        Task RequestRandomRoom(int category, int capacityChoice);
+        Task RequestRandomRoom(int category, string env);
 
         /// <summary>
         /// called by timeout
@@ -16,16 +16,12 @@ namespace OlympicWords.Services
 
         Task MakeRoomUserReadyRpc();
         void RemovePendingDisconnectedUser(RoomUser roomUser);
-
-        // Task<MatchRequestResult> RequestMatch(ActiveUser activeUser, string oppoId);
-        // void CancelChallengeRequest(ActiveUser activeUser);
-        // Task<ChallengeResponseResult> RespondChallengeRequest(ActiveUser activeUser,
-        // bool response, string sender);
     }
 
     public class RoomPrepareResponse
     {
         public List<FullUserInfo> TurnSortedUsersInfo { get; set; }
+        public List<string> SelectedItemPlayers { get; set; }
         public int TurnIndex { get; set; }
         public string Text { get; set; }
         public int Seed { get; set; }
@@ -53,13 +49,13 @@ namespace OlympicWords.Services
             this.logger = logger;
         }
 
-        public async Task RequestRandomRoom(int category, int capacityChoice)
+        public async Task RequestRandomRoom(int category, string env)
         {
             //I set user domain fast because this will await sometime and enable the user to call
             //twice this method without domain change
             scopeRepo.MarkUserPending();
 
-            if (!category.IsInRange(Room.Bets.Length) || !capacityChoice.IsInRange(Room.Capacities.Length))
+            if (!category.IsInRange(Room.Bets.Length) || !OfflineRepo.GameConfig.OrderedEnvs.Contains(env))
             {
                 scopeRepo.RemovePendingUser();
                 throw new Exceptions.BadUserInputException();
@@ -73,7 +69,7 @@ namespace OlympicWords.Services
                 throw new Exceptions.BadUserInputException();
             }
 
-            var room = scopeRepo.TakePendingRoom(category, capacityChoice) ?? MakeRoom(category, capacityChoice);
+            var room = scopeRepo.TakePendingRoom(category, env) ?? MakeRoom(category, env);
             var roomUser = CreateRoomUser(room);
             room.RoomUsers.Add(roomUser);
             room.RoomActors.Add(roomUser);
@@ -130,9 +126,9 @@ namespace OlympicWords.Services
             await PrepareRoom(room);
         }
 
-        private Room MakeRoom(int capacityChoice, int category)
+        private Room MakeRoom(int capacityChoice, string env)
         {
-            return scopeRepo.AddRoom(new Room(capacityChoice, category));
+            return scopeRepo.AddRoom(new Room(capacityChoice, env));
         }
 
         public async Task MakeRoomUserReadyRpc()
@@ -156,20 +152,23 @@ namespace OlympicWords.Services
             SetFillers(room);
 
             var userIds = room.RoomActors.Select(ru => ru.Id).ToList();
+
             var users = await offlineRepo.GetUsersAsync(userIds);
 
             users.ForEach(u => u.Money -= room.Bet);
 
-            var fullUsersInfos = users.Select(Mapper.UserToFullFunc).ToList();
+            var turnSortedUsers = room.RoomActors
+                .Join(users, actor => actor.Id, user => user.Id, (_, user) => user)
+                .ToList();
 
-            var turnSortedUsersInfo = room.RoomActors.Join(fullUsersInfos, actor => actor.Id,
-                info => info.Id, (_, info) => info).ToList();
+            var usersInfos = turnSortedUsers.Select(Mapper.UserToFullFunc).ToList();
+            var selectedItemPlayers = turnSortedUsers.Select(u => u.SelectedItemPlayer[room.Env]).ToList();
 
             room.RoomUsers.ForEach(ru => scopeRepo.RemovePendingUser(ru.Id));
 
             await offlineRepo.SaveChangesAsync();
             serverLoop.SetForceStartRoomTimeout(room);
-            await SendPrepareRoom(room, turnSortedUsersInfo);
+            await SendPrepareRoom(room, usersInfos, selectedItemPlayers);
         }
 
         private IEnumerable<string> ChooseFillers()
@@ -237,7 +236,8 @@ namespace OlympicWords.Services
             //will sort based on the index, then on the player, the index must be unique anyway
         }
 
-        private async Task SendPrepareRoom(Room room, List<FullUserInfo> turnSortedUsersInfo)
+        private async Task SendPrepareRoom(Room room, List<FullUserInfo> turnSortedUsersInfo,
+            List<string> selectedItemPlayers)
         {
             var tasks = new List<Task>();
 
@@ -257,6 +257,7 @@ namespace OlympicWords.Services
                 var response = new RoomPrepareResponse
                 {
                     TurnSortedUsersInfo = turnSortedUsersInfo,
+                    SelectedItemPlayers = selectedItemPlayers,
                     TurnIndex = i,
                     Text = room.Text,
                     FillerWords = room.FillerWords,
@@ -285,7 +286,7 @@ namespace OlympicWords.Services
             if (readyUsersCount == room.RoomUsers.Count) //bots don't get ready
             {
                 serverLoop.CancelForceStart(room);
-                await gameplay.StartRoom();
+                await gameplay.ReadyGo();
             }
         }
 

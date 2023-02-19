@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OlympicWords.Common;
+using OlympicWords.Data;
 using OlympicWords.Services;
 using OlympicWords.Services.Extensions;
 using Shared;
@@ -14,13 +15,15 @@ public class UserController : ControllerBase, IUserController
 {
     private readonly ILogger<UserController> logger;
     private readonly IOfflineRepo offlineRepo;
+    private readonly IScopeRepo scopeRepo;
     private readonly HttpContext context;
 
     public UserController(ILogger<UserController> logger, IOfflineRepo offlineRepo,
-        IHttpContextAccessor contextAccessor)
+        IHttpContextAccessor contextAccessor, IScopeRepo scopeRepo)
     {
         this.logger = logger;
         this.offlineRepo = offlineRepo;
+        this.scopeRepo = scopeRepo;
         context = contextAccessor.HttpContext;
     }
 
@@ -29,7 +32,7 @@ public class UserController : ControllerBase, IUserController
 
     public async Task<PersonalFullUserInfo> Personal()
     {
-        return await offlineRepo.GetPersonalInfo();
+        return await offlineRepo.GetPersonalInfo(track: false);
     }
 
     /// <summary>
@@ -51,13 +54,14 @@ public class UserController : ControllerBase, IUserController
         await offlineRepo.SaveChangesAsync();
     }
 
-    public async Task ToggleOpenMatches()
+    public async Task SetOpenMatches(bool value)
     {
-        var user = await offlineRepo.GetCurrentUserAsync();
-        user.EnableOpenMatches = !user.EnableOpenMatches;
+        var user = offlineRepo.GetEmptyCurrenUserTracked();
+        // user.EnableOpenMatches = false;
+        // offlineRepo.MarkUserPropertyModified(user, u => u.EnableOpenMatches);
+        offlineRepo.ModifyUserProperty(user, u => u.EnableOpenMatches, value);
         await offlineRepo.SaveChangesAsync();
     }
-
 
 
     [AllowAnonymous]

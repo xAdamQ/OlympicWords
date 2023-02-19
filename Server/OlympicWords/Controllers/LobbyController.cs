@@ -20,9 +20,9 @@ public class LobbyController : ControllerBase, ILobbyController
     }
 
     [ActionDomain(typeof(UserDomain.Stateless.Free))]
-    public async Task RequestRandomRoom(int betChoice, int capChoice)
+    public async Task RequestRandomRoom(int betChoice, string env)
     {
-        await matchMaker.RequestRandomRoom(betChoice, capChoice);
+        await matchMaker.RequestRandomRoom(betChoice, env);
     }
 
     #region not used
@@ -46,47 +46,30 @@ public class LobbyController : ControllerBase, ILobbyController
         throw new NotImplementedException();
         // return await matchMaker.RespondChallengeRequest(scopeRepo.ActiveUser, response, senderId);
     }
+    public Task AskForMoneyAid()
+    {
+        throw new NotImplementedException();
+    }
+    public Task ClaimMoneyAid()
+    {
+        throw new NotImplementedException();
+    }
 
-    // [ActionDomain(typeof(UserDomain.App.Lobby.Idle))]
+    [ActionDomain(typeof(UserDomain.Stateless))]
+    public async Task BuyPlayer(string itemId)
+    {
+        await lobbyManager.BuyPlayer(itemId);
+    }
+
+    [ActionDomain(typeof(UserDomain.Stateless))]
+    public async Task SelectPlayer(string itemId, string env)
+    {
+        await lobbyManager.SelectPlayer(itemId, env);
+    }
+
     public async Task MakePurchase(string purchaseData, string sign)
     {
         await lobbyManager.MakePurchase(purchaseData, sign);
-    }
-
-    // [ActionDomain(typeof(UserDomain.App.Lobby.Idle))]
-    public async Task AskForMoneyAid()
-    {
-        // await lobbyManager.RequestMoneyAid(scopeRepo.ActiveUser);
-    }
-
-    // [ActionDomain(typeof(UserDomain.App.Lobby.Idle))]
-    public async Task ClaimMoneyAid()
-    {
-        // await lobbyManager.ClaimMoneyAim(scopeRepo.ActiveUser);
-    }
-
-    // [ActionDomain(typeof(UserDomain.App.Lobby.Idle))]
-    public async Task BuyCardback(int cardbackId)
-    {
-        // await lobbyManager.BuyCardBack(cardbackId, scopeRepo.ActiveUser.Id);
-    }
-
-    // [ActionDomain(typeof(UserDomain.App.Lobby.Idle))]
-    public async Task BuyBackground(int backgroundId)
-    {
-        // await lobbyManager.BuyBackground(backgroundId, scopeRepo.ActiveUser.Id);
-    }
-
-    // [ActionDomain(typeof(UserDomain.App.Lobby.Idle))]
-    public async Task SelectCardback(int cardbackId)
-    {
-        // await lobbyManager.SelectCardback(cardbackId, scopeRepo.ActiveUser.Id);
-    }
-
-    // [ActionDomain(typeof(UserDomain.App.Lobby.Idle))]
-    public async Task SelectBackground(int backgroundId)
-    {
-        // await lobbyManager.SelectBackground(backgroundId, scopeRepo.ActiveUser.Id);
     }
     #endregion
 }

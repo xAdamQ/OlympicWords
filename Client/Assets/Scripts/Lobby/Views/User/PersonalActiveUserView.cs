@@ -1,8 +1,6 @@
-using Cysharp.Threading.Tasks;
 using System.ComponentModel;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 /// <summary>
 /// uses Repository.I.PersonalFullInfo, 
@@ -41,7 +39,7 @@ public class PersonalActiveUserView : MinUserView
         switch (e.PropertyName)
         {
             case nameof(info.SelectedTitleId):
-                Title = PlayerBase.Titles[info.SelectedTitleId];
+                Title = Player.Titles[info.SelectedTitleId];
                 break;
             case nameof(info.Money):
                 Money = info.Money;

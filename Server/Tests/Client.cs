@@ -8,7 +8,6 @@ using OlympicWords.Common;
 // ReSharper disable TemplateIsNotCompileTimeConstantProblem
 
 namespace Tests;
-
 public class Client
 {
     public HubConnection HubConnection { get; private set; }

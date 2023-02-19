@@ -70,21 +70,7 @@ namespace OlympicWords.Services
         //     return user;
         // }
 
-        /// <summary>
-        /// checks if the user exist and make a new one if not
-        /// the last 2 args are not used if you won't sign up and would be usually null
-        /// </summary>
-        public async Task<User> SignUpAndInAsync(ProviderUser providerUser)
-        {
-            var user = await offlineRepo.GetUserAsync(providerUser.Id, providerUser.Provider);
-
-            if (user == null)
-                return await SignUpAsync(providerUser);
-
-            return await SignInAsync(providerUser, user);
-        }
-
-        public async Task<User> SignInAsync(ProviderUser providerUser, User user)
+        public async Task SignInAsync(ProviderUser providerUser, User user)
         {
             logger.LogInformation("sign in attempt of {EId} -- named: {Name} -- isNull? {IsNull}",
                 providerUser.Id, providerUser.Name, user == null);
@@ -92,10 +78,12 @@ namespace OlympicWords.Services
             await SetProviderFriends(user, providerUser.Friends);
 
             await UpdateUserData(user, providerUser);
-            user!.LastLogin = DateTime.Now;
+
+            //the last login resolution is 2 hours minimum
+            if (DateTime.Now - user!.LastLogin > TimeSpan.FromHours(2))
+                user!.LastLogin = DateTime.Now;
 
             await offlineRepo.SaveChangesAsync();
-            return user;
         }
 
         private async Task UpdateUserData(User user, ProviderUser providerUser)
@@ -126,11 +114,8 @@ namespace OlympicWords.Services
             user.Followings.AddRange(newFriends);
         }
 
-        private async Task<User> SignUpAsync(ProviderUser providerUser)
+        public async Task<User> SignUpAsync(ProviderUser providerUser)
         {
-            var bot = new User() { Id = "999" };
-
-
             var user = await offlineRepo.CreateUserAsync(new User
             {
                 Name = providerUser.Name,
@@ -144,9 +129,23 @@ namespace OlympicWords.Services
                 LastLogin = DateTime.Now,
                 Followers = new(),
                 Followings = new(),
+                AverageWpm = 10f,
+                SelectedItemPlayer = new Dictionary<string, string>
+                {
+                    {
+                        "GraphJumpCity", OfflineRepo.ItemPlayers.First().Value.Id
+                    }
+                },
+                OwnedItemPlayers = new HashSet<string>
+                {
+                    OfflineRepo.ItemPlayers.First().Value.Id,
+                },
             });
 
-            offlineRepo.SetCurrentUser(user);
+            // offlineRepo.MarkCurrentUserPropertyModified(u => u.SelectedItemPlayer);
+            // offlineRepo.MarkCurrentUserPropertyModified(u => u.OwnedItemPlayers);
+
+            scopeRepo.SetRealOwner(user.Id);
 
             await LinkUser(user.Id, providerUser);
 

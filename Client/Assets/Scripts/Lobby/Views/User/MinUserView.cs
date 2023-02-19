@@ -1,8 +1,6 @@
-using System;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class MinUserView : MonoBehaviour
@@ -29,7 +27,6 @@ public class MinUserView : MonoBehaviour
         Id = minUserInfo.Id;
         Level = minUserInfo.CalcLevel();
         DisplayName = minUserInfo.Name;
-        Title = PlayerBase.Titles[minUserInfo.SelectedTitleId];
 
         SetPicture(minUserInfo).Forget();
     }

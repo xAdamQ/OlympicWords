@@ -30,10 +30,17 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
     }
     private void DownStream()
     {
-        var controller = hubConnection.GetDownStreamController<string[]>("DownStreamCharBuffer");
-        controller.OnItem(DigitsReceived)
-            .OnSuccess(_ => Debug.Log("Streaming finished!"))
-            .OnError(error => Debug.Log("Error: " + error));
+        downStreamController = hubConnection.GetDownStreamController<string[]>("DownStreamCharBuffer");
+        downStreamController.OnError(f =>
+        {
+            Debug.LogError(f.Message);
+            NetManager.I.RestartGame();
+        });
+
+        downStreamController.OnItem(DigitsReceived)
+            .OnSuccess(_ => Debug.Log("Streaming finished!"));
+
+        Closed += () => downStreamController.Cancel();
 
         // A stream request can be cancelled any time by calling the controller's Cancel method
         // controller.Cancel();
@@ -41,17 +48,25 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
     private void DigitsReceived(string[] playerBuffers)
     {
         for (var p = 0; p < playerBuffers.Length; p++)
-            if (p != EnvBase.I.MyTurn)
+            if (p != RootEnv.I.MyTurn)
                 foreach (var digit in playerBuffers[p])
-                    EnvBase.I.Players[p].TakeInput(digit);
+                    RootEnv.I.Players[p].TakeInput(digit);
     }
     private void UpStream()
     {
         upStreamItemController = hubConnection.GetUpStreamController<string, char>("UpStreamChar");
-        upStreamItemController.UploadParam((char)Random.Range(0, 200));
-        upStreamItemController.UploadParam((char)Random.Range(0, 200));
-        upStreamItemController.UploadParam((char)Random.Range(0, 200));
-        // upStreamItemController.OnSuccess(result => { Debug.Log($"Upload finished: {result}"); });
+
+        upStreamItemController.OnError(f =>
+        {
+            Debug.LogError(f.Message);
+            NetManager.I.RestartGame();
+        });
+
+        Closed += () => upStreamItemController.Cancel();
+
+        // upStreamItemController.UploadParam((char)Random.Range(0, 200));
+        // upStreamItemController.UploadParam((char)Random.Range(0, 200));
+        // upStreamItemController.UploadParam((char)Random.Range(0, 200));
     }
     public void StartStreaming()
     {
@@ -65,10 +80,10 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
 
     private void Start()
     {
-        StartRandomRoom(RoomRequester.LastRequest.betChoice, RoomRequester.LastRequest.capacityChoice);
+        StartRandomRoom(RoomRequester.LastRequest.betChoice, RoomRequester.LastRequest.env);
     }
 
-    private void StartRandomRoom(int betChoice, int capacityChoice)
+    private void StartRandomRoom(int betChoice, string env)
     {
         if (GuestView.I)
             NetManager.I.SelectedAddress = GuestView.I.GetServerAddress();
@@ -77,7 +92,7 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
 
         var query = NetManager.I.GetAuthQuery();
         query["betChoice"] = betChoice.ToString();
-        query["capacityChoice"] = capacityChoice.ToString();
+        query["env"] = env;
         var uriBuilder = new UriBuilder(Extensions.UriCombine(NetManager.I.SelectedAddress, "/connect"))
         {
             Query = query.ToString()
@@ -108,7 +123,7 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
         BlockingOperationManager.Forget(hubConnection.ConnectAsync());
     }
 
-    public event Action Connected;
+    public event Action Connected, Closed;
 
     private bool OnMessage(HubConnection arg1, Message msg)
     {
@@ -122,16 +137,13 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
         IsConnected = true;
         Debug.Log("connected to server");
         Connected?.Invoke();
-
-        hubConnection.Send("Test", 2);
-        hubConnection.Send("Test", 4);
-        hubConnection.Send("Test", 5);
     }
     private void OnClosed(HubConnection obj)
     {
         //don't restart game here because this is called only when the connection
         //is gracefully closed
         Debug.Log("OnClosed");
+        Closed?.Invoke();
     }
     private void OnError(HubConnection arg1, string arg2)
     {
@@ -189,6 +201,7 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
     // private bool rpcCalling;
 
     private static HashSet<RoomNet> nets = new();
+    private DownStreamItemController<string[]> downStreamController;
     private async UniTaskVoid HandleInvocationMessage(Message message)
     {
         nets.Add(this);

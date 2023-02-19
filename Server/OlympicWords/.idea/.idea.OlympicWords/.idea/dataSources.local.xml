@@ -18,8 +18,20 @@
       </schema-mapping>
     </data-source>
     <data-source name="@wordwar.database.windows.net" uuid="5613223f-9cc5-4fda-a142-5848ba5ea3af">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="AZURE" exact-version="0" />
-      <schema-mapping />
+      <database-info product="Microsoft SQL Server" version="12.00.937" jdbc-version="4.2" driver-name="Microsoft JDBC Driver 11.2 for SQL Server" driver-version="11.2.0.0" dbms="AZURE" exact-version="12.0.937" exact-driver-version="11.2">
+        <extra-name-characters>$#@</extra-name-characters>
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>leer</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="wc">
+            <node kind="schema" qname="dbo" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
     </data-source>
   </component>
 </project>

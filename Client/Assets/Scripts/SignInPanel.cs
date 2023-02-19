@@ -10,24 +10,42 @@ public class SignInPanel : MonoModule<SignInPanel>
 
     // ReSharper disable once Unity.IncorrectMethodSignature
     // ReSharper disable once UnusedMember.Local
-    private async UniTaskVoid Start()
+    private void Start()
     {
+        ShowSuitableLogin().Forget();
+    }
+
+    private int retryCount;
+    private readonly int[] retryPolicy = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+    private async UniTaskVoid ShowSuitableLogin()
+    {
+        if (retryCount > 0)
+        {
+            var waitIndex = Math.Min(retryCount - 1, retryPolicy.Length - 1);
+            var waitSeconds = retryPolicy[waitIndex];
+            await UniTask.Delay(TimeSpan.FromSeconds(waitSeconds));
+            Toast.I.Show($"retry in {waitSeconds}");
+        }
+
+        retryCount++;
+
         var (p, t) = NetManager.I.GetActiveAuth();
 
         if (string.IsNullOrEmpty(t))
         {
             FbManager.ShowButton();
             ShowGuest();
+            return;
         }
-        else if (p == ProviderType.Facebook)
+
+        switch (p)
         {
-            if (!await FbManager.IsTokenValid())
-            {
+            case ProviderType.Facebook when !await FbManager.IsTokenValid():
                 FbManager.ShowButton();
                 ShowHavingTrouble();
-            }
-            else
-            {
+                break;
+            case ProviderType.Facebook:
                 try
                 {
                     CachedLogin(p, t);
@@ -38,16 +56,32 @@ public class SignInPanel : MonoModule<SignInPanel>
                     FbManager.ShowButton();
                     ShowHavingTrouble();
                 }
-            }
-        }
-        else if (p == ProviderType.Guest)
-        {
-            CachedLogin(p, t);
+                break;
+            case ProviderType.Guest:
+                CachedLogin(p, t);
+                break;
+            case ProviderType.Huawei:
+                throw new NotImplementedException();
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
+
     private void CachedLogin(ProviderType p, string t)
     {
-        BlockingOperationManager.Forget(NetManager.I.Login(t, p));
+        UniTask.Create(async () =>
+        {
+            try
+            {
+                await BlockingOperationManager.Start(NetManager.I.Login(t, p));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+                HideAll();
+                ShowSuitableLogin().Forget();
+            }
+        });
     }
 
     private void ShowGuest()
@@ -78,5 +112,13 @@ public class SignInPanel : MonoModule<SignInPanel>
             guestToken = Guid.NewGuid().ToString();
 
         BlockingOperationManager.Forget(NetManager.I.Login(guestToken, ProviderType.Guest));
+    }
+
+    private void HideAll()
+    {
+        guestLoginButton.SetActive(false);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            JsManager.HideFbButton();
+#endif
     }
 }

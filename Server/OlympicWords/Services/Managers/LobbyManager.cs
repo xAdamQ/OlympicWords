@@ -1,12 +1,10 @@
-using OlympicWords.Services.Exceptions;
 using OlympicWords.Services.Extensions;
 using Hangfire;
-using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json.Linq;
+using OlympicWords.Services.Exceptions;
 
 namespace OlympicWords.Services
 {
@@ -15,11 +13,10 @@ namespace OlympicWords.Services
         Task RequestMoneyAid();
         Task ClaimMoneyAim();
 
-        Task BuyCardBack(int cardbackId);
-        Task BuyBackground(int backgroundId);
-        Task SelectCardback(int cardbackId);
-        Task SelectBackground(int backgroundId);
         Task MakePurchase(string purchaseData, string sign);
+
+        Task BuyPlayer(string id);
+        Task SelectPlayer(string id, string env);
     }
 
     public class LobbyManager : ILobbyManager
@@ -43,13 +40,13 @@ namespace OlympicWords.Services
         {
             var user = await offlineRepo.GetCurrentUserAsync();
             if (user.IsMoneyAidProcessing)
-                throw new Exceptions.BadUserInputException(
+                throw new BadUserInputException(
                     "the user requested money while there's a waiting request");
             if (user.RequestedMoneyAidToday >= 4)
-                throw new Exceptions.BadUserInputException(
+                throw new BadUserInputException(
                     "the user was trying to request money aid above limit");
             if (user.Money >= Room.MinBet)
-                throw new Exceptions.BadUserInputException(
+                throw new BadUserInputException(
                     "the user was trying to request money aid while he have enough money");
             //not tested because logic is trivial
 
@@ -79,10 +76,10 @@ namespace OlympicWords.Services
             var user = await offlineRepo.GetCurrentUserAsync();
 
             if (user.LastMoneyAimRequestTime == null)
-                throw new Exceptions.BadUserInputException(
+                throw new BadUserInputException(
                     "the user was trying to claim while he didn't request");
             if (user.LastMoneyAimRequestTime.SecondsPassedSince() < ConstData.MoneyAimTime)
-                throw new Exceptions.BadUserInputException(
+                throw new BadUserInputException(
                     "the user was trying to claim while the time is not done");
 
             user.LastMoneyAimRequestTime = null;
@@ -94,97 +91,70 @@ namespace OlympicWords.Services
             //animation and ui update
         } //don't test
 
-        /// <summary>
-        /// I can't remove items in the future, that's why their price order is the id
-        /// </summary>
-        private static readonly int[] CardbackPrices =
-            { 50, 65, 120, 450, 800, 1100, 2000, 3000, 5000 };
-        /// <summary>
-        /// I can't remove items in the future, that's why their price order is the id
-        /// </summary>
-        private static readonly int[] BackgroundPrices =
-            { 50, 65, 300, 600, 1000, 2100, 3050, 3900, 6000, 9000 };
-
-        /*
-        so say I want to add an item, what to do?
-        
-        1- add it's price to the server
-        2- add it's string adress to the client and append this address in the enum as last element
-        */
-
-        public async Task BuyCardBack(int cardbackId)
+        public async Task BuyPlayer(string id)
         {
+            if (!OfflineRepo.ItemPlayers.TryGetValue(id, out var item))
+                throw new BadUserInputException("client give player id that doesn't exist");
+
             var user = await offlineRepo.GetCurrentUserAsync();
 
-            if (cardbackId < 0 || cardbackId >= CardbackPrices.Length)
-                throw new Exceptions.BadUserInputException("client give cardback id exceed count");
-            if (user.Money < CardbackPrices[cardbackId])
-                throw new Exceptions.BadUserInputException(
-                    "the client is trying to buy cardback without enough money");
-            if (user.OwnedCardBackIds.Contains(cardbackId))
-                throw new Exceptions.BadUserInputException(
-                    "the client is trying to buy cardback that he already owns");
+            if (user.Money < item.Price)
+                throw new BadUserInputException
+                    ("the client is trying to buy a player without enough money");
 
-            user.Money -= CardbackPrices[cardbackId];
-            user.OwnedCardBackIds.Add(cardbackId);
-            //and here the issue is raised
-            //(1) if the client got success result, then the money is taken and the card is bought and he can do this
-            //logic of updating the money and unlock cardback
-            //(2) but also I can sync the whole user data so the money will be updated and the cardback will be unlocked
-            //so the difference between the 2 approached is (1) I know what is the result in the client
-            //(2) I don't know, I will update the data
-            //and to avoid updating the whole data you can pass the change name and value as return
-            //which is something the client will expect also so this is meaningless
+            if (user.OwnedItemPlayers.Contains(id))
+                throw new BadUserInputException
+                    ("the client is trying to buy a player that he already owns");
+
+            user.Money -= item.Price;
+            user.OwnedItemPlayers.Add(id);
+
+            offlineRepo.MarkUserPropertyModified(user, u => u.OwnedItemPlayers);
 
             await offlineRepo.SaveChangesAsync();
         }
-        public async Task BuyBackground(int backgroundId)
+
+        /// <summary>
+        /// the chosen env is a top level playable env
+        /// </summary>
+        public async Task SelectPlayer(string id, string env)
         {
+            if (!OfflineRepo.ItemPlayers.TryGetValue(id, out var item))
+                throw new BadUserInputException("client give player id that doesn't exist");
+
+            if (!item.Environment.Matching.TryGetValue(env, out var matchingEnv))
+                throw new BadUserInputException($"environment {env} doesn't match the item or doesn't exist");
+
+            if (!matchingEnv.Playable)
+                throw new BadUserInputException($"environment {env} is not a playable environment");
+
             var user = await offlineRepo.GetCurrentUserAsync();
 
-            if (backgroundId < 0 || backgroundId >= BackgroundPrices.Length)
-                throw new Exceptions.BadUserInputException("client give background id exceed count");
-            if (user.Money < BackgroundPrices[backgroundId])
-                throw new Exceptions.BadUserInputException(
-                    "the client is trying to buy background without enough money");
-            if (user.OwnedBackgroundIds.Contains(backgroundId))
-                throw new Exceptions.BadUserInputException(
-                    "the client is trying to buy background that he already owns");
+            if (!user.OwnedItemPlayers.Contains(id))
+                throw new BadUserInputException($"the user is trying to select a player {item.Id} " +
+                                                $"he doesn't own {string.Join(", ", user.OwnedCardBackIds)}");
 
-            user.Money -= BackgroundPrices[backgroundId];
-            user.OwnedBackgroundIds.Add(backgroundId);
+            if (user.SelectedItemPlayer.TryGetValue(env, out var selectedPlayerId))
+            {
+                if (selectedPlayerId == id) return;
+                //already selected
+
+                user.SelectedItemPlayer[env] = id;
+            }
+            else
+            {
+                user.SelectedItemPlayer.Add(env, id);
+            }
+
+            offlineRepo.MarkUserPropertyModified(user, u => u.SelectedItemPlayer);
 
             await offlineRepo.SaveChangesAsync();
         }
-        //I tested cardback bu bu it's applicable on both
 
-        public async Task SelectCardback(int cardbackId)
+        public void BuyItem(string id, string env, int type)
         {
-            var user = await offlineRepo.GetCurrentUserAsync();
-
-            if (!user.OwnedCardBackIds.Contains(cardbackId))
-                throw new Exceptions.BadUserInputException(
-                    $"the user is trying to select a cardback {cardbackId} he doesn't own {string.Join(", ", user.OwnedCardBackIds)}");
-
-            if (user.SelectedCardback == cardbackId) return;
-
-            user.SelectedCardback = cardbackId;
-
-            await offlineRepo.SaveChangesAsync();
-        } //trivial to test
-        public async Task SelectBackground(int backgroundId)
-        {
-            var user = await offlineRepo.GetCurrentUserAsync();
-
-            if (!user.OwnedBackgroundIds.Contains(backgroundId))
-                throw new Exceptions.BadUserInputException(
-                    $"the user is trying to select a background {backgroundId} he doesn't own {string.Join(", ", user.OwnedBackgroundIds)}");
-
-            if (user.SelectedBackground == backgroundId) return;
-
-            user.SelectedBackground = backgroundId;
-
-            await offlineRepo.SaveChangesAsync();
+            //we shouldn't have the option of extending the functionality, so a shared function is less useful
+            //anyway, for shared logic use the type int to get the needed item list
         }
 
         public async Task MakePurchase(string purchaseData, string sign)

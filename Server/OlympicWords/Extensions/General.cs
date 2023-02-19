@@ -206,5 +206,10 @@ namespace OlympicWords.Services.Extensions
 
             return t1.IsEquivalentTo(t2) && t1.IsSubclassOf(t2);
         }
+
+        public static float NextFloat(this Random random, float minimum, float maximum)
+        {
+            return random.NextSingle() * (maximum - minimum) + minimum;
+        }
     }
 }

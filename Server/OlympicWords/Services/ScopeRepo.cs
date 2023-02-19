@@ -15,7 +15,7 @@ namespace OlympicWords.Services
         /// <summary>
         /// we don't remove pending rooms, TakePendingRoom excludes them
         /// </summary>
-        Room TakePendingRoom(int category, int capacityChoice);
+        Room TakePendingRoom(int category, string env);
         void DeleteRoom();
 
         void AddNewUser(RoomUser ru);
@@ -34,7 +34,7 @@ namespace OlympicWords.Services
 
         void Init(ConcurrentDictionary<int, Room> rooms,
             ConcurrentDictionary<string, RoomUser> activeRoomUsers,
-            ConcurrentDictionary<(int, int), ConcurrentBag<Room>> pendingRooms,
+            ConcurrentDictionary<(int, string), ConcurrentBag<Room>> pendingRooms,
             HashSet<string> pendingUsers, ref int lastRoomId);
 
         public void SetRealOwner(string userId);
@@ -49,7 +49,7 @@ namespace OlympicWords.Services
     {
         private readonly ConcurrentDictionary<int, Room> rooms = new();
         private readonly ConcurrentDictionary<string, RoomUser> roomUsers = new();
-        private readonly ConcurrentDictionary<(int, int), ConcurrentBag<Room>> pendingRooms = new();
+        private readonly ConcurrentDictionary<(int, string), ConcurrentBag<Room>> pendingRooms = new();
         private readonly HashSet<string> pendingUsers = new();
 
         private int lastRoomId;
@@ -57,8 +57,8 @@ namespace OlympicWords.Services
         public PersistantData()
         {
             for (var i = 0; i < Room.Bets.Length; i++)
-            for (var j = 0; j < Room.Capacities.Length; j++)
-                pendingRooms.TryAdd((i, j), new ConcurrentBag<Room>());
+                foreach (var env in OfflineRepo.GameConfig.OrderedEnvs)
+                    pendingRooms.TryAdd((i, env), new ConcurrentBag<Room>());
         }
 
         public void FeedScope(IScopeRepo scopeRepo)
@@ -119,7 +119,7 @@ namespace OlympicWords.Services
         private ConcurrentDictionary<int, Room> rooms;
         // private ConcurrentDictionary<string, ActiveUser> activeUsers;
         private ConcurrentDictionary<string, RoomUser> activeRoomUsers;
-        private ConcurrentDictionary<(int, int), ConcurrentBag<Room>> pendingRooms;
+        private ConcurrentDictionary<(int, string), ConcurrentBag<Room>> pendingRooms;
         private HashSet<string> pendingUsers;
         private int lastRoomId;
         public string UserId { get; private set; }
@@ -133,7 +133,7 @@ namespace OlympicWords.Services
         public void Init(ConcurrentDictionary<int, Room> rooms,
             // ConcurrentDictionary<string, ActiveUser> activeUsers,
             ConcurrentDictionary<string, RoomUser> activeRoomUsers,
-            ConcurrentDictionary<(int, int), ConcurrentBag<Room>> pendingRooms,
+            ConcurrentDictionary<(int, string), ConcurrentBag<Room>> pendingRooms,
             HashSet<string> pendingUsers, ref int lastRoomId)
         {
             this.rooms = rooms;
@@ -180,9 +180,9 @@ namespace OlympicWords.Services
         /// <summary>
         /// takes possible rooms, excludes active amd null rooms
         /// </summary>
-        public Room TakePendingRoom(int category, int capacityChoice)
+        public Room TakePendingRoom(int category, string env)
         {
-            var bag = pendingRooms[(category, capacityChoice)];
+            var bag = pendingRooms[(category, env)];
 
             while (true)
             {
@@ -196,7 +196,7 @@ namespace OlympicWords.Services
         }
         public void KeepPendingRoom(Room room)
         {
-            pendingRooms[(room.Category, room.CapacityChoice)].Add(room);
+            pendingRooms[(room.Category, room.Env)].Add(room);
             // PendingRooms[(room.BetChoice, room.CapacityChoice)].Enqueue(room);
         }
 

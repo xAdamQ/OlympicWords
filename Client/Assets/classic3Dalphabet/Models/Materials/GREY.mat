@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 6
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -26,8 +26,6 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _EMISSION
-  - _GLOSSINESS_FROM_BASE_ALPHA
-  - _SPECULAR_COLOR
   m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
@@ -112,6 +110,7 @@ Material:
     m_Floats:
     - PixelSnap: 0
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -148,7 +147,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.25735292, g: 0.25735292, b: 0.25735292, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.2573529, g: 0.2573529, b: 0.2573529, a: 1}
     - _EmissionColor: {r: 0.5808823, g: 0.5464182, b: 0.081152685, a: 1}
     - _ReflectColor: {r: 0.44852942, g: 0.44852942, b: 0.44852942, a: 0.5}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
