@@ -1,5 +1,9 @@
 # OlympicWords
 
+## License
+OlympicWords (c) 2023. <br />
+OlympicWords is licensed under a Creative Commons Attribution-NoDerivs 3.0 Unported License.
+
 ## overview
 This is a project I made to help me learn how multiplayer games work, and know the possible challenges that I can face in a practical manner. <br />
 I chose ASP.NET Core SignalR for the backend because I wanted to make use of WebGL as it looks futuristic, allowing you to start playing directly and download parts of the game on demand, and make use of your GPU.
