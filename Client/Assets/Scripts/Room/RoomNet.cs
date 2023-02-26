@@ -30,7 +30,7 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
     }
     private void DownStream()
     {
-        downStreamController = hubConnection.GetDownStreamController<string[]>("DownStreamCharBuffer");
+        downStreamController = hubConnection.GetDownStreamController<char[][]>("DownStreamCharBuffer");
         downStreamController.OnError(f =>
         {
             Debug.LogError(f.Message);
@@ -45,7 +45,7 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
         // A stream request can be cancelled any time by calling the controller's Cancel method
         // controller.Cancel();
     }
-    private void DigitsReceived(string[] playerBuffers)
+    private void DigitsReceived(char[][] playerBuffers)
     {
         for (var p = 0; p < playerBuffers.Length; p++)
             if (p != RootEnv.I.MyTurn)
@@ -201,7 +201,7 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
     // private bool rpcCalling;
 
     private static HashSet<RoomNet> nets = new();
-    private DownStreamItemController<string[]> downStreamController;
+    private DownStreamItemController<char[][]> downStreamController;
     private async UniTaskVoid HandleInvocationMessage(Message message)
     {
         nets.Add(this);

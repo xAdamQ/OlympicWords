@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: tstG
+  m_EditorClassIdentifier: 
+  m_GroupName: tstG
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 8cd027fa722d174bf9e5db9d9274be7d
+  m_SerializeEntries:
+  - m_GUID: a2836f0676e46dc4685632e429aadbc8
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/AlienDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c86e41b5e19b7447aa5c4f94049889d
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/BasicFemaleDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5811f4236f7f88b41b2a1da538566706
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/BasicMaleDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b764a1b0b8e7be49840198c1c767688
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/BasicMaleNoWeaponDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5cacba29a1abb9a4aa2b32001a835a1f
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/BearDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ad8c8a13025e384badee4fd7d15d55c
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/ChemicalmanDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c3b220a089f7c747bdc1a5c678cbbf5
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/ChickenDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 586bab38c75b5b147b9c1df83c23142b
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/CowboyDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55d87a7c8e027d24fb93e6d6cd2a1e93
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/HeroDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5377447fbfa7e9840b1c129ac510762b
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/HoodieDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aed620248b17c3f4db3152fea0cbb1b8
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/JesterDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e35ed10d84d43824897c7725c0484540
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/KnightDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b8fb5f7958265f439719d3c335d052a
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/NinjaDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d78b46c303ce99448b76ee7c2eb2defa
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/RobotDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c39674f261e11b4f80664cc2e5b6b00
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/SalarymanDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 879f3c2143ca95744ab0aa427ceb5c96
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/SamuraiDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3be40c921eae126468595736e72eb132
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/SniperDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac24486140b39ae45a1c0814a24fa3fc
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/SoldierDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 927b1ef0067ed344c90f0793ad5a3d92
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/SpacemanDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7862987238331b429631c399071f6db
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/TerroristDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eed2826d10b367d4baa1d37358f64197
+    m_Address: Assets/BattleRoyaleHeroesPBR/Prefab/Character/PBRDefault/VeteranDefault.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b2c7024f110de7f4f9f1208d9a0e5d05, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: a48b8b3d6596aee3ab145fd0dcef93ff, type: 2}
+    - {fileID: 11400000, guid: 02324afe6aaf3f82f84ce9aff5b40941, type: 2}

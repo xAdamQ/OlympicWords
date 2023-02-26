@@ -38,7 +38,22 @@ public class TestController : ControllerBase
 
         offlineRepo.ModifyUserProperty(user, u => u.EnableOpenMatches, false);
         offlineRepo.ModifyUserProperty(user, u => u.Email, "thank tou");
-        
+
         await offlineRepo.SaveChangesAsync();
+    }
+
+
+    [AllowAnonymous]
+    public async Task<ArraySegment<char>> Test4()
+    {
+        var str = "1234567890qwertyuiopasdfghjkl;Segmdent".ToCharArray();
+        return new ArraySegment<char>(str);
+    }
+
+
+    [AllowAnonymous]
+    public async Task<char[]> Test5()
+    {
+        return "1234567890qwertyuiopasdfghjkl;".ToCharArray();
     }
 }

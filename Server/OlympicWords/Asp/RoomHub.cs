@@ -154,7 +154,7 @@ namespace OlympicWords.Services
         }
 
         [RpcDomain(typeof(UserDomain.Room.Active))]
-        public async IAsyncEnumerable<string[]> DownStreamCharBuffer
+        public async IAsyncEnumerable<ArraySegment<char>[]> DownStreamCharBuffer
             ([EnumeratorCancellation] CancellationToken cancellationToken)
         {
             await foreach (var item in gameplay.DownStreamCharBuffer(cancellationToken))

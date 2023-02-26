@@ -17,7 +17,7 @@ namespace OlympicWords.Services
         /// </summary>
         Task ReadyGo();
 
-        IAsyncEnumerable<string[]> DownStreamCharBuffer(CancellationToken clientCancellationToken);
+        IAsyncEnumerable<ArraySegment<char>[]> DownStreamCharBuffer(CancellationToken clientCancellationToken);
 
         Task ProcessChar(char chr);
     }
@@ -27,6 +27,11 @@ namespace OlympicWords.Services
     /// </summary>
     public class Gameplay : IGameplay
     {
+        private ReadOnlySpan<char> v()
+        {
+            return "1234".AsSpan();
+        }
+
         private readonly IHubContext<RoomHub> masterHub;
         private readonly ILogger<Gameplay> logger;
         private readonly IFinalizer finalizer;
@@ -149,11 +154,13 @@ namespace OlympicWords.Services
             }
         }
 
-        public async IAsyncEnumerable<string[]> DownStreamCharBuffer(
+        public async IAsyncEnumerable<ArraySegment<char>[]> DownStreamCharBuffer(
             [EnumeratorCancellation] CancellationToken clientCancellationToken)
         {
             var roomUser = scopeRepo.RoomUser;
             var room = scopeRepo.Room;
+
+            var updateBuffer = new ArraySegment<char>[room.Capacity];
 
             //send as long as the channel is opened
             //the first token is set by the server, the second token is set by the client
@@ -163,8 +170,6 @@ namespace OlympicWords.Services
                 // Check the cancellation token regularly so that the server will stop
                 // producing items if the client disconnects.
 
-                var updateBuffer = new string[room.Capacity];
-
                 // attempt to send the real digits including the failed ones
                 for (var u = 0; u < room.Capacity; u++)
                 {
@@ -172,22 +177,20 @@ namespace OlympicWords.Services
 
                     if (roomUser.BufferSyncPointers[u] == otherActor.BufferPointer)
                     {
-                        updateBuffer[u] = string.Empty;
+                        updateBuffer[u] = ArraySegment<char>.Empty;
                         continue;
                     }
 
-                    updateBuffer[u] = new string
-                    (otherActor.CharBuffer[
-                        roomUser.BufferSyncPointers[u]..otherActor.BufferPointer]);
-                    //can return empty list
+                    updateBuffer[u] = new ArraySegment<char>
+                        (otherActor.CharBuffer[roomUser.BufferSyncPointers[u]..otherActor.BufferPointer]);
 
                     roomUser.BufferSyncPointers[u] = otherActor.BufferPointer;
                 }
 
-                if (!updateBuffer.All(string.IsNullOrEmpty))
+                if (updateBuffer.Any(x => x.Count > 0))
                     yield return updateBuffer;
 
-                await Task.Delay(100);
+                await Task.Delay(200);
             }
 
             //we don't reach here, probably some silent exception happen above when we close the connection
