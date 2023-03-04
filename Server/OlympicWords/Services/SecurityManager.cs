@@ -153,8 +153,8 @@ namespace OlympicWords.Services
             if (imageBytes != null)
                 await offlineRepo.SaveUserPicture(user.Id, imageBytes);
 
-            await offlineRepo.ToggleFollow("999");
-            await offlineRepo.ToggleFollow("9999");
+            await offlineRepo.ToggleFollow("999", user);
+            await offlineRepo.ToggleFollow("9999", user);
 
             await offlineRepo.SaveChangesAsync();
 

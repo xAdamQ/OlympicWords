@@ -8,6 +8,7 @@ using Shared;
 using Shared.Controllers;
 
 namespace OlympicWords.Controllers;
+
 [Route("[controller]/[action]")]
 [ApiController]
 [Authorize]

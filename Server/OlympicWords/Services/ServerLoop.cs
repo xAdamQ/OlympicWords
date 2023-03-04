@@ -104,7 +104,11 @@ namespace OlympicWords.Services
 
                 using var scope = serviceScopeFactory.CreateScope();
                 scope.ServiceProvider.GetService<IScopeRepo>()!.SetBotOwner(roomBot);
+
                 var gameplay = scope.ServiceProvider.GetService<IGameplay>()!;
+                var scopeRepo = scope.ServiceProvider.GetService<IScopeRepo>()!;
+                var persistantData = scope.ServiceProvider.GetService<PersistantData>()!;
+                persistantData.FeedScope(scopeRepo);
 
                 while (roomBot.TextPointer < room.Text.Length)
                 {

@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OlympicWords", "OlympicWords.csproj", "{9AE097AB-BAE4-4CD3-9CAE-6955FA3C4CDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "..\Tests\Tests.csproj", "{97906454-B33F-49E6-94D6-C4FF6FB956DD}"
@@ -18,5 +21,11 @@ Global
 		{97906454-B33F-49E6-94D6-C4FF6FB956DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97906454-B33F-49E6-94D6-C4FF6FB956DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97906454-B33F-49E6-94D6-C4FF6FB956DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6727BB00-6A32-478D-B311-29CDBA8F3702}
 	EndGlobalSection
 EndGlobal

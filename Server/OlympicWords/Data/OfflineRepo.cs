@@ -11,6 +11,7 @@ using Shared;
 using Environment = Shared.Environment;
 
 namespace OlympicWords.Services;
+
 public interface IOfflineRepo
 {
     /// <summary>
@@ -30,7 +31,7 @@ public interface IOfflineRepo
     Task<PersonalFullUserInfo> GetPersonalInfo(bool track);
     Task<FullUserInfo> GetFullUserInfoAsync(string id);
 
-    Task ToggleFollow(string target);
+    Task ToggleFollow(string target, User currentUser = null);
     Task<FriendShip> GetFriendship(string userId, string targetId);
 
     Task CreateProviderLink(ProviderLink providerLink);
@@ -51,6 +52,7 @@ public interface IOfflineRepo
     User GetEmptyCurrenUserTracked();
     User TrackNewUser(string userId);
 }
+
 /// <summary>
 /// hide queries, reuse queries
 /// </summary>
@@ -360,9 +362,9 @@ public class OfflineRepo : IOfflineRepo
     public static GameConfig GameConfig { get; set; }
 
     #region user relation
-    public async Task ToggleFollow(string targetId)
+    public async Task ToggleFollow(string targetId, User currentUser = null)
     {
-        var currentUser = await GetCurrentUserAsync(includeFollowings: true);
+        currentUser ??= await GetCurrentUserAsync(includeFollowings: true);
 
         currentUser.Followings ??= new List<User>();
 
