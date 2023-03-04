@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 public class GraphEditorWindow : EditorWindow
 {
-    [MenuItem("Window/GraphSettings")]
+    [MenuItem("MyTools/GraphSettings")]
     public static void ShowWindow()
     {
         OpenOrRefreshWindow();
@@ -16,13 +16,16 @@ public class GraphEditorWindow : EditorWindow
     private static void OpenOrRefreshWindow()
     {
         var wnd = GetWindow<GraphEditorWindow>();
-        if (wnd != null)
+        if (wnd == null)
         {
-            wnd.Close();
-            wnd = GetWindow<GraphEditorWindow>();
+            wnd = CreateWindow<GraphEditorWindow>();
+            wnd.titleContent = new GUIContent("Positioning Test Window");
+            //create gui is called automatically
         }
-
-        wnd.titleContent = new GUIContent("Positioning Test Window");
+        else
+        {
+            wnd.CreateGUI();
+        }
     }
 
     public static GraphEditorWindow I;
@@ -37,24 +40,9 @@ public class GraphEditorWindow : EditorWindow
     private void OnEnable()
     {
         I = this;
-
-        var subFolders = AssetDatabase.GetSubFolders(GRAPH_ROOT);
-        foreach (var subFolder in subFolders)
-        {
-            var guids = AssetDatabase.FindAssets("", new[] { subFolder });
-
-            var graphs = guids
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Select(AssetDatabase.LoadAssetAtPath<GraphData>)
-                .ToList();
-
-            graphTree.Add((System.IO.Path.GetFileName(subFolder), graphs));
-        }
     }
 
     private int selectedGraphList;
-
-
     private int SelectedGraphList
     {
         set
@@ -76,9 +64,7 @@ public class GraphEditorWindow : EditorWindow
         get => selectedGraphList;
     }
 
-
     private int selectedGraph;
-
     private int SelectedGraph
     {
         set
@@ -120,16 +106,35 @@ public class GraphEditorWindow : EditorWindow
         }
     }
 
-    private List<Button> listButtons = new();
+    private readonly List<Button> listButtons = new();
     private Label selectedGraphName;
     private SliderInt selectGraphSlider;
 
-
-    /// <summary>
-    /// this is not GUI update! only called once!
-    /// </summary>
-    private void CreateGUI()
+    private void Init()
     {
+        rootVisualElement.Clear();
+        selectedGraph = 0;
+        selectedGraphList = 0;
+        graphTree.Clear();
+        listButtons.Clear();
+    }
+    private void FetchGraphs()
+    {
+        Init();
+
+        var subFolders = AssetDatabase.GetSubFolders(GRAPH_ROOT);
+        foreach (var subFolder in subFolders)
+        {
+            var guids = AssetDatabase.FindAssets("", new[] { subFolder });
+
+            var graphs = guids
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<GraphData>)
+                .ToList();
+
+            graphTree.Add((System.IO.Path.GetFileName(subFolder), graphs));
+        }
+
         for (var i = 0; i < graphTree.Count; i++)
         {
             var graphList = graphTree[i];
@@ -144,7 +149,15 @@ public class GraphEditorWindow : EditorWindow
             rootVisualElement.Add(graphButton);
             listButtons.Add(graphButton);
         }
+    }
 
+    /// <summary>
+    /// this is not GUI update! only called once!
+    /// </summary>
+    private void CreateGUI()
+    {
+        Init();
+        FetchGraphs();
 
         selectGraphSlider = new SliderInt
         {
@@ -166,7 +179,6 @@ public class GraphEditorWindow : EditorWindow
 
         SelectedGraphList = selectedGraphList;
 
-
         var refreshButton = new Button()
         {
             text = "refresh",
@@ -177,6 +189,8 @@ public class GraphEditorWindow : EditorWindow
         };
         refreshButton.clicked += OpenOrRefreshWindow;
         rootVisualElement.Add(refreshButton);
+
+        Debug.Log("refreshed");
     }
 
     // private void OnGUI()

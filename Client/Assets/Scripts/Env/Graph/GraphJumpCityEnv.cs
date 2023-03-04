@@ -3,6 +3,6 @@ public class GraphJumpCityEnv : GraphJumpEnv
 {
     public override Type GetControllerType()
     {
-        return typeof(GraphJumpCityController);
+        return typeof(GraphJumpController);
     }
 }

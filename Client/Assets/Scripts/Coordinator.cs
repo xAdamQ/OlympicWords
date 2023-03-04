@@ -75,6 +75,7 @@ public class Coordinator : MonoModule<Coordinator>
     public void Start()
     {
         Toast.Create().Forget();
+        AddressManager.Init().Forget(e => throw e);
 
         References.SetSources();
     }

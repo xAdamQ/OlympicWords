@@ -255,22 +255,22 @@ public abstract class RootEnv : MonoBehaviour
         var random = new Random(response.Seed);
 
         CreateWordArray();
+        GenerateDigits(random);
+        ColorFillers(response.FillerWords);
 
         UniTask.Create(async () =>
         {
+            await AddressManager.I.WaitInit();
+
             await CreatePlayers(response.FillerWords, response.ChosenPowerUps, response.TurnSortedUsersInfo,
                 response.SelectedItemPlayers);
-
-            GenerateDigits(random);
-
-            ColorFillers(response.FillerWords);
 
             SetPlayersInitialPoz();
 
             GamePrepared?.Invoke();
 
             await RoomNet.I.Ready();
-        });
+        }).Forget(e => throw e);
     }
 
     protected abstract void SetPlayersInitialPoz();
@@ -316,17 +316,24 @@ public abstract class RootEnv : MonoBehaviour
             var myFillers = fillerWords.Where(w => w.player == i).Select(w => w.index).ToList();
             if (myFillers.Count == 0) myFillers = null;
 
-            var go = await Addressables.InstantiateAsync(AddressManager.I.GetPlayerLocation(selectedItemPlayers[i]));
+            GameObject go = null;
+            try
+            {
+                go = await Addressables.InstantiateAsync(AddressManager.I.GetPlayerLocation(selectedItemPlayers[i]));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             var player = go.GetComponent<Player>();
 
             player.Init(i, chosenPowerUps[i], myFillers, fullUserInfos[i].Name);
             Players.Add(player);
 
-            if (MyTurn == i)
-            {
-                var controller = (PlayerController)player.gameObject.AddComponent(GetControllerType());
-                controller.SetCameraFollow();
-            }
+            if (MyTurn != i) continue;
+            var controller = (PlayerController)player.gameObject.AddComponent(GetControllerType());
+            controller.SetCameraFollow();
         }
     }
 

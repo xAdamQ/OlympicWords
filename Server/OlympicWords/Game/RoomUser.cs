@@ -24,7 +24,7 @@
 
         public RoomUser(string id, Room room) : base(id, room)
         {
-            Domain = typeof(UserDomain.Room.Init);
+            Domain = typeof(UserDomain.Room.Init.InComplete);
             BufferSyncPointers = new int[room.Capacity];
         }
 

@@ -115,8 +115,7 @@ namespace Server
 
         private async UniTask ExportServerDataAsync()
         {
-            AddressManager.Reset();
-            await AddressManager.I.WaitInit();
+            await AddressManager.Init();
 
             var envs = RootEnv.GetEnvironments();
             var diskEnvs = envs.Select(e => new DiskEnvironment

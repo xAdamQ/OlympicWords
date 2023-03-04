@@ -5,7 +5,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(GraphPlayer))]
 //you can insert additional base classes when needed
-public class GraphJumpCityController : PlayerController<GraphPlayer>
+public class GraphJumpController : PlayerController<GraphPlayer>
 {
     private Vector3 addedOffset;
 
@@ -35,6 +35,8 @@ public class GraphJumpCityController : PlayerController<GraphPlayer>
 
         GraphEnv.I.WordState(0, true);
         GraphEnv.I.WordState(1, true);
+
+        StartCoroutine(SetLazyY());
     }
 
     protected override Vector3 GetTargetPoz()
@@ -52,17 +54,17 @@ public class GraphJumpCityController : PlayerController<GraphPlayer>
     {
         addedOffset = Vector3.Distance(Player.MovePath.start, Player.MovePath.end)
                       * JumpZoomCoefficient * Vector3.one;
-
-        StartCoroutine(SetLazyY());
     }
 
     private IEnumerator SetLazyY()
     {
-        var framesCount = MOVE_TIME / Time.fixedDeltaTime;
-        var part = 1 / framesCount;
-        for (var i = 0; i < framesCount; i++)
+        // var framesCount = MOVE_TIME / Time.fixedDeltaTime;
+        // var part = 1 / framesCount;
+        // for (var i = 0; i < framesCount; i++)
+        while (true)
         {
-            var lazyY = Mathf.Lerp(Player.MovePath.start.y, Player.MovePath.end.y, i * part);
+            // var lazyY = Mathf.Lerp(Player.MovePath.start.y, Player.MovePath.end.y, i * part);
+            var lazyY = Mathf.Lerp(transform.position.y, Player.MovePath.end.y, .1f);
             lazyYPosition = new Vector3(transform.position.x, lazyY, transform.position.z);
             //the look at in the y makes the camera less shaky
             yield return new WaitForFixedUpdate();

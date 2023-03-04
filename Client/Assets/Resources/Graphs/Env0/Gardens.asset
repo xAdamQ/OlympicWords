@@ -199,7 +199,7 @@ MonoBehaviour:
   - Position: {x: 67.12622, y: 0.03999809, z: -66.40999}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: 67.68666, y: 1.651016, z: -13.429428}
+  - Position: {x: 67.68666, y: 0.20878899, z: -13.429428}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
   - Position: {x: 67.75742, y: 0.04, z: -4.921449}
@@ -241,13 +241,13 @@ MonoBehaviour:
   - Position: {x: -8.296692, y: 0.04, z: -41.834072}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: -27.616737, y: 0.04, z: -42.377052}
+  - Position: {x: -27.616737, y: 0.7776218, z: -42.377052}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
   - Position: {x: -26.988918, y: 0.04, z: -32.621204}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: -36.52524, y: 0.040001906, z: -31.939215}
+  - Position: {x: -37.73512, y: 0.040001906, z: -31.939215}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
   - Position: {x: -37.63557, y: 0.04, z: -13.77309}
@@ -443,7 +443,7 @@ MonoBehaviour:
     Start: 36
     End: 0
   - Type: 1
-    Direction: 1
+    Direction: -1
     Group: 1
     Start: 27
     End: 29
@@ -478,12 +478,12 @@ MonoBehaviour:
     Start: 32
     End: 37
   - Type: 0
-    Direction: 1
+    Direction: -1
     Group: 0
     Start: 29
     End: 30
   - Type: 1
-    Direction: 1
+    Direction: -1
     Group: 1
     Start: 30
     End: 31
@@ -603,7 +603,7 @@ MonoBehaviour:
     Start: 22
     End: 64
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 2
     Start: 11
     End: 64
@@ -633,17 +633,17 @@ MonoBehaviour:
     Start: 0
     End: 65
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 0
     Start: 65
     End: 66
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 0
     Start: 66
     End: 67
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 62
     End: 68
@@ -743,12 +743,12 @@ MonoBehaviour:
     Start: 82
     End: 45
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 68
     End: 83
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 83
     End: 67
@@ -778,7 +778,17 @@ MonoBehaviour:
     Start: 85
     End: 44
   - Type: 0
-    Direction: -1
+    Direction: 1
     Group: 0
-    Start: 62
-    End: 21
+    Start: 78
+    End: 76
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 11
+    End: 28
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 11
+    End: 22

@@ -7,9 +7,10 @@ public class PowerUpRadioSet : RadioSet
     {
         UniTask.Create(async () =>
         {
-            await RoomNet.I.SetPowerUp(choice);
-            Debug.Log("set power up done");
-            base.Choose(choice);
+            var success = await RoomNet.I.SetPowerUp(choice);
+
+            Debug.Log("set power up " + success);
+            if (success) base.Choose(choice);
         });
     }
 }

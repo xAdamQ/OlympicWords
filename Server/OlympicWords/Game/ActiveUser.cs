@@ -23,11 +23,24 @@ namespace OlympicWords.Services
         {
             public class Init : Room
             {
+                /// <summary>
+                /// this means the room is not full yet, this is the default state for the newly created room user
+                /// </summary>
+                public class InComplete : Init
+                {
+                }
+
+                /// <summary>
+                /// this means the room is full and the player is not ready yet
+                /// </summary>
                 public class GettingReady : Init
                 {
                 }
 
-                public class WaitingForOthers : Init
+                /// <summary>
+                /// this means he is ready and waiting for others to be ready
+                /// </summary>
+                public class Ready : Init
                 {
                 }
             }

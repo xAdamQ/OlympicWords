@@ -19,12 +19,6 @@ public class LobbyController : ControllerBase, ILobbyController
         this.scopeRepo = scopeRepo;
     }
 
-    [ActionDomain(typeof(UserDomain.Stateless.Free))]
-    public async Task RequestRandomRoom(int betChoice, string env)
-    {
-        await matchMaker.RequestRandomRoom(betChoice, env);
-    }
-
     #region not used
     [ActionDomain(typeof(UserDomain.Stateless))]
     public async Task<MatchRequestResult> RequestMatch(string oppoId)

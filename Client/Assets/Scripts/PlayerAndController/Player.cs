@@ -27,14 +27,14 @@ public abstract class Player : MonoBehaviour
 
     private List<int> fillerWords;
 
-    protected float JumpTime, AutomationSpeedUp, JetJumpSlowDown;
+    protected float OriginalJumpTime, JumpTime, AutomationSpeedUp, JetJumpSlowDown;
 
     protected virtual void Awake()
     {
         Mapper = GetComponent<PlayerMapper>();
 
         //I copy them so I don't edit the global values
-        JumpTime = Config.JumpTime;
+        OriginalJumpTime = JumpTime = Config.JumpTime;
         AutomationSpeedUp = Config.AutomationSpeedUp;
         JetJumpSlowDown = Config.JetJumpSlowDown;
     }
@@ -218,14 +218,16 @@ public abstract class Player : MonoBehaviour
         usedJets++;
 
         JetJumped?.Invoke(lastWordIndex);
+
+        HideJetpack();
     }
 
     private void HideJetpack()
     {
         UniTask.Create(async () =>
         {
-            JumpTime /= JetJumpSlowDown;
-            await UniTask.Delay(250);
+            JumpTime = OriginalJumpTime;
+            await UniTask.Delay(TimeSpan.FromSeconds(Config.JetpackTime));
             Mapper.jetpack.SetActive(false);
         });
     }

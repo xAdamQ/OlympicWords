@@ -218,6 +218,9 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
         // rpcCalling = true;
         #endregion
 
+        if (message.target == "PrepareRequestedRoomRpc")
+        {
+        }
         var method = rpcInfos[message.target];
         var realArgs = hubConnection.Protocol.GetRealArguments(method.types,
             message.arguments.Skip(1).ToArray());
@@ -260,9 +263,10 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
         return SendAsync(nameof(LeaveFinishedRoom));
     }
 
-    public Task SetPowerUp(int powerUp)
+    public Task<bool> SetPowerUp(int powerUp)
     {
-        return SendAsync(nameof(SetPowerUp), powerUp);
+        return hubConnection.InvokeAsync<bool>(nameof(SetPowerUp), powerUp);
+        // return SendAsync(nameof(SetPowerUp), powerUp);
     }
 
     public Task<string> UpStreamChar(IAsyncEnumerable<char> stream)

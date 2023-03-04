@@ -1,0 +1,232 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1e6ca90faad4746a4e86da52a2495cf, type: 3}
+  m_Name: narrow test
+  m_EditorClassIdentifier: 
+  Nodes:
+  - Position: {x: 52.370544, y: 0.08999999, z: 21.561035}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 64.430504, y: 0.08999999, z: 22.14503}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 52.87394, y: 0.08999999, z: 24.218449}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 64.39549, y: 0.08999999, z: 24.809301}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 53.17355, y: 0.08999999, z: 26.361355}
+    Normal: {x: 0, y: 0.99999994, z: 0}
+    Type: 0
+  - Position: {x: 64.46335, y: 0.09000094, z: 27.46182}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 53.783173, y: 0.08999999, z: 29.117086}
+    Normal: {x: 0, y: 0.99999994, z: 0}
+    Type: 0
+  - Position: {x: 49.695354, y: 0.08999999, z: 31.820402}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 45.573135, y: 0.090000466, z: 29.269493}
+    Normal: {x: 0, y: 0.99999994, z: 0}
+    Type: 0
+  - Position: {x: 35.428154, y: 0.08999999, z: 30.78159}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 33.411503, y: 0.09000094, z: 26.06609}
+    Normal: {x: 0, y: 0.99999994, z: 0}
+    Type: 0
+  - Position: {x: 41.69283, y: 0.09000142, z: 27.41091}
+    Normal: {x: 0, y: 0.99999994, z: 0}
+    Type: 0
+  - Position: {x: 49.01444, y: 0.09000094, z: 25.74575}
+    Normal: {x: 0, y: 0.99999994, z: 0}
+    Type: 0
+  - Position: {x: 48.1458, y: 0.08999999, z: 18.32381}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 56.1046, y: 0.08999999, z: 15.013331}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 61.338295, y: 0.08999999, z: 16.29644}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 52.422607, y: 0.08999999, z: 21.48572}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 69.6827, y: 0.08999999, z: 18.712961}
+    Normal: {x: 0, y: 1, z: -0}
+    Type: 0
+  - Position: {x: 66.48317, y: 0.08999999, z: 10.572807}
+    Normal: {x: 0, y: 1, z: -0}
+    Type: 0
+  - Position: {x: 66.18014, y: 0.08999999, z: 17.399923}
+    Normal: {x: 0, y: 1, z: -0}
+    Type: 0
+  - Position: {x: 61.0757, y: 0.08999999, z: 8.643306}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 74.22969, y: 0.089999035, z: 5.604472}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 64.15486, y: 0.08999999, z: -4.4124584}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 80.823944, y: 0.0900038, z: -4.4135866}
+    Normal: {x: 0, y: 0.99999994, z: -0}
+    Type: 0
+  - Position: {x: 74.9489, y: 0.08999999, z: 8.615956}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 61.835983, y: 0.00000047683716, z: 13.934439}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  - Position: {x: 61.94294, y: 0.00000047683716, z: 17.620628}
+    Normal: {x: 0, y: 1, z: 0}
+    Type: 0
+  Edges:
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 0
+    End: 1
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 1
+    End: 2
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 2
+    End: 3
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 3
+    End: 4
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 4
+    End: 5
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 5
+    End: 6
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 6
+    End: 7
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 7
+    End: 8
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 8
+    End: 9
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 9
+    End: 10
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 10
+    End: 11
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 11
+    End: 12
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 12
+    End: 13
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 13
+    End: 14
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 14
+    End: 15
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 15
+    End: 16
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 16
+    End: 17
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 17
+    End: 18
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 18
+    End: 19
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 19
+    End: 20
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 21
+    End: 22
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 22
+    End: 23
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 23
+    End: 24
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 24
+    End: 18
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 19
+    End: 17
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 21
+    End: 20
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 25
+    End: 26

@@ -9,9 +9,19 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 
 public class AddressManager
 {
-    public static AddressManager I => i ??= new AddressManager();
-    private static AddressManager i;
+    public static AddressManager I { get; private set; }
+    public bool Initialized;
 
+    public static async UniTask Init()
+    {
+        I = new AddressManager();
+        await I.MakeEnvironmentLocations();
+    }
+
+    public async UniTask WaitInit()
+    {
+        await UniTask.WaitUntil(() => Initialized);
+    }
     /// <summary>
     /// env type is the key
     /// </summary>
@@ -64,22 +74,6 @@ public class AddressManager
 
     public const string PREFAB_ADDRESS = "Assets/Prefabs";
 
-    public bool Initialized;
-
-    public AddressManager()
-    {
-        MakeEnvironmentLocations().Forget();
-    }
-
-    public static void Reset()
-    {
-        i = null;
-    }
-
-    public async UniTask WaitInit()
-    {
-        await UniTask.WaitUntil(() => Initialized);
-    }
 
     private Dictionary<string, IResourceLocation> GetAllLocations()
     {
@@ -95,7 +89,7 @@ public class AddressManager
         return allLocations;
     }
 
-    private async UniTaskVoid MakeEnvironmentLocations()
+    private async UniTask MakeEnvironmentLocations()
     {
         await Addressables.InitializeAsync();
 

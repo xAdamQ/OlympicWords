@@ -120,9 +120,13 @@ public class GraphTool : EditorTool
                     if (smoothLevel < 0) smoothLevel = 0;
                     Debug.Log(smoothLevel);
                     break;
-                // case KeyCode.U:
-                //     Nodes.ForEach(n => n.Position += n.Normal * .01f);
-                //     break;
+                case KeyCode.U:
+                    Nodes.ForEach(n => n.Position += n.Normal * .01f);
+                    break;
+                case KeyCode.B:
+                    Nodes.ForEach(n => n.Position += n.Normal * -.01f);
+                    break;
+
                 case KeyCode.K:
                     thickMode = !thickMode;
                     break;
@@ -525,13 +529,11 @@ public class GraphTool : EditorTool
                 10f);
         }
 
+        if (remainingAlgoEdges == null) return;
+
         Handles.color = Color.cyan;
-        if (remainingAlgoEdges != null)
-            for (var i = 0; i < remainingAlgoEdges.Count; i++)
-            {
-                var edge = remainingAlgoEdges[i];
-                Handles.DrawLine(Nodes[edge.Start].Position, Nodes[edge.End].Position, 10f);
-            }
+        foreach (var edge in remainingAlgoEdges)
+            Handles.DrawLine(Nodes[edge.Start].Position, Nodes[edge.End].Position, 10f);
     }
 
     private void RecordUndo()

@@ -133,7 +133,7 @@ namespace OlympicWords.Services
 
         public async Task MakeRoomUserReadyRpc()
         {
-            scopeRepo.RoomUser.Domain = typeof(UserDomain.Room.Init.WaitingForOthers);
+            scopeRepo.RoomUser.Domain = typeof(UserDomain.Room.Init.Ready);
             scopeRepo.RoomUser.IsReady = true;
 
             await StartRoomIfAllReady(scopeRepo.Room);
@@ -188,16 +188,16 @@ namespace OlympicWords.Services
                     break;
                 case 2: //1l
                     yield return offlineRepo.LargeFillers.GetRandom();
-                    break;
+                    break;  
             }
         }
 
         public void SetFillers(Room room)
         {
-            const int filler = (int)PowerUp.Filler;
+            const int FILLER = (int)PowerUp.Filler;
 
             var allFillers = new List<(int player, string fillerText)>();
-            var fillerPlayers = room.RoomActors.Where(a => a.ChosenPowerUp == filler).ToList();
+            var fillerPlayers = room.RoomActors.Where(a => a.ChosenPowerUp == FILLER).ToList();
             foreach (var fillerPLayer in fillerPlayers)
                 allFillers.AddRange(ChooseFillers().Select(f => (fillerPLayer.TurnId, f)));
 

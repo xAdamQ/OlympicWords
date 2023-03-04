@@ -17,8 +17,8 @@ public interface IRoomHub
 
     Task Surrender();
     Task LeaveFinishedRoom();
-    Task SetPowerUp(int powerUp);
-    
+    Task<bool> SetPowerUp(int powerUp);
+
     // Task<PersonalFullUserInfo> GetPersonalUserData();
     // /// <summary>
     // /// get public user data by his id
@@ -40,7 +40,6 @@ public interface IRoomHub
     // Task SelectCardback(int cardbackId);
     // Task SelectBackground(int backgroundId);
     // Task ShowMessage(string msgId);
-  
 }
 
 //

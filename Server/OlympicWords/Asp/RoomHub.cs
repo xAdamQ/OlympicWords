@@ -43,9 +43,9 @@ namespace OlympicWords.Services
 
 
 #if UNITY
-        Task
+        Task<bool>
 #else
-        void
+        bool
 #endif
             SetPowerUp(int powerUp);
     }
@@ -182,11 +182,20 @@ namespace OlympicWords.Services
             await matchMaker.MakeRoomUserReadyRpc();
         }
 
-        //you can set the power up whether you're ready or not yet
+        /// <summary>
+        /// the domain is InComplete, because otherwise the room will be prepared and the fillers will be already created
+        /// this doesn't use the domain attribute because a latency affect not a malicious attack, and this is very common
+        /// so this is not an "exception" and shouldn't throw one
+        /// </summary>
         [RpcDomain(typeof(UserDomain.Room.Init))]
-        public void SetPowerUp([ValidRange(3)] int powerUp)
+        public bool SetPowerUp([ValidRange(3)] int powerUp)
         {
+            if (scopeRepo.RoomUser.Domain != typeof(UserDomain.Room.Init.InComplete))
+                return false;
+
             scopeRepo.RoomActor.ChosenPowerUp = powerUp;
+            logger.LogInformation("power up set to {PowerUp}", powerUp);
+            return true;
         }
 
 

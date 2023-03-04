@@ -58,11 +58,15 @@ public class EdgeDrawer
         }
     }
 
+    private const float WIDTH = .6f;
+
+
     public void DrawEdges()
     {
-        // Handles.zTest = gt.drawMode ? CompareFunction.Less : CompareFunction.Always;
         Handles.zTest = CompareFunction.LessEqual;
-        var thickness = gt.thickMode ? 50f : 3f;
+        // Handles.zTest = CompareFunction.Always;
+        Handles.color = Color.white;
+
 
         for (var i = 0; i < gt.Edges.Count; i++)
         {
@@ -70,49 +74,9 @@ public class EdgeDrawer
 
             if (gt.Edges[i].Type == 1) Handles.color -= Color.white * .5f;
 
-            var center = Vector3.Lerp(gt.Nodes[edge.Start].Position, gt.Nodes[edge.End].Position,
-                .5f);
-            var length = Vector3.Distance(gt.Nodes[edge.Start].Position,
-                gt.Nodes[edge.End].Position);
-            var relativeThickness = HandleUtility.GetHandleSize(center) * thickness;
-
-            // Handles.DrawLine(gt.Nodes[edge.Start].Position, gt.Nodes[edge.End].Position, thickness);
-            // var perpendicular = Vector2.Perpendicular(direction);
-
-            var middleNormal = Vector3.Lerp(gt.Nodes[edge.Start].Normal, gt.Nodes[edge.End].Normal, .5f);
-            var direction = (gt.Nodes[edge.End].Position - gt.Nodes[edge.Start].Position).normalized;
-            var widthDir = Vector3.Cross(middleNormal, direction);
-            var width = .6f;
-
-            var upLeft = gt.Nodes[edge.Start].Position + widthDir * width;
-            var upRight = gt.Nodes[edge.End].Position + widthDir * width;
-            var downLeft = gt.Nodes[edge.Start].Position - widthDir * width;
-            var downRight = gt.Nodes[edge.End].Position - widthDir * width;
-
-
-            Handles.color = Color.white;
-            Handles.DrawSolidRectangleWithOutline(new[] { downLeft, upLeft, upRight, downRight },
-                edgeGroupColors[edge.Group],
-                Color.black);
-
-            // Handles.DrawLine(gt.Nodes[edge.End].Position, gt.Nodes[edge.End].Position + widthDir * .5f, 3f);
-            // Handles.color = Color.black;
-            // Handles.Button(downLeft, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
-            // Handles.color = Color.white;
-            // Handles.Button(upLeft, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
-            // Handles.color = Color.blue;
-            // Handles.Button(downRight, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
-            // Handles.color = Color.red;
-            // Handles.Button(upRight, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
-
-
-            // Handles.DrawSolidRectangleWithOutline(new Rect(center, new Vector2(length, 50)),
-            //     Color.green, Color.yellow);
-            // Nodes[edge.Start].Position, Nodes[edge.End].Position, relativeThickness);
-
-
-            // Handles.Label(Vector3.Lerp(Nodes[edge.Start].Position, Nodes[edge.End].Position, .5f), i.ToString());
-            // Handles.zTest = CompareFunction.Always;
+            // Handles.color = edgeGroupColors[edge.Group];    
+            // Handles.DrawLine(gt.Nodes[edge.Start].Position, gt.Nodes[edge.End].Position, 5f);
+            DrawMeshLine(edge);
 
             if (gt.viewMode) continue;
 
@@ -121,6 +85,31 @@ public class EdgeDrawer
         }
     }
 
+    public void DrawMeshLine(Edge edge)
+    {
+        var middleNormal = Vector3.Lerp(gt.Nodes[edge.Start].Normal, gt.Nodes[edge.End].Normal, .5f);
+        var direction = (gt.Nodes[edge.End].Position - gt.Nodes[edge.Start].Position).normalized;
+        var widthDir = Vector3.Cross(middleNormal, direction);
+
+        var upLeft = gt.Nodes[edge.Start].Position + widthDir * WIDTH;
+        var upRight = gt.Nodes[edge.End].Position + widthDir * WIDTH;
+        var downLeft = gt.Nodes[edge.Start].Position - widthDir * WIDTH;
+        var downRight = gt.Nodes[edge.End].Position - widthDir * WIDTH;
+
+        Handles.color = Color.white;
+        Handles.DrawSolidRectangleWithOutline(new[] { downLeft, upLeft, upRight, downRight },
+            edgeGroupColors[edge.Group], edgeGroupColors[edge.Group]);
+
+        // Handles.DrawLine(gt.Nodes[edge.End].Position, gt.Nodes[edge.End].Position + widthDir * .5f, 3f);
+        // Handles.color = Color.black;
+        // Handles.Button(downLeft, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
+        // Handles.color = Color.white;
+        // Handles.Button(upLeft, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
+        // Handles.color = Color.blue;
+        // Handles.Button(downRight, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
+        // Handles.color = Color.red;
+        // Handles.Button(upRight, Quaternion.identity, .1f, .1f, Handles.SphereHandleCap);
+    }
 
     /// <summary>
     /// contains direction click functions
