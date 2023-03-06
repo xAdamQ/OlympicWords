@@ -33,9 +33,9 @@ public class NetManager : MonoModule<NetManager>
 
         base.Awake();
 
-#if !UNITY_EDITOR
-        SelectedAddress = "https://wordwar3.azurewebsites.net";
-#endif
+// #if !UNITY_EDITOR
+//         SelectedAddress = "https://wordwar3.azurewebsites.net";
+// #endif
     }
 
     public string SelectedAddress;
@@ -70,6 +70,9 @@ public class NetManager : MonoModule<NetManager>
         if (json != null)
             request.AddField("data", json);
 
+        Debug.Log($"Sending to: {uriBuilder.Uri} \n" +
+                  $"with data: {json}, and queries: {JsonConvert.SerializeObject(queryParams)}");
+
         var response = await request.GetHTTPResponseAsync();
 
         if (request.Exception is not null)
@@ -92,7 +95,14 @@ public class NetManager : MonoModule<NetManager>
         //     throw new Exception(
         //         $"the content types: {string.Join(", ", contentTypes)} for http requests is not supported");
 
+        // Debug.Log("before deserializing");
+        // var res = JsonConvert.DeserializeObject<T>(response.DataAsText);
+        // Debug.Log("after deserializing");
+
+        Debug.Log(response.DataAsText);
         return JsonConvert.DeserializeObject<T>(response.DataAsText);
+        // return JsonConvert.DeserializeObject<T>(null);
+        // return JsonUtility.FromJson<T>(response.DataAsText);
     }
 
     public async Task<(HTTPRequest, HTTPResponse)> SendAsyncHTTP(string uri,
@@ -163,7 +173,9 @@ public class NetManager : MonoModule<NetManager>
 
         PlayerPrefs.Save();
 
+        Debug.Log("1");
         Repository.I.PersonalFullInfo = await Controllers.User.Personal();
+        Debug.Log("2");
         //current auth is then used to fetch the personal data
 
         SetToken(provider, token);

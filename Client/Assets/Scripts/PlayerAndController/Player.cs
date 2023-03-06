@@ -32,8 +32,9 @@ public abstract class Player : MonoBehaviour
     protected virtual void Awake()
     {
         Mapper = GetComponent<PlayerMapper>();
+        animator = GetComponent<Animator>();
 
-        //I copy them so I don't edit the global values
+        //I copy them so I don't edit the original values
         OriginalJumpTime = JumpTime = Config.JumpTime;
         AutomationSpeedUp = Config.AutomationSpeedUp;
         JetJumpSlowDown = Config.JetJumpSlowDown;
@@ -68,7 +69,7 @@ public abstract class Player : MonoBehaviour
     public void TakeInput(char chr)
     {
         //supposed we won't have \r naturally in the text
-        if (chr == '\r')
+        if (chr is '\r' or '\n')
         {
             if (ChosenPowerUp == PowerUp.MegaJet && usedJets < 1)
                 JetJump(4);
@@ -104,17 +105,16 @@ public abstract class Player : MonoBehaviour
         lastMoveTween.SkipTween();
         lastRotateTween.SkipTween();
         stepMoveTween.SkipTween();
-
-        // animator.SetTrigger(jump);
     }
 
     public (Vector3 start, Vector3 end) MovePath { get; set; }
     protected abstract Tween JumpMovement();
     protected abstract Tween JumpRotation();
 
-    public event Action Jumped, JumpFinished;
+    public event Action Jumping, JumpOrdered, JumpFinished;
     private void JumpToCurrent()
     {
+        Jumping?.Invoke();
         JumpMovement();
 
         lastMoveTween = JumpMovement();
@@ -122,7 +122,7 @@ public abstract class Player : MonoBehaviour
 
         lastMoveTween.OnComplete(() => JumpFinished?.Invoke());
 
-        Jumped?.Invoke();
+        JumpOrdered?.Invoke();
     }
 
     private Tween lastMoveTween;
@@ -240,4 +240,5 @@ public abstract class Player : MonoBehaviour
         "basra grandmaster",
         "top eater",
     };
+    protected Animator animator;
 }

@@ -47,8 +47,6 @@ public class AddressableEditorUtility
 
     public static void UpdateSystem()
     {
-        var baseAddress = AddressManager.PREFAB_ADDRESS;
-
         var envs = RootEnv.GetEnvironments();
         var envQueue = new Queue<ClientEnvironment>();
         envQueue.Enqueue(envs.Single(e => e.Name == "Root"));
@@ -67,7 +65,7 @@ public class AddressableEditorUtility
 
             var envPath = Path.Combine(
                 currentDirectory,
-                baseAddress,
+                AddressManager.PREFAB_ADDRESS,
                 env.Name == RootEnv.Name ? "" : RootEnv.Name,
                 //root a special rule that it is not included in the sub types names
                 Path.Combine(env.Name.SplitCamelCase())
@@ -96,11 +94,11 @@ public class AddressableEditorUtility
 
             envAddr.Add(env.Name, new EnvironmentAddresses
             {
-                Shop = shop.path,
-                Players = players.Select(o => o.path).ToList(),
+                Shop = shop.path?.Replace('\\', '/'),
+                Players = players.Select(o => o.path.Replace('\\', '/')).ToList(),
                 Items = new()
                 {
-                    Players = itemPlayers.Select(o => o.path).ToList(),
+                    Players = itemPlayers.Select(o => o.path.Replace('\\', '/')).ToList(),
                 },
             });
         }

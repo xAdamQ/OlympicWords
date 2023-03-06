@@ -103,7 +103,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!95 &7609011456187578341
 Animator:
-  serializedVersion: 5
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -112,7 +112,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 2db7e17401e08b94697ecd7acce75ab1, type: 3}
   m_Controller: {fileID: 9100000, guid: 6695da54bf75b5248a3195f8ddc8fec9, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
@@ -120,7 +120,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &5190531886719562144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,8 +263,8 @@ SkinnedMeshRenderer:
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 7609011456178575369}
   m_AABB:
-    m_Center: {x: 0.0000059094746, y: -0.0005736614, z: -0.00010164175}
-    m_Extent: {x: 0.00453745, y: 0.004939339, z: 0.0013197282}
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
   m_DirtyAABB: 0
 --- !u!1 &7609011456178209833
 GameObject:
@@ -2256,12 +2256,12 @@ MonoBehaviour:
   m_margin: {x: 1.1016501, y: 0.3362301, z: 1.1291677, w: 0.21023408}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_renderer: {fileID: 817397348830178049}
-  m_maskType: 0
   _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
+  m_hasFontAssetChanged: 0
+  m_renderer: {fileID: 817397348830178049}
+  m_maskType: 0
 --- !u!114 &1542779975651129849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2279,7 +2279,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 3
+    serializedVersion: 2
     m_TransformParent: {fileID: 7609011456178575365}
     m_Modifications:
     - target: {fileID: 1378504738697240690, guid: 2f17d1e2826b77b48923cf038aa72583, type: 3}
@@ -2403,9 +2403,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f17d1e2826b77b48923cf038aa72583, type: 3}
 --- !u!1 &3903740574287345227 stripped
 GameObject:

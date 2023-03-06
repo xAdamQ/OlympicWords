@@ -72,8 +72,7 @@ public class AddressManager
         return PlayerLocations[id];
     }
 
-    public const string PREFAB_ADDRESS = "Assets/Prefabs";
-
+    public static readonly string PREFAB_ADDRESS = Path.Combine("Assets", "Prefabs");
 
     private Dictionary<string, IResourceLocation> GetAllLocations()
     {
@@ -81,10 +80,10 @@ public class AddressManager
         var allLocations = new Dictionary<string, IResourceLocation>();
 
         foreach (var locator in locators)
-        foreach (var locatorKey in locator.Keys)
-            if (locator.Locate(locatorKey, typeof(GameObject), out var locations))
-                foreach (var location in locations)
-                    allLocations.TryAdd(location.InternalId, location);
+            foreach (var locatorKey in locator.Keys)
+                if (locator.Locate(locatorKey, typeof(GameObject), out var locations))
+                    foreach (var location in locations)
+                        allLocations.TryAdd(location.InternalId, location);
 
         return allLocations;
     }
@@ -93,8 +92,9 @@ public class AddressManager
     {
         await Addressables.InitializeAsync();
 
-        var addresses = JsonConvert.DeserializeObject<Dictionary<string, EnvironmentAddresses>>
-            (await File.ReadAllTextAsync("Assets/EnvironmentAddresses.json"));
+        var addressesText = await Addressables.LoadAssetAsync<TextAsset>("EnvironmentAddresses");
+
+        var addresses = JsonConvert.DeserializeObject<Dictionary<string, EnvironmentAddresses>>(addressesText.text);
 
         var locations = GetAllLocations();
 
@@ -134,7 +134,8 @@ public class AddressManager
 
     public static void SaveEnvAddr(Dictionary<string, EnvironmentAddresses> environmentAddresses)
     {
-        File.WriteAllText("Assets/EnvironmentAddresses.json", JsonConvert.SerializeObject(environmentAddresses));
+        File.WriteAllText("Assets/EnvironmentAddresses.json",
+            JsonConvert.SerializeObject(environmentAddresses));
     }
 
     public class EnvironmentLocations

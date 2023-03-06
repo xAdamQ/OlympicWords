@@ -55,10 +55,16 @@ namespace OlympicWords.Services
             //twice this method without domain change
             scopeRepo.MarkUserPending();
 
-            if (!category.IsInRange(Room.Bets.Length) || !OfflineRepo.GameConfig.OrderedEnvs.Contains(env))
+            if (!category.IsInRange(Room.Bets.Length))
             {
                 scopeRepo.RemovePendingUser();
-                throw new Exceptions.BadUserInputException();
+                throw new Exceptions.BadUserInputException($"the room category: {category} exceeds the category list: {Room.Bets.Length}");
+            }
+
+            if(!OfflineRepo.GameConfig.OrderedEnvs.Contains(env))
+            {
+                scopeRepo.RemovePendingUser();
+                throw new Exceptions.BadUserInputException($"the environment {env} doesn't exist");
             }
 
             var dUser = await offlineRepo.GetCurrentUserAsync();

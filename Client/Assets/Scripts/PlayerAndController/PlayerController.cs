@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Player))]
 public abstract class PlayerController : MonoModule<PlayerController>
 {
+    private bool canWrite;
+
     protected const float MOVE_TIME = .2f;
 
     //don't set this here, should be set by a concrete type
@@ -29,8 +31,16 @@ public abstract class PlayerController : MonoModule<PlayerController>
 
         mainCamera = Camera.main!.transform;
 
-        Player.WordSkipping += () => { Keyboard.current.onTextInput -= OnTextInput; };
-        Player.WordSkipped += () => { Keyboard.current.onTextInput += OnTextInput; };
+        Player.WordSkipping += () =>
+        {
+            canWrite = false;
+            Keyboard.current.onTextInput -= OnTextInput;
+        };
+        Player.WordSkipped += () =>
+        {
+            canWrite = true;
+            Keyboard.current.onTextInput += OnTextInput;
+        };
     }
 
     protected virtual void Start()
@@ -41,6 +51,7 @@ public abstract class PlayerController : MonoModule<PlayerController>
 
     private void OnGameStarted()
     {
+        canWrite = true;
         Keyboard.current.onTextInput += OnTextInput;
 
         switch (Player.ChosenPowerUp)
@@ -59,6 +70,7 @@ public abstract class PlayerController : MonoModule<PlayerController>
 
     private void OnGameFinished()
     {
+        canWrite = false;
         Keyboard.current.onTextInput -= OnTextInput;
     }
 
@@ -121,8 +133,6 @@ public abstract class PlayerController : MonoModule<PlayerController>
 
             lastLookAtPoz = Vector3.Lerp(lastLookAtPoz, TargetLookAt, CameraLookSmoothing);
             mainCamera.LookAt(lastLookAtPoz);
-
-            // Debug.Log($"following{lastLookAtPoz}, {TargetLookAt}");
 
             yield return new WaitForFixedUpdate();
         }

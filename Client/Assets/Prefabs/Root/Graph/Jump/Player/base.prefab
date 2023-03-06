@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3823713405820912399, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.03097178
+      objectReference: {fileID: 0}
+    - target: {fileID: 3823713405820912399, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.00089216046
+      objectReference: {fileID: 0}
     - target: {fileID: 3823713405820912427, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -52,9 +60,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3823713405820912507, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.0007336913
+      objectReference: {fileID: 0}
+    - target: {fileID: 3823713405820912507, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.047071863
+      objectReference: {fileID: 0}
     - target: {fileID: 3823713405821083403, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
       propertyPath: m_Name
-      value: graph jump player Variant
+      value: base
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -62,14 +78,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3823713405821083403, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5502628398265721965}
+      addedObject: {fileID: 8369625650882077425}
   m_SourcePrefab: {fileID: 100100000, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
 --- !u!1 &6279866200224707283 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3823713405821083403, guid: 66b394fc643b9719fb5c4292af77d19e, type: 3}
   m_PrefabInstance: {fileID: 7076876970499075544}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5502628398265721965
+--- !u!114 &8369625650882077425
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,7 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6279866200224707283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a95b97c054ec4b3987a7af22a4202b41, type: 3}
+  m_Script: {fileID: 11500000, guid: e149d0d6618a4a429c4b11096a23a7a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   StartTime: 0

@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+
 public class EdgeDrawer
 {
     private readonly GraphTool gt;
@@ -58,8 +59,7 @@ public class EdgeDrawer
         }
     }
 
-    private const float WIDTH = .6f;
-
+    private const float WIDTH = .6f, CAP_SIZE = .1f;
 
     public void DrawEdges()
     {
@@ -71,8 +71,6 @@ public class EdgeDrawer
         for (var i = 0; i < gt.Edges.Count; i++)
         {
             var edge = gt.Edges[i];
-
-            if (gt.Edges[i].Type == 1) Handles.color -= Color.white * .5f;
 
             // Handles.color = edgeGroupColors[edge.Group];    
             // Handles.DrawLine(gt.Nodes[edge.Start].Position, gt.Nodes[edge.End].Position, 5f);
@@ -87,18 +85,28 @@ public class EdgeDrawer
 
     public void DrawMeshLine(Edge edge)
     {
+        Handles.zTest = CompareFunction.LessEqual;
+        Handles.color = edgeGroupColors[edge.Group];
+
         var middleNormal = Vector3.Lerp(gt.Nodes[edge.Start].Normal, gt.Nodes[edge.End].Normal, .5f);
         var direction = (gt.Nodes[edge.End].Position - gt.Nodes[edge.Start].Position).normalized;
         var widthDir = Vector3.Cross(middleNormal, direction);
 
-        var upLeft = gt.Nodes[edge.Start].Position + widthDir * WIDTH;
-        var upRight = gt.Nodes[edge.End].Position + widthDir * WIDTH;
-        var downLeft = gt.Nodes[edge.Start].Position - widthDir * WIDTH;
-        var downRight = gt.Nodes[edge.End].Position - widthDir * WIDTH;
+        var color = edgeGroupColors[edge.Group];
+        var width = WIDTH;
+        if (edge.Type == 1)
+        {
+            width = .2f;
+            color -= Color.white * .5f;
+        }
 
-        Handles.color = Color.white;
-        Handles.DrawSolidRectangleWithOutline(new[] { downLeft, upLeft, upRight, downRight },
-            edgeGroupColors[edge.Group], edgeGroupColors[edge.Group]);
+
+        var upLeft = gt.Nodes[edge.Start].Position + widthDir * width;
+        var upRight = gt.Nodes[edge.End].Position + widthDir * width;
+        var downLeft = gt.Nodes[edge.Start].Position - widthDir * width;
+        var downRight = gt.Nodes[edge.End].Position - widthDir * width;
+
+        Handles.DrawSolidRectangleWithOutline(new[] { downLeft, upLeft, upRight, downRight }, color, color);
 
         // Handles.DrawLine(gt.Nodes[edge.End].Position, gt.Nodes[edge.End].Position + widthDir * .5f, 3f);
         // Handles.color = Color.black;
@@ -116,6 +124,10 @@ public class EdgeDrawer
     /// </summary>
     private void DrawDirectionCap(Edge edge, ref int edgeCounter)
     {
+        Handles.zTest = CompareFunction.Always;
+        Handles.color = Color.red;
+        // edgeGroupColors[edge.Group] + new Color(.4f, .4f, .4f, 0f);
+
         Quaternion capDir;
         Handles.CapFunction capFunction;
         if (edge.Direction != 0)
@@ -131,10 +143,9 @@ public class EdgeDrawer
         }
 
 
-        var capPoz = Vector3.Lerp(gt.Nodes[edge.Start].Position, gt.Nodes[edge.End].Position,
-            .3f);
-        var capSize = gt.GetRelativeCapSize(capPoz);
-        var dirClicked = Handles.Button(capPoz, capDir, .2f, .2f, capFunction);
+        var capPoz = Vector3.Lerp(gt.Nodes[edge.Start].Position, gt.Nodes[edge.End].Position, .3f);
+        var capSize = gt.GetRelativeCapSize(capPoz, CAP_SIZE);
+        var dirClicked = Handles.Button(capPoz, capDir, capSize, capSize, capFunction);
 
         if (!dirClicked) return;
 

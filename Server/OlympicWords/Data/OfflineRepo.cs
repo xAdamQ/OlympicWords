@@ -279,8 +279,7 @@ public class OfflineRepo : IOfflineRepo
     }
     public async Task<List<User>> GetUsersAsync(List<string> ids)
     {
-        return await context.Users.Where(u => ids.Contains(u.Id)).Take(ids.Count)
-            .ToListAsync();
+        return await context.Users.Where(u => ids.Contains(u.Id)).ToListAsync();
     }
 
     public async Task<FullUserInfo> GetFullUserInfoAsync(string id)

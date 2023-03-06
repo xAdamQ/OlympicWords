@@ -3,9 +3,9 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
-[RequireComponent(typeof(GraphPlayer))]
+[RequireComponent(typeof(GraphJumpPlayer))]
 //you can insert additional base classes when needed
-public class GraphJumpController : PlayerController<GraphPlayer>
+public class GraphJumpController : PlayerController<GraphJumpPlayer>
 {
     private Vector3 addedOffset;
 
@@ -27,7 +27,7 @@ public class GraphJumpController : PlayerController<GraphPlayer>
         Player.WordJumping += WordJumping;
         Player.WordJumped += WordJumped;
 
-        Player.Jumped += OnPlayerJumped;
+        Player.JumpOrdered += OnPlayerJumpOrdered;
         Player.JumpFinished += OnJumpFinished;
 
         ColorWord(0);
@@ -50,7 +50,7 @@ public class GraphJumpController : PlayerController<GraphPlayer>
             TargetLookAt;
     }
 
-    private void OnPlayerJumped()
+    private void OnPlayerJumpOrdered()
     {
         addedOffset = Vector3.Distance(Player.MovePath.start, Player.MovePath.end)
                       * JumpZoomCoefficient * Vector3.one;
