@@ -67,7 +67,7 @@ namespace OlympicWords.Services
             //////extract inputs and validate them
 
             var profile = await securityManager.GetProfile(provider, accessToken);
-            var user = await offlineRepo.GetUserAsync(accessToken, provider);
+            var user = await offlineRepo.GetUserAsync(profile.Id, provider);
 
             if (user == null)
                 user = await securityManager.SignUpAsync(profile);

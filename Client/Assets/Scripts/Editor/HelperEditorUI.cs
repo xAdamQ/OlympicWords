@@ -118,30 +118,36 @@ namespace Server
             await AddressManager.Init();
 
             var envs = RootEnv.GetEnvironments();
-            var diskEnvs = envs.Select(e => new DiskEnvironment
-            {
-                Name = e.Name,
-                Parent = e.Parent?.Name,
-                Children = e.Children.Select(c => c.Name).ToList(),
-                Playable = !RootEnv.EnvTypes[e.Name].IsAbstract,
-            }).ToList();
 
-            foreach (var diskEnvironment in diskEnvs)
+            var diskEnvs = new List<DiskEnvironment>(envs.Count);
+            foreach (var e in envs)
             {
-                var locations = AddressManager.I.GetItemPlayerLocations(diskEnvironment.Name);
-                diskEnvironment.ItemPlayers = new();
-                foreach (var resourceLocation in locations)
+                var diskEnv = new DiskEnvironment
                 {
-                    var go = await Addressables.LoadAssetAsync<GameObject>(resourceLocation);
-                    var item = go.GetComponent<ItemPlayer>();
+                    Name = e.Type.Name,
+                    Parent = e.Parent?.Type.Name,
+                    Children = e.Children.Select(c => c.Type.Name).ToList(),
+                    Playable = !e.Type.IsAbstract,
+                };
 
-                    diskEnvironment.ItemPlayers.Add(new Shared.ItemPlayer
+                var itemLocations = AddressManager.I.GetItemPlayerLocations(e.Type);
+                if (itemLocations is not null)
+                {
+                    diskEnv.ItemPlayers = new();
+                    foreach (var resourceLocation in itemLocations)
                     {
-                        Id = item.Id,
-                        Level = item.Level,
-                        Price = item.Price,
-                    });
+                        var go = await Addressables.LoadAssetAsync<GameObject>(resourceLocation);
+                        var item = go.GetComponent<ItemPlayer>();
+                        diskEnv.ItemPlayers.Add(new DiskItemPlayer
+                        {
+                            Id = item.Id,
+                            Level = item.Level,
+                            Price = item.Price,
+                        });
+                    }
                 }
+
+                diskEnvs.Add(diskEnv);
             }
 
             var envString = JsonConvert.SerializeObject(diskEnvs, new JsonSerializerSettings
@@ -153,8 +159,9 @@ namespace Server
 
             var config = new GameConfig
             {
-                OrderedEnvs = RootEnv.OrderedEnvs.Select(e => RootEnv.EnvIds[e]).ToArray(),
+                EnvConfigs = RootEnv.EnvConfigs,
             };
+
             await File.WriteAllTextAsync(Path.Combine(pathField.value, "GameConfig.json"),
                 JsonConvert.SerializeObject(config));
         }

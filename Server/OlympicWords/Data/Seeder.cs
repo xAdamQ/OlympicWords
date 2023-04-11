@@ -2,22 +2,11 @@
 using OlympicWords.Data;
 
 namespace OlympicWords.Services;
+
 public static class Seeder
 {
     public static void SeedData(ModelBuilder modelBuilder)
     {
-        var selectedPlayers =
-            new Dictionary<string, string>
-            {
-                {
-                    "GraphJumpCity", OfflineRepo.ItemPlayers.First().Value.Id
-                }
-            };
-        var ownedPlayers = new HashSet<string>
-        {
-            OfflineRepo.ItemPlayers.First().Value.Id,
-        };
-
         var bot999 = new User()
         {
             Id = "999",
@@ -35,8 +24,8 @@ public static class Seeder
             RequestedMoneyAidToday = 0,
             LastMoneyAimRequestTime = null,
             SelectedCardback = 1,
-            OwnedItemPlayers = ownedPlayers,
-            SelectedItemPlayer = selectedPlayers,
+            OwnedItemPlayers = OfflineRepo.DefaultOwnedItemPlayers,
+            SelectedItemPlayer = OfflineRepo.DefaultSelectedItemPlayers,
         };
         var bot9999 = new User()
         {
@@ -54,8 +43,8 @@ public static class Seeder
             RequestedMoneyAidToday = 0,
             LastMoneyAimRequestTime = null,
             SelectedCardback = 2,
-            OwnedItemPlayers = ownedPlayers,
-            SelectedItemPlayer = selectedPlayers,
+            OwnedItemPlayers = OfflineRepo.DefaultOwnedItemPlayers,
+            SelectedItemPlayer = OfflineRepo.DefaultSelectedItemPlayers,
         };
         var bot99999 = new User()
         {
@@ -73,8 +62,8 @@ public static class Seeder
             RequestedMoneyAidToday = 0,
             LastMoneyAimRequestTime = null,
             SelectedCardback = 2,
-            OwnedItemPlayers = ownedPlayers,
-            SelectedItemPlayer = selectedPlayers,
+            OwnedItemPlayers = OfflineRepo.DefaultOwnedItemPlayers,
+            SelectedItemPlayer = OfflineRepo.DefaultSelectedItemPlayers,
         };
 
         var pictureData = new UserPicture[]

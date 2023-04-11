@@ -172,52 +172,13 @@ MonoBehaviour:
   - Position: {x: 42.752934, y: 0.13366702, z: 51.37048}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: 61.97119, y: 0.04, z: -75.19414}
+  - Position: {x: 62.172276, y: 0.5339782, z: -1.0473899}
     Normal: {x: 0, y: 1, z: 0}
     Type: 1
-  - Position: {x: 95.253006, y: 0.04, z: -74.567604}
+  - Position: {x: 8.091526, y: 0.6282683, z: -47.534874}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: 94.89826, y: 0.04, z: -5.319881}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 67.12622, y: 0.03999809, z: -66.40999}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 67.68666, y: 0.20878899, z: -13.429428}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 67.75742, y: 0.04, z: -4.921449}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 60.181156, y: 0.5339782, z: -1.0473899}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 1
-  - Position: {x: 8.091526, y: 0.040001906, z: -53.273098}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 24.045618, y: 0.04, z: -48.02836}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 40.5633, y: 0.04, z: -39.714485}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 67.53343, y: 0.03999809, z: -35.567917}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 8.429453, y: 0.04, z: -75.021576}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 63.227905, y: 1.142458, z: 35.171288}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 62.789417, y: 0.040000953, z: 35.770977}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 63.128513, y: 0.04, z: 30.44009}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 63.241833, y: 1.8055744, z: 31.084133}
+  - Position: {x: 62.716866, y: 0.04, z: 30.44009}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
   - Position: {x: -8.822014, y: 0.04, z: 3.940319}
@@ -241,19 +202,13 @@ MonoBehaviour:
   - Position: {x: -8.806509, y: 0.040003814, z: -12.649204}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: -8.183216, y: 0.04000001, z: 24.779291}
+  - Position: {x: -8.419979, y: 0.04000001, z: 30.526226}
     Normal: {x: 0, y: 1.0000002, z: 0}
     Type: 0
   - Position: {x: 7.14312, y: 0.04000381, z: 42.732162}
     Normal: {x: 0, y: 0.99999994, z: 0}
     Type: 0
-  - Position: {x: 60.863827, y: 0.04, z: -35.5995}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 0.6571655, y: 0.040000003, z: -67.085884}
-    Normal: {x: 0, y: 1.0000001, z: 0}
-    Type: 0
-  - Position: {x: -26.30724, y: 0.1, z: 22.359066}
+  - Position: {x: -32.42728, y: 0.15808582, z: 29.807991}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
   - Position: {x: -32.62306, y: 0.1, z: 17.384413}
@@ -268,7 +223,7 @@ MonoBehaviour:
   - Position: {x: -32.590004, y: 0.1, z: 3.6664424}
     Normal: {x: 0, y: 1, z: -0}
     Type: 0
-  - Position: {x: -29.82137, y: 0.099999994, z: -4.847079}
+  - Position: {x: -32.069992, y: 0.099999994, z: -4.674976}
     Normal: {x: 0, y: 0.99999994, z: -0}
     Type: 0
   - Position: {x: -37.066345, y: 0.10000193, z: -5.063074}
@@ -296,27 +251,27 @@ MonoBehaviour:
     Start: 3
     End: 23
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 7
     End: 10
   - Type: 1
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 26
     End: 27
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 31
     End: 28
   - Type: 1
-    Direction: 0
+    Direction: -1
     Group: 1
     Start: 25
     End: 32
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 0
     Start: 38
     End: 37
@@ -326,7 +281,7 @@ MonoBehaviour:
     Start: 10
     End: 9
   - Type: 1
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 36
     End: 35
@@ -356,7 +311,7 @@ MonoBehaviour:
     Start: 20
     End: 21
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 0
     Start: 34
     End: 35
@@ -366,7 +321,7 @@ MonoBehaviour:
     Start: 1
     End: 3
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 33
     End: 32
@@ -391,37 +346,37 @@ MonoBehaviour:
     Start: 44
     End: 45
   - Type: 0
-    Direction: 1
+    Direction: -1
     Group: 0
     Start: 45
     End: 46
   - Type: 0
-    Direction: 1
+    Direction: -1
     Group: 0
     Start: 46
     End: 47
   - Type: 0
-    Direction: 1
+    Direction: -1
     Group: 0
     Start: 48
     End: 49
   - Type: 0
-    Direction: 1
+    Direction: -1
     Group: 0
     Start: 49
     End: 50
   - Type: 0
-    Direction: 1
+    Direction: -1
     Group: 0
     Start: 47
     End: 51
   - Type: 0
-    Direction: 1
+    Direction: -1
     Group: 0
     Start: 52
     End: 48
   - Type: 0
-    Direction: -1
+    Direction: 1
     Group: 0
     Start: 52
     End: 51
@@ -431,12 +386,12 @@ MonoBehaviour:
     Start: 12
     End: 0
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 1
     Start: 36
     End: 0
   - Type: 1
-    Direction: 0
+    Direction: 1
     Group: 1
     Start: 27
     End: 29
@@ -445,33 +400,28 @@ MonoBehaviour:
     Group: 0
     Start: 14
     End: 15
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 54
-    End: 55
   - Type: 1
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 34
     End: 33
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 25
     End: 26
   - Type: 1
-    Direction: 0
+    Direction: 1
     Group: 1
     Start: 32
     End: 37
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 29
     End: 30
   - Type: 1
-    Direction: 0
+    Direction: 1
     Group: 1
     Start: 30
     End: 31
@@ -536,21 +486,6 @@ MonoBehaviour:
     Start: 1
     End: 2
   - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 58
-    End: 55
-  - Type: 0
-    Direction: -1
-    Group: 1
-    Start: 53
-    End: 56
-  - Type: 0
-    Direction: 0
-    Group: 1
-    Start: 53
-    End: 54
-  - Type: 0
     Direction: 1
     Group: 0
     Start: 41
@@ -566,37 +501,27 @@ MonoBehaviour:
     Start: 39
     End: 42
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 1
     Start: 31
     End: 27
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 2
     Start: 28
-    End: 59
+    End: 53
   - Type: 0
     Direction: 1
     Group: 2
     Start: 22
-    End: 59
+    End: 53
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 2
     Start: 11
-    End: 59
-  - Type: 0
-    Direction: -1
-    Group: 1
-    Start: 57
-    End: 59
-  - Type: 0
-    Direction: 0
-    Group: 1
-    Start: 58
-    End: 59
+    End: 53
   - Type: 1
-    Direction: 0
+    Direction: -1
     Group: 0
     Start: 27
     End: 38
@@ -604,194 +529,134 @@ MonoBehaviour:
     Direction: 1
     Group: 1
     Start: 0
+    End: 54
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 0
+    End: 56
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 57
+    End: 58
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 58
+    End: 59
+  - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 59
     End: 60
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 0
     Start: 60
     End: 61
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 0
     Start: 61
     End: 62
   - Type: 0
     Direction: 1
     Group: 0
+    Start: 56
+    End: 62
+  - Type: 0
+    Direction: 1
+    Group: 0
     Start: 57
+    End: 62
+  - Type: 0
+    Direction: 1
+    Group: 0
+    Start: 56
     End: 63
   - Type: 0
     Direction: 1
     Group: 0
     Start: 63
-    End: 56
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 64
-    End: 53
-  - Type: 1
-    Direction: -1
-    Group: 0
-    Start: 65
-    End: 66
-  - Type: 0
-    Direction: -1
-    Group: 0
-    Start: 66
-    End: 50
-  - Type: 1
-    Direction: -1
-    Group: 0
-    Start: 67
-    End: 68
-  - Type: 0
-    Direction: -1
-    Group: 0
-    Start: 68
-    End: 65
-  - Type: 0
-    Direction: 1
-    Group: 0
-    Start: 0
-    End: 69
-  - Type: 0
-    Direction: -1
-    Group: 0
-    Start: 70
-    End: 71
-  - Type: 0
-    Direction: -1
-    Group: 0
-    Start: 71
-    End: 72
-  - Type: 0
-    Direction: -1
-    Group: 0
-    Start: 72
-    End: 73
-  - Type: 0
-    Direction: -1
-    Group: 0
-    Start: 73
-    End: 74
-  - Type: 0
-    Direction: -1
-    Group: 0
-    Start: 74
-    End: 75
-  - Type: 0
-    Direction: 1
-    Group: 0
-    Start: 69
-    End: 75
-  - Type: 0
-    Direction: 1
-    Group: 0
-    Start: 70
-    End: 75
-  - Type: 0
-    Direction: 1
-    Group: 0
-    Start: 69
-    End: 76
-  - Type: 0
-    Direction: 1
-    Group: 0
-    Start: 76
     End: 41
   - Type: 0
     Direction: 0
     Group: 0
     Start: 45
-    End: 77
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 77
-    End: 41
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 63
-    End: 78
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 78
-    End: 62
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 60
-    End: 79
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 79
     End: 64
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 64
+    End: 41
   - Type: 0
     Direction: 1
     Group: 0
     Start: 39
     End: 40
   - Type: 0
-    Direction: -1
+    Direction: 1
     Group: 0
-    Start: 59
-    End: 67
+    Start: 53
+    End: 55
   - Type: 0
     Direction: 1
     Group: 0
     Start: 40
     End: 43
   - Type: 0
-    Direction: 0
+    Direction: 1
     Group: 0
     Start: 43
     End: 41
   - Type: 0
+    Direction: -1
+    Group: 0
+    Start: 57
+    End: 54
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 63
+    End: 65
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 65
+    End: 66
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 66
+    End: 67
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 67
+    End: 68
+  - Type: 1
+    Direction: 0
+    Group: 0
+    Start: 68
+    End: 69
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 69
+    End: 70
+  - Type: 0
     Direction: 0
     Group: 0
     Start: 70
-    End: 60
+    End: 71
   - Type: 0
     Direction: 0
     Group: 0
-    Start: 76
-    End: 80
+    Start: 61
+    End: 71
   - Type: 0
-    Direction: 0
+    Direction: -1
     Group: 0
-    Start: 80
-    End: 81
-  - Type: 1
-    Direction: 0
-    Group: 0
-    Start: 81
-    End: 82
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 82
-    End: 83
-  - Type: 1
-    Direction: 0
-    Group: 0
-    Start: 83
-    End: 84
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 84
-    End: 85
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 85
-    End: 86
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 74
-    End: 86
+    Start: 50
+    End: 55

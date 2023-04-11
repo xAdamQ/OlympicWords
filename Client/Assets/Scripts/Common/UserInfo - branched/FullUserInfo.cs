@@ -27,7 +27,7 @@ public class FullUserInfo : MinUserInfo
 
     public int Friendship { get; set; }
 
-    public HashSet<string> OwnedItemPlayers { get; set; }
+    public List<string> OwnedItemPlayers { get; set; }
     public Dictionary<string, string> SelectedItemPlayer { get; set; }
 
     #region helpers

@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   JumpTime: 0.3
   AutomationSpeedUp: 3.5
-  JetJumpSlowDown: 3
+  JetJumpSlowDown: 5
   JetpackTime: 0.8
+  SkipSpeed: 0

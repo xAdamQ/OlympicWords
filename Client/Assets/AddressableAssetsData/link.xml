@@ -3,12 +3,17 @@
     <type fullname="ControllerConfig" preserve="all" />
     <type fullname="GraphJumpItemPlayer" preserve="all" />
     <type fullname="GraphJumpPlayer" preserve="all" />
+    <type fullname="GWSPlayer" preserve="all" />
     <type fullname="ItemMapper" preserve="all" />
+    <type fullname="ItemPlayer" preserve="all" />
+    <type fullname="JumpPlayerMapper" preserve="all" />
     <type fullname="LookAtCamera" preserve="all" />
     <type fullname="PlayerConfig" preserve="all" />
     <type fullname="PlayerMapper" preserve="all" />
     <type fullname="RootShop" preserve="all" />
+    <type fullname="ShootPlayerConfig" preserve="all" />
     <type fullname="Translatable" preserve="all" />
+    <type fullname="WalkPlayerConfig" preserve="all" />
   </assembly>
   <assembly fullname="RTLTMPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="RTLTMPro.RTLTextMeshPro" preserve="all" />

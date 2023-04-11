@@ -5,82 +5,47 @@ using UnityEngine;
 
 [RequireComponent(typeof(GraphJumpPlayer))]
 //you can insert additional base classes when needed
-public class GraphJumpController : PlayerController<GraphJumpPlayer>
+public class GraphJumpController : GraphController<GraphJumpPlayer>
 {
-    private Vector3 addedOffset;
+    public JumpControllerConfig JumpConfig;
 
-    private Vector3 lazyYPosition;
-    protected override Vector3 TargetLookAt => lazyYPosition;
+    protected override Transform CameraTarget => Player.currentLetter.transform;
+    protected override void Awake()
+    {
+        base.Awake();
+
+        JumpConfig = Player.JumpControllerConfig;
+    }
 
     protected override void Start()
     {
         base.Start();
 
-        lazyYPosition = transform.position;
 
-        Player.MovedADigit += OnMyDigitMoved;
-        Player.MovedAWord += ColorWord;
-
-        Player.JetJumping += OnJetJumping;
-        Player.JetJumped += OnJetJumped;
-
-        Player.WordJumping += WordJumping;
-        Player.WordJumped += WordJumped;
-
-        Player.JumpOrdered += OnPlayerJumpOrdered;
-        Player.JumpFinished += OnJumpFinished;
+        AssignEvents();
 
         ColorWord(0);
         ColorChar(0);
-
-        GraphEnv.I.WordState(0, true);
-        GraphEnv.I.WordState(1, true);
-
-        StartCoroutine(SetLazyY());
     }
 
-    protected override Vector3 GetTargetPoz()
+    private void AssignEvents()
     {
-        var offset = CameraOffset + addedOffset;
-
-        return
-            transform.right * offset.z +
-            transform.up * offset.y +
-            transform.forward * offset.x +
-            TargetLookAt;
-    }
-
-    private void OnPlayerJumpOrdered()
-    {
-        addedOffset = Vector3.Distance(Player.MovePath.start, Player.MovePath.end)
-                      * JumpZoomCoefficient * Vector3.one;
-    }
-
-    private IEnumerator SetLazyY()
-    {
-        // var framesCount = MOVE_TIME / Time.fixedDeltaTime;
-        // var part = 1 / framesCount;
-        // for (var i = 0; i < framesCount; i++)
-        while (true)
+        Player.LetterDone += _ =>
         {
-            // var lazyY = Mathf.Lerp(Player.MovePath.start.y, Player.MovePath.end.y, i * part);
-            var lazyY = Mathf.Lerp(transform.position.y, Player.MovePath.end.y, .1f);
-            lazyYPosition = new Vector3(transform.position.x, lazyY, transform.position.z);
-            //the look at in the y makes the camera less shaky
-            yield return new WaitForFixedUpdate();
-        }
+            ColorChar(0);
+            MinimizeChar(Player.TextPointer);
+        };
+
+        Player.MovedAWord += wordIndex =>
+        {
+            foreach (var digit in GraphEnv.I.GetWordObjects(wordIndex, Player.Index))
+            {
+                digit.GetComponent<Renderer>().material = WordHighlightMat;
+                digit.layer = 7;
+            }
+        };
     }
 
-    private void OnJumpFinished()
-    {
-        UniTask.Delay(300).ContinueWith(() => addedOffset = Vector3.zero).Forget();
-    }
-
-    private void OnMyDigitMoved()
-    {
-        ColorChar(0);
-        MinimizeChar(Player.TextPointer);
-    }
 
     private void ColorChar(int charIndex)
     {
@@ -97,22 +62,6 @@ public class GraphJumpController : PlayerController<GraphJumpPlayer>
         }
     }
 
-    //jumping visuals are for my player only
-    private void OnJetJumping()
-    {
-        GraphEnv.I.WordState(Player.WordIndex, false);
-    }
-
-    private void OnJetJumped(int lastWordIndex)
-    {
-        GraphEnv.I.WordState(Player.WordIndex, true);
-        if (Player.WordIndex + 1 < GraphEnv.I.WordsCount)
-            GraphEnv.I.WordState(Player.WordIndex + 1, true);
-
-        for (var i = lastWordIndex + 1; i <= Player.WordIndex - 1; i++)
-            GraphEnv.I.WordState(i, false);
-    }
-
     private void MinimizeChar(int charIndex)
     {
         var digit = GraphEnv.I.GetCharObjectAt(charIndex, Player.Index);
@@ -125,17 +74,5 @@ public class GraphJumpController : PlayerController<GraphJumpPlayer>
             .OnComplete(() => FadeMaterial.color = Color.white);
 
         digit.transform.DOScale(.5f, .3f);
-    }
-
-    private void WordJumping()
-    {
-        //previous word
-        GraphEnv.I.WordState(Player.WordIndex, false);
-    }
-    private void WordJumped()
-    {
-        //current word + 1
-        if (Player.WordIndex < GraphEnv.I.WordsCount - 1)
-            GraphEnv.I.WordState(Player.WordIndex + 1, true);
     }
 }

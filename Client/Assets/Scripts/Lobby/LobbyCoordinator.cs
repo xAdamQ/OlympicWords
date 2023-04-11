@@ -14,14 +14,7 @@ public class LobbyCoordinator : MonoModule<LobbyCoordinator>
 
     public void Logout()
     {
-        if (!FbManager.Logout())
-            if (PlayerPrefs.HasKey("GuestGuid"))
-            {
-                PlayerPrefs.DeleteKey("GuestGuid");
-                PlayerPrefs.Save();
-            }
-        //if not logged in with fb, logout from guest
-
+        NetManager.I.Logout();
         NetManager.I.RestartGame();
     }
 }

@@ -7,38 +7,39 @@ public static class BlockingOperationManager
     /// <summary>
     /// invoke, block, and forget
     /// </summary>
-    public static void Forget(UniTask operation, Action onComplete = null)
+    public static void Forget(UniTask operation, Action onSuccess = null, string msg = "")
     {
-        Start(operation).Forget(e => throw e);
+        Start(operation, onSuccess, msg).Forget(e => throw e);
     }
     /// <summary>
     /// invoke, block, and forget
     /// </summary>
-    public static void Forget(Task operation, Action onComplete = null)
+    public static void Forget(Task operation, Action onSuccess = null)
     {
-        Start(operation).Forget(e => throw e);
+        Start(operation, onSuccess).Forget(e => throw e);
     }
-    public static void Forget<T>(Task<T> operation, Action<T> onComplete)
+    public static void Forget<T>(Task<T> operation, Action<T> onSuccess)
     {
-        Start(operation).ContinueWith(onComplete)
+        Start(operation, onSuccess).ContinueWith(onSuccess)
             .Forget(e => throw e); //the error exception happens normally inside start
     }
-    public static void Forget<T>(UniTask<T> operation, Action<T> onComplete)
+    public static void Forget<T>(UniTask<T> operation, Action<T> onSuccess)
     {
-        Start(operation).ContinueWith(onComplete)
+        Start(operation, onSuccess).ContinueWith(onSuccess)
             .Forget(e => throw e); //the error exception happens normally inside start
     }
 
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public static async UniTask Start(Task operation)
+    public static async UniTask Start(Task operation, Action onSuccess = null)
     {
         BlockingPanel.Show();
 
         try
         {
             await operation;
+            onSuccess?.Invoke();
         }
         //todo test if you can get bad user input exc here
         catch (BadUserInputException)
@@ -59,12 +60,13 @@ public static class BlockingOperationManager
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public static async UniTask Start(UniTask operation)
+    public static async UniTask Start(UniTask operation, Action onSuccess = null, string msg = "")
     {
-        BlockingPanel.Show();
+        BlockingPanel.Show(msg);
         try
         {
             await operation;
+            onSuccess?.Invoke();
         }
         catch (BadUserInputException)
         {
@@ -112,12 +114,13 @@ public static class BlockingOperationManager
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public static async UniTask<T> Start<T>(UniTask<T> operation)
+    public static async UniTask<T> Start<T>(UniTask<T> operation, Action<T> onSuccess = null)
     {
         BlockingPanel.Show();
         try
         {
             var result = await operation;
+            onSuccess?.Invoke(result);
             return result;
         }
         catch (BadUserInputException)
@@ -138,12 +141,13 @@ public static class BlockingOperationManager
     /// <summary>
     /// uses BlockingPanel 
     /// </summary>
-    public static async UniTask<T> Start<T>(Task<T> operation)
+    public static async UniTask<T> Start<T>(Task<T> operation, Action<T> onSuccess = null)
     {
         BlockingPanel.Show();
         try
         {
             var result = await operation;
+            onSuccess?.Invoke(result);
             return result;
         }
         catch (BadUserInputException)

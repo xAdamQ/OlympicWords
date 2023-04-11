@@ -45,6 +45,9 @@ namespace OlympicWords.Services
         void RemovePendingUser(string uid);
     }
 
+    /// <summary>
+    /// it can be used in shared memory server later
+    /// </summary>
     public class PersistantData
     {
         private readonly ConcurrentDictionary<int, Room> rooms = new();
@@ -52,12 +55,23 @@ namespace OlympicWords.Services
         private readonly ConcurrentDictionary<(int, string), ConcurrentBag<Room>> pendingRooms = new();
         private readonly HashSet<string> pendingUsers = new();
 
+        #region pending room messages and notifications
+        public Queue<(Room, DateTime)> InitiatedRooms { get; } = new();
+        public Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
+
+        public void CancelPendingRoomTimeout(Room room)
+        {
+            PendingRoomCancellations[room].Cancel();
+            PendingRoomCancellations.Remove(room);
+        }
+        #endregion
+
         private int lastRoomId;
 
         public PersistantData()
         {
             for (var i = 0; i < Room.Bets.Length; i++)
-                foreach (var env in OfflineRepo.GameConfig.OrderedEnvs)
+                foreach (var env in OfflineRepo.GameConfig.EnvConfigs.Select(e => e.Name))
                     pendingRooms.TryAdd((i, env), new ConcurrentBag<Room>());
         }
 

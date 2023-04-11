@@ -1,6 +1,10 @@
+using System;
 using System.Collections;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Player))]
 public abstract class PlayerController : MonoModule<PlayerController>
@@ -10,12 +14,13 @@ public abstract class PlayerController : MonoModule<PlayerController>
     protected const float MOVE_TIME = .2f;
 
     //don't set this here, should be set by a concrete type
-    protected Player Player { get; set; }
+    public Player Player { get; protected set; }
+    protected abstract Transform CameraTarget { get; }
+
 
     #region config
     public ControllerConfig Config;
 
-    protected float JumpZoomCoefficient => Config.JumpZoomCoefficient;
     protected Material WordHighlightMat => Config.WordHighlightMat;
     protected Material FadeMaterial => Config.FadeMaterial;
     protected Vector3 CameraOffset => Config.CameraOffset;
@@ -31,6 +36,11 @@ public abstract class PlayerController : MonoModule<PlayerController>
 
         mainCamera = Camera.main!.transform;
 
+        AssignEvents();
+    }
+
+    private void AssignEvents()
+    {
         Player.WordSkipping += () =>
         {
             canWrite = false;
@@ -45,8 +55,11 @@ public abstract class PlayerController : MonoModule<PlayerController>
 
     protected virtual void Start()
     {
-        RootEnv.I.GameFinished += OnGameFinished;
+        Player.GameFinished += OnGameFinished;
         RootEnv.I.GameStarted += OnGameStarted;
+
+        lazyYPosition = transform.position;
+        StartCoroutine(SetLazyY());
     }
 
     private void OnGameStarted()
@@ -78,10 +91,12 @@ public abstract class PlayerController : MonoModule<PlayerController>
     {
         RoomNet.I.StreamChar(c);
 
-        Player.TakeInput(c);
+        if (Player.CurrentChar != c)
+            KeyboardHint.I.ShowHint(Player.CurrentChar);
+        else
+            KeyboardHint.I.HideHint();
 
-        if (Player.IsFinished())
-            RootEnv.I.FinishGame();
+        Player.TakeInput(c);
     }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -102,6 +117,7 @@ public abstract class PlayerController : MonoModule<PlayerController>
     private Vector3 lastLookAtPoz;
     private Transform mainCamera;
     private Coroutine followRoutine;
+    private Vector3 lazyYPosition;
 
     public void SetCameraFollow()
     {
@@ -122,16 +138,37 @@ public abstract class PlayerController : MonoModule<PlayerController>
         mainCamera.LookAt(transform);
     }
 
-    protected abstract Vector3 GetTargetPoz();
-    protected abstract Vector3 TargetLookAt { get; }
+    private IEnumerator SetLazyY()
+    {
+        // var framesCount = MOVE_TIME / Time.fixedDeltaTime;
+        // var part = 1 / framesCount;
+        // for (var i = 0; i < framesCount; i++)
+        while (!Player.IsFinished)
+        {
+            // var lazyY = Mathf.Lerp(Player.MovePath.start.y, Player.MovePath.end.y, i * part);
+            var lazyY = Mathf.Lerp(CameraTarget.position.y, Player.TargetPos.y, .1f);
+            lazyYPosition = new Vector3(CameraTarget.position.x, lazyY, CameraTarget.position.z);
+            //the look at in the y makes the camera less shaky
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    private Vector3 GetTargetPoz()
+    {
+        return
+            CameraTarget.right * CameraOffset.z +
+            CameraTarget.up * CameraOffset.y +
+            CameraTarget.forward * CameraOffset.x +
+            lazyYPosition;
+    }
 
     private IEnumerator FollowIEnumerator()
     {
-        while (true)
+        while (!Player.IsFinished)
         {
             mainCamera.position = Vector3.Lerp(mainCamera.transform.position, GetTargetPoz(), CameraMoveSmoothing);
 
-            lastLookAtPoz = Vector3.Lerp(lastLookAtPoz, TargetLookAt, CameraLookSmoothing);
+            lastLookAtPoz = Vector3.Lerp(lastLookAtPoz, lazyYPosition, CameraLookSmoothing);
             mainCamera.LookAt(lastLookAtPoz);
 
             yield return new WaitForFixedUpdate();
@@ -143,10 +180,10 @@ public abstract class PlayerController : MonoModule<PlayerController>
 
 public abstract class PlayerController<TPlayer> : PlayerController where TPlayer : Player
 {
-    protected new TPlayer Player
+    public new TPlayer Player
     {
         get => player;
-        set => base.Player = player = value;
+        private set => base.Player = player = value;
     }
     private TPlayer player;
 

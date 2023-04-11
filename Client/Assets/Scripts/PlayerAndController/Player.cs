@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMapper))]
@@ -13,31 +11,28 @@ public abstract class Player : MonoBehaviour
     [HideInInspector] public int
         Index,
         WordIndex,
+        //text pointer point at the next character, not the current
         TextPointer;
 
     public ControllerConfig ControllerConfig;
-
-    [HideInInspector] public PlayerMapper Mapper;
     public PlayerConfig Config;
 
-    private char CurrentChar => RootEnv.I.Text[TextPointer];
+    [HideInInspector] public PlayerMapper Mapper;
+
+    public char CurrentChar => RootEnv.I.Text[TextPointer];
+    public Vector3 TargetPos { get; set; }
+    public GameObject currentLetter => RootEnv.I.GetCharObjectAt(TextPointer, Index);
 
     [HideInInspector] public PowerUp ChosenPowerUp;
     private int usedJets;
 
     private List<int> fillerWords;
-
-    protected float OriginalJumpTime, JumpTime, AutomationSpeedUp, JetJumpSlowDown;
+    protected float skipSpeed;
 
     protected virtual void Awake()
     {
         Mapper = GetComponent<PlayerMapper>();
-        animator = GetComponent<Animator>();
-
-        //I copy them so I don't edit the original values
-        OriginalJumpTime = JumpTime = Config.JumpTime;
-        AutomationSpeedUp = Config.AutomationSpeedUp;
-        JetJumpSlowDown = Config.JetJumpSlowDown;
+        skipSpeed = Config.SkipSpeed;
     }
 
     protected virtual void Start()
@@ -58,12 +53,9 @@ public abstract class Player : MonoBehaviour
         StartTime = Time.time;
     }
 
-    public bool IsFinished()
-    {
-        return TextPointer >= RootEnv.I.Text.Length;
-    }
+    public bool IsFinished => TextPointer >= RootEnv.I.Text.Length;
 
-    public event Action MovedADigit;
+    public event Action<char> DoingLetter, LetterDone;
     public event Action<int> MovedAWord;
 
     public void TakeInput(char chr)
@@ -72,67 +64,40 @@ public abstract class Player : MonoBehaviour
         if (chr is '\r' or '\n')
         {
             if (ChosenPowerUp == PowerUp.MegaJet && usedJets < 1)
-                JetJump(4);
+                PowerSkip(4);
             else if (ChosenPowerUp == PowerUp.SmallJet && usedJets < 2)
-                JetJump(1);
+                PowerSkip(1);
         }
         else if (chr == CurrentChar)
         {
-            CharJump();
+            DoLetter();
         }
+
+        if (IsFinished) FinishGame();
     }
 
-    private void CharJump()
+    private void DoLetter()
     {
-        PrepareNewJump();
-        JumpToCurrent();
-        //CharIndex is the coming character, 
+        DoingLetter?.Invoke(CurrentChar);
 
-        MovedADigit?.Invoke();
+        //you can add additional logic here
+
+        LetterDone?.Invoke(CurrentChar);
         TextPointer++;
 
-        //don't jump to the next word if there are no more words
-        if (IsFinished())
+        //don't go to the next word if there are no more words
+        if (IsFinished)
             return;
 
-        // if (CharIndex == EnvBase.I.GetWordLengthAt(WordIndex))
         if (RootEnv.I.Text[TextPointer - 1] == ' ')
-            JumpWord();
+            NextWord();
     }
 
-    private void PrepareNewJump()
+
+    public Action GoingToNextWord, GoneToNextWord;
+    private void NextWord()
     {
-        lastMoveTween.SkipTween();
-        lastRotateTween.SkipTween();
-        stepMoveTween.SkipTween();
-    }
-
-    public (Vector3 start, Vector3 end) MovePath { get; set; }
-    protected abstract Tween JumpMovement();
-    protected abstract Tween JumpRotation();
-
-    public event Action Jumping, JumpOrdered, JumpFinished;
-    private void JumpToCurrent()
-    {
-        Jumping?.Invoke();
-        JumpMovement();
-
-        lastMoveTween = JumpMovement();
-        lastRotateTween = JumpRotation();
-
-        lastMoveTween.OnComplete(() => JumpFinished?.Invoke());
-
-        JumpOrdered?.Invoke();
-    }
-
-    private Tween lastMoveTween;
-    private Tween lastRotateTween;
-    private Tween stepMoveTween;
-
-    public Action WordJumping, WordJumped;
-    private void JumpWord()
-    {
-        WordJumping?.Invoke();
+        GoingToNextWord?.Invoke();
         WordIndex++;
 
         //we have fillers, and the coming is at least a filler
@@ -141,96 +106,57 @@ public abstract class Player : MonoBehaviour
         else
             MovedAWord?.Invoke(WordIndex);
 
-        WordJumped?.Invoke();
+        GoneToNextWord?.Invoke();
     }
 
     public Action WordSkipping, WordSkipped;
+    /// <summary>
+    /// skipping here is writing the word so fast, using the same do character logic
+    /// </summary>
     private IEnumerator SkipWord()
     {
         WordSkipping?.Invoke();
-
         fillerWords.RemoveAt(0);
-
-        var original = JumpTime;
-        JumpTime /= AutomationSpeedUp;
 
         while (CurrentChar != ' ')
         {
-            CharJump();
-            yield return new WaitForSeconds(JumpTime);
+            DoLetter();
+            yield return new WaitForSeconds(skipSpeed);
         }
 
-        JumpTime = original;
         WordSkipped?.Invoke();
 
-        CharJump();
+        DoLetter();
         //this can make recursive call to skip work, I put it at the end to make it sequential
     }
 
-    public event Action JetJumping;
-    public event Action<int> JetJumped;
-
-    private void JetJump(int count)
+    public Action<int> PowerSkipping;
+    public Action<int> PowerSkipped;
+    private void PowerSkip(int count)
     {
-        JetJumping?.Invoke();
+        PowerSkipping?.Invoke(WordIndex);
+
         var lastWordIndex = WordIndex;
-
-        Mapper.jetpack.SetActive(true);
-
-        JumpTime *= JetJumpSlowDown;
-
-        PrepareNewJump();
-
-        var consumedWords = 0;
 
         if (CurrentChar == ' ') TextPointer++;
         //in case we are in the start of a word
 
-        for (; consumedWords < count && !IsFinished(); TextPointer++)
+        for (var consumedWords = 0; consumedWords < count && !IsFinished; TextPointer++)
         {
             if (CurrentChar != ' ') continue;
             consumedWords++;
             WordIndex++;
         }
 
-        if (IsFinished())
-        {
+        if (IsFinished)
             WordIndex = RootEnv.I.WordsCount - 1;
-
-            jumpPreChar();
-
-            //finish directly because time is critical, the player will see
-            //the animation through finalize panel anyway
-            RootEnv.I.FinishGame();
-        }
-        else
-        {
-            jumpPreChar();
-        }
-
-        void jumpPreChar()
-        {
-            TextPointer--;
-            JumpToCurrent();
-            TextPointer++;
-        }
 
         usedJets++;
 
-        JetJumped?.Invoke(lastWordIndex);
-
-        HideJetpack();
+        PowerSkipped?.Invoke(lastWordIndex);
     }
 
-    private void HideJetpack()
-    {
-        UniTask.Create(async () =>
-        {
-            JumpTime = OriginalJumpTime;
-            await UniTask.Delay(TimeSpan.FromSeconds(Config.JetpackTime));
-            Mapper.jetpack.SetActive(false);
-        });
-    }
+    public abstract Type GetControllerType();
 
     public static readonly string[] Titles =
     {
@@ -240,5 +166,11 @@ public abstract class Player : MonoBehaviour
         "basra grandmaster",
         "top eater",
     };
-    protected Animator animator;
+
+    public event Action GameFinished;
+    private void FinishGame()
+    {
+        GameFinished?.Invoke();
+        Debug.Log("show finish particles here");
+    }
 }

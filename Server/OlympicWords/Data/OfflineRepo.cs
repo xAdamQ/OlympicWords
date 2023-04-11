@@ -108,27 +108,27 @@ public class OfflineRepo : IOfflineRepo
 
     private readonly string[] testSentences =
     {
-        // "i do well in school",
-        // "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes",
-        // "he swung back the fishing pole and cast the line which ell feet away into the river the lure landed in the perfect spot and he was sure he would soon get a bite he never expected that the bite would come from behind in the form of a bear",
-        // "there was nothing to indicate nancy was going to change the world she looked like an average girl going to an average high school it was the fact that everything about her seemed average that would end up becoming her superpower",
-        // "twenty five stars were neatly placed on the piece of paper there was room for five more stars but they would be difficult ones to earn it had taken years to earn the first twenty five and they were considered the easy ones",
-        // "the lone lamp post of the one street town flickered not quite dead but definitely on its way out suitcase by her side she paid no heed to the light the street or the town",
-        "bryan had made peace with himself and felt comfortable with the choices he made this had made all the difference in the world being alone no longer bothered him and this was essential",
-        // "last week we installed a kitty door so that our cat could come and go as she pleases unfortunately we ran into a problem our cat was afraid to use the kitty door we tried pushing her through and that caused her to be even more afraid",
-        // "the kitty door was dark and she could not see what was on the other side the first step we took in solving this problem was taping the kitty door open after a couple of days she was confidently coming and going through the open door",
-        // "however when we removed the tape and closed the door once again she would not go through they say you catch more bees with honey so we decided to use food as bait",
-        // "we would sit next to the kitty door with a can of wet food and click the top of the can when kitty came through the closed door we would open the can and feed her",
-        // "it took five days of doing this to make her unafraid of using the kitty door now we have just one last problem our kitty controls our lives",
-        // "people often install a kitty door only to discover that they have a problem the problem is their cat will not use the kitty door there are several common reasons why cats wo not use kitty doors",
-        // "first i decided i would become interested in whatever was being taught regardless of what other people thought i also decided i would work hard every day and never give up on any assignment",
-        // "i decided to never never fall behind finally i decided to make school a priority over friends and fun after implementing these changes i became an active participant in classroom discussions",
-        // "then my test scores began to rise i still remember the first time that someone made fun of me because i was smart how exciting it seems to me that being smart is simply a matter of working hard and being interested",
-        // "after all learning a new video game is hard work even when you are interested unfortunately learning a new video game does not help you get into college or get a good job",
-        // "oceans and lakes have much in common but they are also quite different both are bodies of water but oceans are very large bodies of salt water while lakes are much smaller bodies of fresh water",
-        // "lakes are usually surrounded by land while oceans are what surround continents both have plants and animals living in them the ocean is home to the largest animals on the planet whereas lakes support much smaller forms of life",
-        // "the blue whales just played their first baseball game of the new season i believe there is much to be excited about although they lost it was against an excellent team that had won the championship last year",
-        // "i like the idea but unfortunately it is not practical the idea is to have a new building built on the site of the old one but the problem is that the old building is a historical landmark",
+        "i do well in school",
+        "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes",
+        "he swung back the fishing pole and cast the line which ell feet away into the river the lure landed in the perfect spot and he was sure he would soon get a bite he never expected that the bite would come from behind in the form of a bear",
+        "there was nothing to indicate nancy was going to change the world she looked like an average girl going to an average high school it was the fact that everything about her seemed average that would end up becoming her superpower",
+        "twenty five stars were neatly placed on the piece of paper there was room for five more stars but they would be difficult ones to earn it had taken years to earn the first twenty five and they were considered the easy ones",
+        "the lone lamp post of the one street town flickered not quite dead but definitely on its way out suitcase by her side she paid no heed to the light the street or the town",
+        // "bryan had made peace with himself and felt comfortable with the choices he made this had made all the difference in the world being alone no longer bothered him and this was essential bryan had made peace with himself and felt comfortable with the choices he made this had made all the difference in the world being alone no longer bothered him and this was essential bryan had made peace with himself and felt comfortable with the choices he made this had made all the difference in",
+        "last week we installed a kitty door so that our cat could come and go as she pleases unfortunately we ran into a problem our cat was afraid to use the kitty door we tried pushing her through and that caused her to be even more afraid",
+        "the kitty door was dark and she could not see what was on the other side the first step we took in solving this problem was taping the kitty door open after a couple of days she was confidently coming and going through the open door",
+        "however when we removed the tape and closed the door once again she would not go through they say you catch more bees with honey so we decided to use food as bait",
+        "we would sit next to the kitty door with a can of wet food and click the top of the can when kitty came through the closed door we would open the can and feed her",
+        "it took five days of doing this to make her unafraid of using the kitty door now we have just one last problem our kitty controls our lives",
+        "people often install a kitty door only to discover that they have a problem the problem is their cat will not use the kitty door there are several common reasons why cats wo not use kitty doors",
+        "first i decided i would become interested in whatever was being taught regardless of what other people thought i also decided i would work hard every day and never give up on any assignment",
+        "i decided to never never fall behind finally i decided to make school a priority over friends and fun after implementing these changes i became an active participant in classroom discussions",
+        "then my test scores began to rise i still remember the first time that someone made fun of me because i was smart how exciting it seems to me that being smart is simply a matter of working hard and being interested",
+        "after all learning a new video game is hard work even when you are interested unfortunately learning a new video game does not help you get into college or get a good job",
+        "oceans and lakes have much in common but they are also quite different both are bodies of water but oceans are very large bodies of salt water while lakes are much smaller bodies of fresh water",
+        "lakes are usually surrounded by land while oceans are what surround continents both have plants and animals living in them the ocean is home to the largest animals on the planet whereas lakes support much smaller forms of life",
+        "the blue whales just played their first baseball game of the new season i believe there is much to be excited about although they lost it was against an excellent team that had won the championship last year",
+        "i like the idea but unfortunately it is not practical the idea is to have a new building built on the site of the old one but the problem is that the old building is a historical landmark",
     };
 
     public string[] SmallFillers { get; } =
@@ -297,14 +297,25 @@ public class OfflineRepo : IOfflineRepo
             .ToListAsync();
     }
 
+    /// <summary>
+    /// for the static constructor to get called
+    /// </summary>
+    public static void Touch()
+    {
+    }
+
     static OfflineRepo()
     {
         Environments = LoadEnvironments();
+
         ItemPlayers = Environments.SelectMany(e => e.ItemPlayers).ToDictionary(i => i.Id, i => i);
+
         EnvironmentNames = Environments.Select(e => e.Name).ToHashSet();
 
         var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "SharedData/GameConfig.json");
         GameConfig = JsonSerializer.Deserialize<GameConfig>(File.ReadAllBytes(fullPath));
+        DefaultSelectedItemPlayers = GameConfig.EnvConfigs.ToDictionary(c => c.Name, c => c.DefaultPlayer);
+        DefaultOwnedItemPlayers = GameConfig.EnvConfigs.Select(c => c.DefaultPlayer).ToHashSet();
     }
 
     private static List<Environment> LoadEnvironments()
@@ -355,10 +366,13 @@ public class OfflineRepo : IOfflineRepo
     /// <summary>
     /// set by a json file fetched from the client
     /// </summary>
-    public static List<Environment> Environments { set; get; }
+    public static List<Environment> Environments { get; }
     public static Dictionary<string, ItemPlayer> ItemPlayers { get; }
-    public static HashSet<string> EnvironmentNames { set; get; }
-    public static GameConfig GameConfig { get; set; }
+    public static HashSet<string> EnvironmentNames { get; }
+    public static GameConfig GameConfig { get; }
+    public static Dictionary<string, string> DefaultSelectedItemPlayers { get; }
+    public static HashSet<string> DefaultOwnedItemPlayers { get; }
+
 
     #region user relation
     public async Task ToggleFollow(string targetId, User currentUser = null)

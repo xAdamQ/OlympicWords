@@ -1,1 +1,1 @@
-/home/leer/Projects/OlympicWords/Server/OlympicWords/SharedData
+D:\projects\OlympicWords\Server\OlympicWords\SharedData

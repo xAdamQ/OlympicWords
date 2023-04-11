@@ -8,8 +8,6 @@ public class SignInPanel : MonoModule<SignInPanel>
 {
     [SerializeField] private GameObject guestLoginButton, havingTroubleButton, linkAdvice;
 
-    // ReSharper disable once Unity.IncorrectMethodSignature
-    // ReSharper disable once UnusedMember.Local
     private void Start()
     {
         ShowSuitableLogin().Forget();
@@ -73,7 +71,7 @@ public class SignInPanel : MonoModule<SignInPanel>
         {
             try
             {
-                await BlockingOperationManager.Start(NetManager.I.Login(t, p));
+                await NetManager.I.BlockingLoginAwaitable(t, p);
             }
             catch (Exception e)
             {
@@ -111,7 +109,7 @@ public class SignInPanel : MonoModule<SignInPanel>
         if (string.IsNullOrEmpty(guestToken))
             guestToken = Guid.NewGuid().ToString();
 
-        BlockingOperationManager.Forget(NetManager.I.Login(guestToken, ProviderType.Guest));
+        NetManager.I.BlockingLogin(guestToken, ProviderType.Guest);
     }
 
     private void HideAll()

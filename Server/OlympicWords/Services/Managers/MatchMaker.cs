@@ -35,11 +35,13 @@ namespace OlympicWords.Services
         private readonly IGameplay gameplay;
         private readonly IServerLoop serverLoop;
         private readonly ILogger<MatchMaker> logger;
+        private readonly PersistantData persistantData;
         private readonly IOfflineRepo offlineRepo;
         private readonly IScopeRepo scopeRepo;
 
         public MatchMaker(IHubContext<RoomHub> masterHub, IOfflineRepo offlineRepo,
-            IScopeRepo scopeRepo, IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger)
+            IScopeRepo scopeRepo, IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger,
+            PersistantData persistantData)
         {
             this.masterHub = masterHub;
             this.offlineRepo = offlineRepo;
@@ -47,6 +49,7 @@ namespace OlympicWords.Services
             this.gameplay = gameplay;
             this.serverLoop = serverLoop;
             this.logger = logger;
+            this.persistantData = persistantData;
         }
 
         public async Task RequestRandomRoom(int category, string env)
@@ -58,10 +61,11 @@ namespace OlympicWords.Services
             if (!category.IsInRange(Room.Bets.Length))
             {
                 scopeRepo.RemovePendingUser();
-                throw new Exceptions.BadUserInputException($"the room category: {category} exceeds the category list: {Room.Bets.Length}");
+                throw new Exceptions.BadUserInputException(
+                    $"the room category: {category} exceeds the category list: {Room.Bets.Length}");
             }
 
-            if(!OfflineRepo.GameConfig.OrderedEnvs.Contains(env))
+            if (!OfflineRepo.GameConfig.EnvConfigs.Any(c => c.Name == env))
             {
                 scopeRepo.RemovePendingUser();
                 throw new Exceptions.BadUserInputException($"the environment {env} doesn't exist");
@@ -86,13 +90,13 @@ namespace OlympicWords.Services
 
             if (room.IsFull)
             {
-                serverLoop.CancelPendingRoomTimeout(room);
+                persistantData.CancelPendingRoomTimeout(room);
                 await PrepareRoom(room);
             }
             else
             {
                 scopeRepo.KeepPendingRoom(room); //so other users can see it
-                serverLoop.SetupPendingRoomTimeoutIfNotExist(room);
+                persistantData.InitiatedRooms.Enqueue((room, DateTime.Now));
 
                 // const int timeout = 1000;
                 // const int checkInterval = 250;
@@ -194,7 +198,7 @@ namespace OlympicWords.Services
                     break;
                 case 2: //1l
                     yield return offlineRepo.LargeFillers.GetRandom();
-                    break;  
+                    break;
             }
         }
 
@@ -268,7 +272,7 @@ namespace OlympicWords.Services
                     Text = room.Text,
                     FillerWords = room.FillerWords,
                     ChosenPowerUps = chosenPowerUps,
-                    Seed = seed
+                    Seed = seed,
                 };
 
                 var task = masterHub.SendOrderedAsync(ru, "PrepareRequestedRoomRpc", response);

@@ -40,7 +40,7 @@ public class MiniMapManager : MonoBehaviour
             miniMaps.Add(miniMap);
 
             miniMap.Init(playerBase);
-            playerBase.MovedADigit += () => OnMovedADigit(miniMap, playerBase);
+            playerBase.LetterDone += _ => OnMovedADigit(miniMap, playerBase);
             OnMovedADigit(miniMap, playerBase);
             //set the initial values of each minimap
         }

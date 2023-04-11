@@ -7,8 +7,6 @@ namespace OlympicWords.Services
         /// </summary>
         void SetForceStartRoomTimeout(Room room);
         void CancelForceStart(Room room);
-        void SetupPendingRoomTimeoutIfNotExist(Room room);
-        void CancelPendingRoomTimeout(Room room);
         void StartGame(Room room);
     }
 
@@ -22,41 +20,6 @@ namespace OlympicWords.Services
             this.serviceScopeFactory = serviceScopeFactory;
             this.logger = logger;
         }
-
-        #region pending room timout
-        private Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
-        private const int PENDING_ROOM_TIMEOUT = 3 * 1000;
-        public void SetupPendingRoomTimeoutIfNotExist(Room room)
-        {
-            if (PendingRoomCancellations.ContainsKey(room)) return;
-
-            var cSource = new CancellationTokenSource();
-            PendingRoomCancellations.Add(room, cSource);
-            Task.Delay(PENDING_ROOM_TIMEOUT, cSource.Token).ContinueWith(async _ =>
-            {
-                await Task.Run(() => OnPendingRoomTimeout(room), cSource.Token);
-            });
-        }
-        private async Task OnPendingRoomTimeout(Room room)
-        {
-            PendingRoomCancellations.Remove(room);
-
-            using var scope = serviceScopeFactory.CreateScope();
-
-            var scopeRepo = scope.ServiceProvider.GetService<IScopeRepo>();
-            var persistantData = scope.ServiceProvider.GetService<PersistantData>();
-            persistantData!.FeedScope(scopeRepo);
-
-            var roomRequester = scope.ServiceProvider.GetService<IMatchMaker>();
-
-            await roomRequester!.FillPendingRoomWithBots(room);
-        }
-        public void CancelPendingRoomTimeout(Room room)
-        {
-            PendingRoomCancellations[room].Cancel();
-            PendingRoomCancellations.Remove(room);
-        }
-        #endregion
 
         #region ready timoue
         private Dictionary<Room, CancellationTokenSource> ForceStartCancellations { get; } = new();

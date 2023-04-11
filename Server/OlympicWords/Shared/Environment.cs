@@ -1,4 +1,5 @@
 namespace Shared;
+
 public class Item
 {
     public int Price { get; set; }
@@ -6,9 +7,11 @@ public class Item
     public int Level { get; set; }
     public Environment Environment;
 }
+
 public class ItemPlayer : Item
 {
 }
+
 public class Environment
 {
     public string Name { get; set; }
@@ -22,6 +25,7 @@ public class Environment
     /// </summary>
     public Dictionary<string, Environment> Matching { get; set; }
 }
+
 public class DiskEnvironment
 {
     public string Name { get; set; }
@@ -30,7 +34,14 @@ public class DiskEnvironment
     public List<ItemPlayer> ItemPlayers { get; set; }
     public bool Playable { get; set; }
 }
+
 public class GameConfig
 {
-    public string[] OrderedEnvs { get; set; }
+    public EnvConfig[] EnvConfigs { get; set; }
+}
+
+public class EnvConfig
+{
+    public string Name { get; set; }
+    public string DefaultPlayer { get; set; }
 }

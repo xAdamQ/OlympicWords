@@ -11,9 +11,9 @@ public abstract class ThreadEnv : RootEnv
         var center = chr.GetComponent<MeshRenderer>().bounds.center;
         return new Vector3(minX, center.y, center.z);
     }
-    public override Vector3 GetCharRotAt(int charIndex, int playerIndex)
+    public override Quaternion GetCharRotAt(int charIndex, int playerIndex)
     {
-        return allChars[playerIndex][charIndex].transform.eulerAngles;
+        return allChars[playerIndex][charIndex].transform.rotation;
     }
     public override GameObject GetCharObjectAt(int charIndex, int playerIndex)
     {
@@ -43,13 +43,13 @@ public abstract class ThreadEnv : RootEnv
         for (var i = 0; i < Players.Count; i++)
         {
             Players[i].transform.position = GetCharPozAt(0, i);
-            Players[i].transform.eulerAngles = GetCharRotAt(0, i);
+            Players[i].transform.rotation = GetCharRotAt(0, i);
         }
     }
 
     protected const float SPACING = .15f;
 
-    protected override void GenerateDigits(Random random)
+    protected override void GenerateWords(Random random)
     {
         //I have a character buffer that get filled by time, so I have to notify the env with my current progress
         //the amount of chars is not that great, so I will do optimizations later, because it's needed for city env
@@ -70,7 +70,7 @@ public abstract class ThreadEnv : RootEnv
 
                 var c = Text[i];
 
-                var mesh = EnvShared.I.GetDigitMesh(c);
+                var mesh = EnvShared.I.GetLetterMesh(c);
                 charObj.GetComponent<MeshFilter>().mesh = mesh;
                 var charWidth = mesh == null ? SPACE_DISTANCE : (mesh.bounds.size.x + SPACING);
                 pointer += Vector3.right * charWidth;

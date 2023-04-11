@@ -49,6 +49,20 @@ public abstract class EnvObject : MonoBehaviour
     protected string GenericEnvName => RootEnv.EnvIds[GenericEnvType];
 }
 
+public class EnvConfig
+{
+    public Type Type;
+    public string Name;
+    public string DefaultPlayer;
+
+    public EnvConfig(Type type, string defaultPlayer)
+    {
+        Type = type;
+        Name = type.Name;
+        DefaultPlayer = defaultPlayer;
+    }
+}
+
 [Rpc]
 public abstract class RootEnv : MonoBehaviour
 {
@@ -62,14 +76,41 @@ public abstract class RootEnv : MonoBehaviour
     protected List<string> Words;
     public int WordsCount => Words.Count;
 
-    public static readonly Type[] OrderedEnvs =
+    public static readonly EnvConfig[] EnvConfigs =
     {
-        typeof(GraphJumpCityEnv),
+        new(typeof(MJC), "criminal"),
+        new(typeof(MWSC), "female"),
+        new(typeof(SJ), "criminal"),
     };
+
+
+    public bool Surrendered;
+
+    public void Surrender()
+    {
+        Surrendered = true;
+
+        UniTask.Create(async () =>
+        {
+            try
+            {
+                await RoomNet.I.Surrender();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+            }
+            finally
+            {
+                SceneManager.LoadScene("Lobby");
+            }
+        }).Forget(e => throw e);
+    }
+
 
     public static int GetEnvIndex(Type envType)
     {
-        return Array.IndexOf(OrderedEnvs, envType);
+        return Array.FindIndex(EnvConfigs, e => e.Type == envType);
     }
 
     public static IEnumerable<Type> GetAllTypes()
@@ -87,8 +128,9 @@ public abstract class RootEnv : MonoBehaviour
 
     public static string GetAbstractName(Type envType)
     {
-        var envIndex = envType.ToString().IndexOf("Env", StringComparison.Ordinal);
-        return envType.ToString()[..envIndex];
+        var envIndex = envType.Name.IndexOf("Env", StringComparison.Ordinal);
+
+        return envIndex == -1 ? envType.Name : envType.Name[..envIndex];
     }
 
     public static List<ClientEnvironment> GetEnvironments()
@@ -96,7 +138,7 @@ public abstract class RootEnv : MonoBehaviour
         var allEnvTypes = GetAllTypes();
 
         Environments = new Dictionary<string, ClientEnvironment>();
-        getOrCreateEnv(EnvIds[typeof(RootEnv)]);
+        getOrCreateEnv(typeof(RootEnv));
 
         foreach (var envType in allEnvTypes)
         {
@@ -106,54 +148,29 @@ public abstract class RootEnv : MonoBehaviour
             if (envType.BaseType == null)
                 throw new Exception("BaseType cannot be null because we inherit from EnvBase at least");
 
-            var child = getOrCreateEnv(EnvIds[envType]);
-            var parent = getOrCreateEnv(EnvIds[envType.BaseType]);
+            var child = getOrCreateEnv(envType);
+            var parent = getOrCreateEnv(envType.BaseType);
 
             parent.Children.Add(child);
             child.Parent = parent;
-
-            // if (incudeItems)
-            //     await Addressables.LoadAssetsAsync<GameObject>(child.Name, o =>
-            //     {
-            //         if (o.TryGetComponent(typeof(global::ItemPlayer), out var i) && !o.name.ToLower().Contains("base"))
-            //             envs[envType].Items.Add((global::ItemPlayer)i);
-            //     });
         }
 
         return Environments.Values.ToList();
 
-        ClientEnvironment getOrCreateEnv(string envName)
+        ClientEnvironment getOrCreateEnv(Type envType)
         {
+            var envName = EnvIds[envType];
             if (Environments.TryGetValue(envName, out var env)) return env;
 
             env = new()
             {
-                Name = envName,
+                Type = envType,
             };
             Environments.Add(envName, env);
 
             return env;
         }
     }
-    //
-    // public static async UniTask HierarchicalEnvLoop(Action<ClientEnvironment> action)
-    // {
-    //     var envs = await GetEnvironments();
-    //     var envQueue = new Queue<ClientEnvironment>();
-    //     envQueue.Enqueue(envs.Single(e => e.Name == "Base"));
-    //     var visited = new List<ClientEnvironment>();
-    //
-    //     while (envQueue.Count > 0)
-    //     {
-    //         var env = envQueue.Dequeue();
-    //         visited.Add(env);
-    //
-    //         foreach (var child in env.Children.Where(e => !visited.Contains(e)))
-    //             envQueue.Enqueue(child);
-    //
-    //         action(env);
-    //     }
-    // }
 
     /// <summary>
     /// each number represents the start index of the word at index
@@ -197,7 +214,7 @@ public abstract class RootEnv : MonoBehaviour
 
 
     public abstract Vector3 GetCharPozAt(int charIndex, int playerIndex);
-    public abstract Vector3 GetCharRotAt(int charIndex, int playerIndex);
+    public abstract Quaternion GetCharRotAt(int charIndex, int playerIndex);
     public abstract GameObject GetCharObjectAt(int charIndex, int playerIndex);
     public abstract IEnumerable<GameObject> GetWordObjects(int wordIndex, int playerIndex);
 
@@ -210,21 +227,12 @@ public abstract class RootEnv : MonoBehaviour
         RoomNet.I.AddRpcContainer(this, typeof(RootEnv));
         //the type is sent manually, otherwise it will be sent with the type of the child
 
-        RoomBaseAdapter.I.PowerUpPanel.SetActive(false);
+        // RoomBaseAdapter.I.PowerUpPanel.SetActive(false);
         RoomBaseAdapter.I.WaitingPanel.SetActive(true);
 
         RoomNet.I.Connected += () => RoomBaseAdapter.I.PowerUpPanel.SetActive(true);
 
         Initiated?.Invoke();
-    }
-
-    public void Surrender()
-    {
-        UniTask.Create(async () =>
-        {
-            await RoomNet.I.Surrender();
-            SceneManager.LoadScene("Lobby");
-        }).Forget(e => throw e);
     }
 
     [Rpc]
@@ -255,7 +263,7 @@ public abstract class RootEnv : MonoBehaviour
         var random = new Random(response.Seed);
 
         CreateWordArray();
-        GenerateDigits(random);
+        GenerateWords(random);
         ColorFillers(response.FillerWords);
 
         UniTask.Create(async () =>
@@ -275,7 +283,7 @@ public abstract class RootEnv : MonoBehaviour
 
     protected abstract void SetPlayersInitialPoz();
 
-    protected abstract void GenerateDigits(Random random);
+    protected abstract void GenerateWords(Random random);
 
     [HideInInspector] public Material[] PlayerMats;
 
@@ -316,28 +324,17 @@ public abstract class RootEnv : MonoBehaviour
             var myFillers = fillerWords.Where(w => w.player == i).Select(w => w.index).ToList();
             if (myFillers.Count == 0) myFillers = null;
 
-            GameObject go = null;
-            try
-            {
-                go = await Addressables.InstantiateAsync(AddressManager.I.GetPlayerLocation(selectedItemPlayers[i]));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var go = await Addressables.InstantiateAsync(AddressManager.I.GetPlayerLocation(selectedItemPlayers[i]));
             var player = go.GetComponent<Player>();
 
             player.Init(i, chosenPowerUps[i], myFillers, fullUserInfos[i].Name);
             Players.Add(player);
 
             if (MyTurn != i) continue;
-            var controller = (PlayerController)player.gameObject.AddComponent(GetControllerType());
+            var controller = (PlayerController)player.gameObject.AddComponent(player.GetControllerType());
             controller.SetCameraFollow();
         }
     }
-
-    public abstract Type GetControllerType();
 
     public List<Player> Players { get; } = new();
 
@@ -387,12 +384,6 @@ public abstract class RootEnv : MonoBehaviour
     protected abstract void ColorFillers(List<(int index, int player)> fillerWords);
 
 
-    public event Action GameFinished, GamePrepared, GameStarted;
+    public event Action GamePrepared, GameStarted;
     public static event Action Initiated;
-
-    public void FinishGame()
-    {
-        GameFinished?.Invoke();
-        Debug.Log("show finish particles here");
-    }
 }

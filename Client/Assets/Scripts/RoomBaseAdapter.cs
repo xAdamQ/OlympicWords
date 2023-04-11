@@ -1,7 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class RoomBaseAdapter : MonoModule<RoomBaseAdapter>
 {
@@ -10,10 +8,6 @@ public class RoomBaseAdapter : MonoModule<RoomBaseAdapter>
 
     public void Surrender()
     {
-        UniTask.Create(async () =>
-        {
-            await RoomNet.I.Surrender();
-            SceneManager.LoadScene("Lobby");
-        }).Forget(e => throw e);
+        RootEnv.I.Surrender();
     }
 }

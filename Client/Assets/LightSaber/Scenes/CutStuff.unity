@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 2138677392}
-  m_IndirectSpecularColor: {r: 0.28502655, g: 0.37139314, b: 0.49600908, a: 1}
+  m_IndirectSpecularColor: {r: 0.2850269, g: 0.3713935, b: 0.49601045, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -567,12 +567,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1c2fbf8dca6d03ce8c67d499a6f0511, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Objects:
-  - {fileID: 1792579058}
-  - {fileID: 1651117123}
-  - {fileID: 1167976925}
-  - {fileID: 804980648}
-  - {fileID: 1131700314}
+  pref: {fileID: 0}
+  start: {x: 0, y: 0, z: 0}
 --- !u!1001 &804980647
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1235,7 +1231,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4095211935016544520, guid: ca6bd3aee076f4f888edcb4a6b2a6d00, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8181818700839087214, guid: ca6bd3aee076f4f888edcb4a6b2a6d00, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1440,6 +1436,13 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+  m_TaaSettings:
+    quality: 3
+    frameInfluence: 0.1
+    jitterScale: 1
+    mipBias: 0
+    varianceClampScale: 0.9
+    contrastAdaptiveSharpening: 0
 --- !u!1 &1687371170
 GameObject:
   m_ObjectHideFlags: 0
@@ -1501,7 +1504,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 28326722d2ceb407cb9fbe257ece9423, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1791,7 +1794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 2
+  m_Version: 3
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
   m_LightLayerMask: 1
@@ -1801,4 +1804,4 @@ MonoBehaviour:
   m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 1
+  m_SoftShadowQuality: 2
