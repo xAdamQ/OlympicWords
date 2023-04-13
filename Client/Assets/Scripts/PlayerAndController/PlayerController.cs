@@ -51,6 +51,14 @@ public abstract class PlayerController : MonoModule<PlayerController>
             canWrite = true;
             Keyboard.current.onTextInput += OnTextInput;
         };
+
+        Player.PowerSkipped += _ =>
+        {
+            var remainingJets = int.Parse(RemainingJets.I.ValueText.text) - 1;
+            RemainingJets.I.ValueText.text = remainingJets.ToString();
+            if (remainingJets == 0)
+                RemainingJets.I.gameObject.SetActive(false);
+        };
     }
 
     protected virtual void Start()
@@ -67,6 +75,7 @@ public abstract class PlayerController : MonoModule<PlayerController>
         canWrite = true;
         Keyboard.current.onTextInput += OnTextInput;
 
+        RemainingJets.I.GetComponent<CanvasGroup>().alpha = 1;
         switch (Player.ChosenPowerUp)
         {
             case PowerUp.SmallJet:

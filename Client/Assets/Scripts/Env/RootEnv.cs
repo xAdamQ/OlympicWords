@@ -378,6 +378,7 @@ public abstract class RootEnv : MonoBehaviour
         yield return new WaitForSeconds(.5f);
 
         Destroy(readyText);
+        RoomBaseAdapter.I.MenuGate.SetActive(true);
         GameStarted?.Invoke();
     }
 
