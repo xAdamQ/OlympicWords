@@ -56,6 +56,7 @@ namespace Assets.Scripts
             var originalMaterial = originalObject.GetComponent<MeshRenderer>().materials;
 
             var meshGameObject = new GameObject();
+            meshGameObject.transform.SetParent(originalObject.transform.parent);
             var originalSliceable = originalObject.GetComponent<Sliceable>();
 
             meshGameObject.AddComponent<MeshFilter>();

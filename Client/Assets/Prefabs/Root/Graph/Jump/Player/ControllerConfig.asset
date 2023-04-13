@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: ControllerConfig
   m_EditorClassIdentifier: 
   WordHighlightMat: {fileID: 2100000, guid: 5fc3ea5a3b5496e47a8d3181bb95e505, type: 2}
-  FadeMaterial: {fileID: 2100000, guid: 13eceaee842705c4389f3f588d4d9515, type: 2}
-  JumpZoomCoefficient: 0
-  CameraOffset: {x: 4, y: 4, z: 5}
+  FadeMaterial: {fileID: 2100000, guid: c562bb9cf97aa0747a4fac6edd115b3e, type: 2}
+  CameraOffset: {x: 7.07, y: 4.88, z: 0.36}
   CameraMoveSmoothing: 0.1
   CameraLookSmoothing: 0.1

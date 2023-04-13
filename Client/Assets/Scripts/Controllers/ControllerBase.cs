@@ -16,7 +16,6 @@ public abstract class ControllerBase
     private void SetAddress()
     {
         var typeName = GetType().Name;
-        Debug.Log($"type name was {typeName}");
         var controllerIndex = typeName.IndexOf("Controller", StringComparison.Ordinal);
         var controllerName = typeName[..controllerIndex];
 

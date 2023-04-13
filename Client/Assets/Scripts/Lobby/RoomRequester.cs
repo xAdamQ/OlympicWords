@@ -19,9 +19,15 @@ public abstract class RoomRequester : EnvObject
         ticketText.text = (bet / 11f).ToString(CultureInfo.InvariantCulture);
     }
 
-    public async void RequestRandomRoom()
+    public void RequestRandomRoom()
+    {
+        RequestRandomRoomAsync().Forget();
+    }
+
+    private async UniTaskVoid RequestRandomRoomAsync()
     {
         var betChoice = RootEnv.GetEnvIndex(GenericEnvType);
+
 
 #if ADDRESSABLES
         if (betChoice > 0)
@@ -39,19 +45,6 @@ public abstract class RoomRequester : EnvObject
 
         LastRequest = (GenericEnvName, betChoice);
         await SwitchScene();
-
-        // UniTask.Create(async () =>
-        // {
-        //     await RoomNet.I.StartRandomRoom(betChoice, capacityChoiceButton.CurrentChoice);
-        //
-        //     LastRequest = (capacityChoiceButton.CurrentChoice, betChoice);
-        //
-        //     await SwitchScene(betChoice);
-        // });
-
-        // BlockingPanel.Show("finding players")
-        //     .Forget(e => throw e);
-        //this is shown even if the room is started, it's removed before game start directly
     }
 
     private async UniTask SwitchScene()

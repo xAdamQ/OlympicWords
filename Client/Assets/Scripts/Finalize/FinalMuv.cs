@@ -49,7 +49,7 @@ public class FinalMuv : MinUserView
 
     public void SetTemporalStatus()
     {
-        player.MovedADigit += UpdateWpm;
+        player.LetterDone += _ => UpdateWpm();
     }
 
 

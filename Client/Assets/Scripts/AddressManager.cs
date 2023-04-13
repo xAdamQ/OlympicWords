@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,14 +27,14 @@ public class AddressManager
     /// env type is the key
     /// </summary>
     /// <returns></returns>
-    private readonly Dictionary<string, EnvironmentLocations> environmentLocationsLookup = new();
+    private readonly Dictionary<Type, EnvironmentLocations> environmentLocationsLookup = new();
     private Dictionary<string, IResourceLocation> PlayerLocations;
 
     public IResourceLocation GetShop(string envName)
     {
         var currentEnv = RootEnv.Environments[envName];
         EnvironmentLocations environmentLocations;
-        while (!environmentLocationsLookup.TryGetValue(currentEnv.Name, out environmentLocations) ||
+        while (!environmentLocationsLookup.TryGetValue(currentEnv.Type, out environmentLocations) ||
                environmentLocations.Shop == null)
             currentEnv = currentEnv.Parent;
 
@@ -46,7 +47,7 @@ public class AddressManager
 
         while (currentEnv != null)
         {
-            if (!environmentLocationsLookup.TryGetValue(currentEnv.Name, out var environmentLocations))
+            if (!environmentLocationsLookup.TryGetValue(currentEnv.Type, out var environmentLocations))
             {
                 currentEnv = currentEnv.Parent;
                 continue;
@@ -59,9 +60,9 @@ public class AddressManager
         }
     }
 
-    public List<IResourceLocation> GetItemPlayerLocations(string envName)
+    public List<IResourceLocation> GetItemPlayerLocations(Type envType)
     {
-        return environmentLocationsLookup.TryGetValue(RootEnv.Environments[envName].Name, out var environmentLocations)
+        return environmentLocationsLookup.TryGetValue(envType, out var environmentLocations)
             ? environmentLocations.Items.Players
             : new List<IResourceLocation>();
     }
@@ -72,8 +73,7 @@ public class AddressManager
         return PlayerLocations[id];
     }
 
-    public const string PREFAB_ADDRESS = "Assets/Prefabs";
-
+    public static readonly string PREFAB_ADDRESS = Path.Combine("Assets", "Prefabs");
 
     private Dictionary<string, IResourceLocation> GetAllLocations()
     {
@@ -81,10 +81,10 @@ public class AddressManager
         var allLocations = new Dictionary<string, IResourceLocation>();
 
         foreach (var locator in locators)
-        foreach (var locatorKey in locator.Keys)
-            if (locator.Locate(locatorKey, typeof(GameObject), out var locations))
-                foreach (var location in locations)
-                    allLocations.TryAdd(location.InternalId, location);
+            foreach (var locatorKey in locator.Keys)
+                if (locator.Locate(locatorKey, typeof(GameObject), out var locations))
+                    foreach (var location in locations)
+                        allLocations.TryAdd(location.InternalId, location);
 
         return allLocations;
     }
@@ -93,14 +93,15 @@ public class AddressManager
     {
         await Addressables.InitializeAsync();
 
-        var addresses = JsonConvert.DeserializeObject<Dictionary<string, EnvironmentAddresses>>
-            (await File.ReadAllTextAsync("Assets/EnvironmentAddresses.json"));
+        var addressesText = await Addressables.LoadAssetAsync<TextAsset>("EnvironmentAddresses");
+
+        var addresses = JsonConvert.DeserializeObject<Dictionary<string, EnvironmentAddresses>>(addressesText.text);
 
         var locations = GetAllLocations();
 
         var envs = RootEnv.GetEnvironments();
         var envQueue = new Queue<ClientEnvironment>();
-        envQueue.Enqueue(envs.Single(e => e.Name == RootEnv.Name));
+        envQueue.Enqueue(envs.Single(e => e.Type == typeof(RootEnv)));
         var visited = new List<ClientEnvironment>();
 
         while (envQueue.Count > 0)
@@ -111,10 +112,10 @@ public class AddressManager
             foreach (var child in env.Children.Where(e => !visited.Contains(e)))
                 envQueue.Enqueue(child);
 
-            if (!addresses.TryGetValue(env.Name, out var envAddresses)) continue;
+            if (!addresses.TryGetValue(env.Type.Name, out var envAddresses)) continue;
 
             //there is not automatic system that fill the types automatically because this is a dump automation
-            environmentLocationsLookup.Add(env.Name, new EnvironmentLocations
+            environmentLocationsLookup.Add(env.Type, new EnvironmentLocations
             {
                 Shop = envAddresses.Shop == null ? null : locations[envAddresses.Shop],
                 Players = locations.Where(l => envAddresses.Players.Contains(l.Key)).Select(kvp => kvp.Value).ToList(),
@@ -134,7 +135,8 @@ public class AddressManager
 
     public static void SaveEnvAddr(Dictionary<string, EnvironmentAddresses> environmentAddresses)
     {
-        File.WriteAllText("Assets/EnvironmentAddresses.json", JsonConvert.SerializeObject(environmentAddresses));
+        File.WriteAllText("Assets/EnvironmentAddresses.json",
+            JsonConvert.SerializeObject(environmentAddresses));
     }
 
     public class EnvironmentLocations

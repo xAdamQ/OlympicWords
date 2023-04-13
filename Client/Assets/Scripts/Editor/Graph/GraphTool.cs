@@ -5,10 +5,10 @@ using System.Linq;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.EditorTools;
+using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Random = UnityEngine.Random;
-using SystemRandom = System.Random;
+using UnityEngine.Serialization;
 
 // ReSharper disable AccessToModifiedClosure
 
@@ -18,10 +18,10 @@ public class GraphTool : EditorTool
     // Serialize this value to set a default value in the Inspector.
     [SerializeField] private Texture2D icon;
 
-    public GraphData graphData;
+    public GraphData GraphData, OriginalGraphData;
     public bool pointerEnabled, drawMode, viewMode, algoMode, checkMode, thickMode;
-    public List<Node> Nodes => graphData.Nodes;
-    public List<Edge> Edges => graphData.Edges;
+    public List<Node> Nodes => GraphData.Nodes;
+    public List<Edge> Edges => GraphData.Edges;
 
     public int startNode;
 
@@ -43,12 +43,12 @@ public class GraphTool : EditorTool
         Load();
     }
 
-    private List<Vector3> smoothGraph;
+    public int smoothLevel;
 
     public override void OnToolGUI(EditorWindow window)
     {
         if (window is not SceneView or null || !ToolManager.IsActiveTool(this) ||
-            graphData is null) return;
+            GraphData is null) return;
 
         var (spawnPoz, spawnNormal) = GetSpawnPosition();
 
@@ -76,7 +76,7 @@ public class GraphTool : EditorTool
                 case KeyCode.P:
                     pointerEnabled = !pointerEnabled;
                     break;
-                case KeyCode.Escape:
+                case KeyCode.Z:
                     startNode = -1;
                     break;
                 case KeyCode.S:
@@ -106,19 +106,16 @@ public class GraphTool : EditorTool
                     EditorCoroutineUtility.StartCoroutineOwnerless(MassTestPaths());
                     break;
                 case KeyCode.X:
-                    CreateRandomPath();
+                    EdgeTool.CreateRandomPath();
                     break;
                 case KeyCode.Backslash:
                     DeleteOrphans();
                     break;
                 case KeyCode.H:
-                    smoothLevel++;
-                    Debug.Log(smoothLevel);
+                    GraphData = GraphManager.SmoothenGraph(GraphData);
                     break;
                 case KeyCode.F:
-                    smoothLevel--;
-                    if (smoothLevel < 0) smoothLevel = 0;
-                    Debug.Log(smoothLevel);
+                    GraphData = OriginalGraphData;
                     break;
                 case KeyCode.U:
                     Nodes.ForEach(n => n.Position += n.Normal * .01f);
@@ -126,7 +123,6 @@ public class GraphTool : EditorTool
                 case KeyCode.B:
                     Nodes.ForEach(n => n.Position += n.Normal * -.01f);
                     break;
-
                 case KeyCode.K:
                     thickMode = !thickMode;
                     break;
@@ -137,15 +133,16 @@ public class GraphTool : EditorTool
 
         if (drawMode) DrawHotEdge(spawnPoz);
 
-        if (algoMode) DrawAlgoPath();
+        if (algoMode) EdgeTool.DrawAlgoPath();
 
-        EdgeDrawer.DrawEdges();
+        EdgeTool.DrawEdges();
+        // EdgeTool.DrawSmoothPath();
         DrawNodes();
     }
 
 
-    private EdgeDrawer EdgeDrawer => edgeDrawer ??= new EdgeDrawer(this);
-    private EdgeDrawer edgeDrawer;
+    private EdgeTool EdgeTool => edgeTool ??= new EdgeTool(this);
+    private EdgeTool edgeTool;
 
     private void Last2PointsWorks()
     {
@@ -158,8 +155,8 @@ public class GraphTool : EditorTool
 
         var digitNormal = Vector3.Lerp(n1.Normal, n2.Normal, .5f);
 
-        var digitStartProjection = GraphEnv.GetProjectedPoz(n1.Position, n2.Normal);
-        var digitEndProjection = GraphEnv.GetProjectedPoz(n2.Position, n2.Normal);
+        var digitStartProjection = GraphEnv.I.GetProjectedPoz(n1.Position, n2.Normal);
+        var digitEndProjection = GraphEnv.I.GetProjectedPoz(n2.Position, n2.Normal);
         var digitPoz = Vector3.Lerp(digitStartProjection.poz, digitEndProjection.poz, .5f);
 
         Handles.DrawLine(digitPoz, digitPoz + digitNormal * 2, 3f);
@@ -180,7 +177,7 @@ public class GraphTool : EditorTool
     {
         for (var i = 0; i < 100; i++)
         {
-            CreateRandomPath();
+            EdgeTool.CreateRandomPath();
             yield return new EditorWaitForSeconds(.1f);
         }
     }
@@ -311,7 +308,7 @@ public class GraphTool : EditorTool
 
     private void Save()
     {
-        var msg = graphData != null ? "saved" : "no graph dats object found";
+        var msg = GraphData != null ? "saved" : "no graph dats object found";
         SceneView.lastActiveSceneView.ShowNotification(new GUIContent(msg), .1f);
     }
 
@@ -319,7 +316,8 @@ public class GraphTool : EditorTool
     {
         if (GraphEditorWindow.I is null) GraphEditorWindow.ShowWindow();
 
-        graphData = GraphEditorWindow.I!.ChosenGraph;
+        GraphData = OriginalGraphData = GraphEditorWindow.I!.ChosenGraph;
+
         //can be null
 
         // var loadedScenes = Enumerable.Range(0, SceneManager.sceneCount).Select(SceneManager.GetSceneAt).ToList();
@@ -349,7 +347,7 @@ public class GraphTool : EditorTool
         return (spawnPoint, normal);
     }
 
-    public float GetRelativeCapSize(Vector3 position, float absSize = .15f)
+    public float GetRelativeCapSize(Vector3 position, float absSize)
     {
         return HandleUtility.GetHandleSize(position) * absSize;
     }
@@ -374,9 +372,7 @@ public class GraphTool : EditorTool
 
             Handles.color = node.Type == 0 ? Color.green : Color.magenta;
 
-            if (algoMode && algoFinishNode == i) Handles.color = Color.white;
-
-            var absCapSize = orphanNodes.Contains(i) ? 1f : .15f;
+            var absCapSize = orphanNodes.Contains(i) ? 1f : .2f;
             var capSize = drawMode ? .1f : GetRelativeCapSize(node.Position, absCapSize);
 
             if (Handles.Button(node.Position, Quaternion.identity, capSize, capSize,
@@ -438,20 +434,14 @@ public class GraphTool : EditorTool
         }
         else
         {
-            if (Edges.Any(e =>
-                    e.Start == startNode && e.End == node || e.Start == node && e.End == startNode))
+            if (Edges.Any(e => e.Start == startNode && e.End == node || e.Start == node && e.End == startNode))
                 return;
 
             var edge = new Edge(startNode, node, type);
 
             Edges.Add(edge);
 
-            // StartNode.Edges.Add(edge);
-            // node.Edges.Add(edge);
-
             startNode = -1;
-
-            // RefreshEditor();
         }
     }
 
@@ -485,7 +475,7 @@ public class GraphTool : EditorTool
     {
         RecordUndo();
 
-        Nodes.Add(new Node { Position = spawnPoz, Type = 0, Normal = spawnNormal });
+        Nodes.Add(new Node { Position = spawnPoz + spawnNormal * .1f, Type = 0, Normal = spawnNormal });
 
         if (!drawMode) return;
 
@@ -502,43 +492,9 @@ public class GraphTool : EditorTool
     // }
 
 
-    private List<(int node, bool isWalkable)> algoPath;
-    private List<Edge> remainingAlgoEdges;
-    private int algoFinishNode;
-    private int smoothLevel;
-
-    private void CreateRandomPath()
-    {
-        var r = new SystemRandom(Random.Range(0, 99999));
-        algoPath = GraphManager.GetRandomPath(graphData, r);
-    }
-
-
-    private void DrawAlgoPath()
-    {
-        Handles.zTest = CompareFunction.Always;
-
-        if (algoPath is null) return;
-
-        for (var i = 0; i < algoPath.Count - 1; i++)
-        {
-            // Handles.color = AlgoPath[i + 1].isWalkable ? Color.yellow : Color.white;
-            Handles.color = Color.Lerp(Color.white, Color.magenta, i / (float)algoPath.Count);
-
-            Handles.DrawLine(Nodes[algoPath[i].node].Position, Nodes[algoPath[i + 1].node].Position,
-                10f);
-        }
-
-        if (remainingAlgoEdges == null) return;
-
-        Handles.color = Color.cyan;
-        foreach (var edge in remainingAlgoEdges)
-            Handles.DrawLine(Nodes[edge.Start].Position, Nodes[edge.End].Position, 10f);
-    }
-
     private void RecordUndo()
     {
-        Undo.RecordObject(graphData, "graphTool");
-        EditorUtility.SetDirty(graphData);
+        Undo.RecordObject(GraphData, "graphTool");
+        EditorUtility.SetDirty(GraphData);
     }
 }

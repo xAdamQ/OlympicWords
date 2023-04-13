@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using EFCoreSecondLevelCacheInterceptor;
 using Hangfire;
 using Hangfire.MemoryStorage;
@@ -5,6 +6,7 @@ using Lib.AspNetCore.ServerSentEvents;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using OlympicWords;
 using OlympicWords.Filters;
 using OlympicWords.Services;
 
@@ -30,16 +32,19 @@ services.AddControllers(opt => { opt.Filters.Add<DefaultActionFilter>(); })
 
 services.AddServerSentEvents();
 
+services.AddHostedService<PendingRoomsLoop>();
+
 #region databse
 const string PROVIDER_NAME = "InMemoryDefault";
 
-// services.AddEFSecondLevelCache(options =>
-// {
-//     // options.UseEasyCachingCoreProvider(PROVIDER_NAME, isHybridCache: false);
-//     options.UseMemoryCacheProvider();
-//     options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
-//     options.DisableLogging(false);
-// });
+var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+if (!isWindows && !isLinux)
+    throw new Exception("Unsupported OS");
+
+var connectionString = isWindows
+    ? configuration.GetConnectionString("Windows")
+    : configuration.GetConnectionString("Azure");
 
 services.AddEFSecondLevelCache(opt => opt
     .UseEasyCachingCoreProvider(PROVIDER_NAME, isHybridCache: false)
@@ -51,7 +56,7 @@ services.AddEasyCaching(options => options.UseInMemory(configuration, PROVIDER_N
 
 services.AddDbContext<MasterContext>((serviceProvider, options) =>
 {
-    var connection = new SqlConnection(configuration.GetConnectionString("Azure"));
+    var connection = new SqlConnection(connectionString);
 
     options.UseSqlServer(connection, opt => opt
         .CommandTimeout(30)
@@ -71,6 +76,8 @@ services.AddScoped<ILobbyManager, LobbyManager>();
 services.AddScoped<IMatchMaker, MatchMaker>();
 services.AddScoped<IScopeRepo, ScopeRepo>();
 services.AddScoped<SecurityManager>();
+
+OfflineRepo.Touch();
 
 services.AddSingleton(new PersistantData());
 services.AddSingleton<IServerLoop, ServerLoop>();

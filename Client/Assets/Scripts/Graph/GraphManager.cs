@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -43,6 +44,7 @@ public static class GraphManager
 
         var path = new List<(int, bool)>
         {
+            //the first node edge type is irrelevant, because the edge is related to the end node always
             (startNode, startEdge.Type == 0),
             (finishNode, startEdge.Type == 0)
         };
@@ -97,8 +99,7 @@ public static class GraphManager
             branches.ForEach(b => b.edges.ForEach(removeEdge));
             //delete all branches
 
-            path.AddRange(
-                chosenBranch.sequence.Select((n, i) => (n, chosenBranch.edges[i].Type == 0)));
+            path.AddRange(chosenBranch.sequence.Select((n, i) => (n, chosenBranch.edges[i].Type == 0)));
             //add chosen sequence to the path
 
             if (chosenBranch.looping)
@@ -177,5 +178,162 @@ public static class GraphManager
         }
 
         return nodeEdges;
+    }
+
+    public static (Vector3 position, Vector3 normal) GetPointOnPath(List<Vector3> path, List<Vector3> normals,
+        float targetDistance, ref (float distance, int index) edgeCounter)
+    {
+        for (; edgeCounter.index < path.Count; edgeCounter.index++)
+        {
+            var edgeLength = Vector3.Distance(path[edgeCounter.index - 1], path[edgeCounter.index]);
+
+            if (targetDistance < edgeCounter.distance + edgeLength)
+            {
+                var edgePassedDistance = targetDistance - edgeCounter.distance;
+                var passedDistanceRatio = edgePassedDistance / edgeLength;
+                var poz = Vector3.Lerp(path[edgeCounter.index - 1], path[edgeCounter.index], passedDistanceRatio);
+                var normal = Vector3.Lerp(normals[edgeCounter.index - 1], normals[edgeCounter.index],
+                    passedDistanceRatio);
+                return (poz, normal);
+            }
+
+            edgeCounter.distance += edgeLength;
+        }
+
+        throw new ArgumentOutOfRangeException(nameof(targetDistance),
+            "the passed distance exceeds the given path length");
+    }
+
+    const float cutRatio = .45f, cutValue = 1f;
+
+    private static Node CutEdge(Edge edge, int endNode, IList<Node> nodes)
+    {
+        var traverseEndNode = nodes[endNode];
+        var traverseStart = edge.OtherEnd(endNode);
+        var traverseStartNode = nodes[traverseStart];
+
+        var edgeVector = traverseEndNode.Position - traverseStartNode.Position;
+        var edgeCutRatio = cutValue > edgeVector.magnitude * .5f ? cutRatio : cutValue / edgeVector.magnitude;
+        var edgeCutPoint = Vector3.Lerp(traverseStartNode.Position, traverseEndNode.Position, edgeCutRatio);
+        var edgeNormal = Vector3.Lerp(traverseStartNode.Normal, traverseEndNode.Normal, edgeCutRatio);
+
+        return new Node
+        {
+            Position = edgeCutPoint,
+            Normal = edgeNormal,
+            Type = traverseEndNode.Type,
+        };
+    }
+
+    public static GraphData SmoothenGraph(GraphData input)
+    {
+        var res = input.Copy();
+        var nodes = res.Nodes;
+        var edges = res.Edges;
+
+        var threadLeads = new Queue<(Edge edge, int end)>();
+        threadLeads.Enqueue((edges.First(), edges.First().End));
+        var visitedEdges = new List<Edge> { edges.First() };
+
+        while (threadLeads.Count > 0)
+        {
+            var (edge, traverseEnd) = threadLeads.Dequeue();
+
+            var nodeEdges = edges
+                .Where(e => (e.Start == traverseEnd || e.End == traverseEnd) && !visitedEdges.Contains(e))
+                .ToList();
+
+            nodes[traverseEnd] = CutEdge(edge, traverseEnd, nodes);
+            //replace the old node with the new node at the cut position
+            //so the old index belongs to the new node, but the old node reference is intact and you can use
+            //it's position to calculate the old edges
+
+            foreach (var nextEdge in nodeEdges)
+            {
+                visitedEdges.Add(nextEdge);
+                var newStart = CutEdge(nextEdge, traverseEnd, nodes);
+                nodes.Add(newStart);
+
+                if (nextEdge.Start == traverseEnd)
+                    nextEdge.Start = nodes.Count - 1;
+                else
+                    nextEdge.End = nodes.Count - 1;
+                //shorten the edge by making it point to the new node
+
+                var connectingEdge = new Edge(traverseEnd, nodes.Count - 1, nextEdge.Type)
+                {
+                    //the group doesn't matter
+                };
+                edges.Add(connectingEdge);
+
+                threadLeads.Enqueue((nextEdge, nextEdge.OtherEnd(traverseEnd)));
+            }
+        }
+
+        return res;
+    }
+
+    private static (Vector3 point, Vector3 normal) CutEdge
+        (Vector3 start, Vector3 startNormal, Vector3 end, Vector3 endNormal)
+    {
+        var vector = end - start;
+        var cutPercent = cutValue > vector.magnitude * .5f ? cutRatio : cutValue / vector.magnitude;
+
+        var position = Vector3.Lerp(end, start, cutPercent);
+        var normal = Vector3.Lerp(endNormal, startNormal, cutPercent);
+
+        return (position, normal);
+    }
+
+    public static IEnumerable<(Vector3 position, Vector3 normal, bool isWalkable)> SmoothenPath
+        (IEnumerable<(Vector3 position, Vector3 normal, bool isWalkable)> path)
+    {
+        using var enumerator = path.GetEnumerator();
+
+        enumerator.MoveNext();
+        var first = enumerator.Current;
+        enumerator.MoveNext();
+        var second = enumerator.Current;
+
+        //if we have less than 3 points, return the exact path, even if it was empty
+        if (!enumerator.MoveNext())
+        {
+            // ReSharper disable once PossibleMultipleEnumeration
+            foreach (var value in path)
+                yield return value;
+
+            yield break;
+        }
+
+        yield return first;
+
+        do
+        {
+            var third = enumerator.Current;
+
+            if (!third.isWalkable || !second.isWalkable)
+            {
+                yield return second;
+
+                first = second;
+                second = third;
+
+                continue;
+            }
+
+            var p1 = CutEdge(first.position, first.normal, second.position, second.normal);
+            var p2 = CutEdge(third.position, third.normal, second.position, second.normal);
+            var p1Full = (p1.point, p1.normal, true);
+            var p2Full = (p2.point, p2.normal, true);
+
+            yield return p1Full;
+            yield return p2Full;
+
+            //we use this, to have the shorter version of the edge, we calculate the ratio right
+            first = p1Full;
+            second = third;
+        } while (enumerator.MoveNext());
+
+        yield return second;
     }
 }

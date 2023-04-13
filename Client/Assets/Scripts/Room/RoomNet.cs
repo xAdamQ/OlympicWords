@@ -11,6 +11,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using Random = UnityEngine.Random;
+
 public class RoomNet : MonoModule<RoomNet>, IRoomHub
 {
     private readonly IProtocol protocol = new JsonProtocol(new LitJsonEncoder());
@@ -142,12 +143,21 @@ public class RoomNet : MonoModule<RoomNet>, IRoomHub
     {
         //don't restart game here because this is called only when the connection
         //is gracefully closed
-        Debug.Log("OnClosed");
+        //what is puzzling is this get called without on error when an error happens sometimes
+        if (!PlayerController.I.Player.IsFinished && !RootEnv.I.Surrendered)
+        {
+            NetManager.I.RestartGame();
+            Toast.I.Show("a network related issue kicked you out of the room, this maybe due to a network error or a server restart/bug");
+            //when it revive, does it show the on OnClose??
+        }
+
         Closed?.Invoke();
+        Debug.Log("OnClosed");
     }
     private void OnError(HubConnection arg1, string arg2)
     {
         NetManager.I.RestartGame();
+        Closed?.Invoke();
         Debug.Log($"OnError: {arg2}");
     }
     private void OnReconnecting(HubConnection arg1, string arg2)

@@ -1,19 +1,15 @@
-﻿using Cysharp.Threading.Tasks;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class RoomBaseAdapter : MonoModule<RoomBaseAdapter>
 {
     public TMP_Text ReadyText;
     public GameObject PowerUpPanel, WaitingPanel;
+    [FormerlySerializedAs("menuGate")] public GameObject MenuGate;
 
     public void Surrender()
     {
-        UniTask.Create(async () =>
-        {
-            await RoomNet.I.Surrender();
-            SceneManager.LoadScene("Lobby");
-        }).Forget(e => throw e);
+        RootEnv.I.Surrender();
     }
 }

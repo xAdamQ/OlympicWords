@@ -6,13 +6,11 @@ public static class Controllers
 {
     static Controllers()
     {
-#if !UNITY_WEBGL
-        User = ControllerProxy<IUserController>.CreateProxy();
-        Lobby = ControllerProxy<ILobbyController>.CreateProxy();
-#else
+        // User = ControllerProxy<IUserController>.CreateProxy();
+        // Lobby = ControllerProxy<ILobbyController>.CreateProxy();
+
         User = new UserController();
         Lobby = new LobbyController();
-#endif
     }
 
     public static readonly IUserController User;

@@ -47,11 +47,9 @@ public class AddressableEditorUtility
 
     public static void UpdateSystem()
     {
-        var baseAddress = AddressManager.PREFAB_ADDRESS;
-
         var envs = RootEnv.GetEnvironments();
         var envQueue = new Queue<ClientEnvironment>();
-        envQueue.Enqueue(envs.Single(e => e.Name == "Root"));
+        envQueue.Enqueue(envs.Single(e => e.Type == typeof(RootEnv)));
         var visited = new List<ClientEnvironment>();
 
         var envAddr = new Dictionary<string, EnvironmentAddresses>();
@@ -66,41 +64,57 @@ public class AddressableEditorUtility
                 envQueue.Enqueue(child);
 
             var envPath = Path.Combine(
-                currentDirectory,
-                baseAddress,
-                env.Name == RootEnv.Name ? "" : RootEnv.Name,
-                //root a special rule that it is not included in the sub types names
-                Path.Combine(env.Name.SplitCamelCase())
-            );
+                Path.Combine(currentDirectory, AddressManager.PREFAB_ADDRESS),
+                Path.Combine(env.GetParentsNames()));
+            //root/graph/jump
+
+
+            // var envPath = Path.Combine(
+            // currentDirectory,
+            // AddressManager.PREFAB_ADDRESS
+            // env.Type == RootEnv.Name ? "" : RootEnv.Name,
+            // //root a special rule that it is not included in the sub types names
+            // Path.Combine(env.Type.SplitCamelCase())
+            // );
 
             if (!Directory.Exists(envPath)) continue;
 
             var topGos = getObjectsAt(envPath, SearchOption.TopDirectoryOnly);
             var shop = topGos.SingleOrDefault(o => o.go.GetComponent<Shop>());
             if (shop != default((string, GameObject)))
-                AddressAssets(env.Name, shop.go);
+                AddressAssets(env.Type.Name, shop.go);
 
             //I leave it to null because it's the rule of the address manager to re-route
             // else
             // shop.path = envAddr[env.Parent.Name].Shop;
 
-            var itemPlayersAll = getObjectsAt(Path.Combine(envPath, "Item/Player"), SearchOption.AllDirectories);
-            var itemPlayers = itemPlayersAll.Where(o => o.go.GetComponent<ItemPlayer>()
-                                                        && !o.go.name.ToLower().Contains("base")).ToList();
-            AddressAssets(env.Name, itemPlayers.Select(o => (Object)o.go).ToArray());
-
-            var playersAll = getObjectsAt(Path.Combine(envPath, "Player"), SearchOption.AllDirectories);
-            var players = playersAll.Where(o => o.go.GetComponent<Player>() &&
-                                                !o.go.name.ToLower().Contains("base")).ToList();
-            AddressAssets(env.Name, players.Select(o => (Object)o.go).ToArray());
-
-            envAddr.Add(env.Name, new EnvironmentAddresses
+            var itemPath = Path.Combine(envPath, "Item/Player");
+            List<(string path, GameObject go)> itemPlayers = new();
+            if (Directory.Exists(itemPath))
             {
-                Shop = shop.path,
-                Players = players.Select(o => o.path).ToList(),
+                var itemPlayersAll = getObjectsAt(itemPath, SearchOption.AllDirectories);
+                itemPlayers = itemPlayersAll.Where(o => o.go.GetComponent<ItemPlayer>()
+                                                        && !o.go.name.ToLower().Contains("base")).ToList();
+                AddressAssets(env.Type.Name, itemPlayers.Select(o => (Object)o.go).ToArray());
+            }
+
+            var playerPath = Path.Combine(envPath, "Player");
+            List<(string path, GameObject go)> players = new();
+            if (Directory.Exists(playerPath))
+            {
+                var playersAll = getObjectsAt(playerPath, SearchOption.AllDirectories);
+                players = playersAll.Where(o => o.go.GetComponent<Player>() &&
+                                                !o.go.name.ToLower().Contains("base")).ToList();
+                AddressAssets(env.Type.Name, players.Select(o => (Object)o.go).ToArray());
+            }
+
+            envAddr.Add(env.Type.Name, new EnvironmentAddresses
+            {
+                Shop = shop.path?.Replace('\\', '/'),
+                Players = players.Select(o => o.path.Replace('\\', '/')).ToList(),
                 Items = new()
                 {
-                    Players = itemPlayers.Select(o => o.path).ToList(),
+                    Players = itemPlayers.Select(o => o.path.Replace('\\', '/')).ToList(),
                 },
             });
         }

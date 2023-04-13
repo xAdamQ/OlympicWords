@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Assertions;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
@@ -52,9 +54,58 @@ public abstract class Shop : MonoModule<Shop>
 
 public class ClientEnvironment
 {
-    public string Name { get; set; }
+    public Type Type { get; set; }
     public List<ClientEnvironment> Children { get; set; } = new();
     public ClientEnvironment Parent { get; set; }
+
+    public List<ClientEnvironment> GetParents()
+    {
+        var res = new List<ClientEnvironment>();
+        var current = this;
+        while (current != null)
+        {
+            res.Add(current);
+            current = current.Parent;
+        }
+
+        res.Reverse();
+        return res;
+    }
+
+    /// <summary>
+    /// this function do:
+    /// RootEnv -> Root
+    /// GraphRnv -> Graph
+    /// GraphJumpEnv -> Graph, Jump
+    /// </summary>
+    public string[] GetParentsNames()
+    {
+        var parents = GetParents();
+        var collectiveName = string.Empty;
+        var res = new string[parents.Count];
+        res[0] = RootEnv.GetAbstractName(typeof(RootEnv));
+
+        for (var i = 1; i < parents.Count; i++)
+        {
+            if (!parents[i].Type.IsAbstract) //if we have a payable env, we use the actual name
+            {
+                Assert.AreEqual(i, parents.Count - 1);
+                res[i] = parents[i].Type.Name;
+            }
+            else
+            {
+                var currentName = RootEnv.GetAbstractName(parents[i].Type);
+
+                if (!string.IsNullOrEmpty(collectiveName))
+                    currentName = currentName.Replace(collectiveName, "");
+
+                res[i] = currentName;
+                collectiveName += currentName;
+            }
+        }
+
+        return res;
+    }
 }
 
 public abstract class Shop<TEnv> : Shop

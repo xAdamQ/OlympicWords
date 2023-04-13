@@ -164,7 +164,6 @@ public abstract class Item : MonoBehaviour
         SetState(ShopItemState.Selected);
     }
 
-    protected abstract Type GetEnvType();
 
     private string GetAbstractName()
     {

@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using BestHTTP;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -58,6 +60,7 @@ public class Coordinator : MonoModule<Coordinator>
 
     protected override void Awake()
     {
+
         if (I) Destroy(I.gameObject);
         DontDestroyOnLoad(this);
 
@@ -71,6 +74,7 @@ public class Coordinator : MonoModule<Coordinator>
 
         TestLocators().Forget(e => throw e);
     }
+
 
     public void Start()
     {

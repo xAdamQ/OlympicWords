@@ -13,9 +13,6 @@ MonoBehaviour:
   m_Name: narrow test
   m_EditorClassIdentifier: 
   Nodes:
-  - Position: {x: 52.370544, y: 0.08999999, z: 21.561035}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
   - Position: {x: 64.430504, y: 0.08999999, z: 22.14503}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
@@ -73,100 +70,94 @@ MonoBehaviour:
   - Position: {x: 66.18014, y: 0.08999999, z: 17.399923}
     Normal: {x: 0, y: 1, z: -0}
     Type: 0
-  - Position: {x: 61.0757, y: 0.08999999, z: 8.643306}
+  - Position: {x: 80.45107, y: 0.1, z: 6.4687643}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: 74.22969, y: 0.089999035, z: 5.604472}
+  - Position: {x: 67.83926, y: 0.1, z: 5.1602554}
+    Normal: {x: 0, y: 1, z: -0}
+    Type: 0
+  - Position: {x: 64.567856, y: 0.1, z: -5.4987717}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: 64.15486, y: 0.08999999, z: -4.4124584}
+  - Position: {x: 63.06394, y: 0.1, z: 9.3445835}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
-  - Position: {x: 80.823944, y: 0.0900038, z: -4.4135866}
-    Normal: {x: 0, y: 0.99999994, z: -0}
-    Type: 0
-  - Position: {x: 74.9489, y: 0.08999999, z: 8.615956}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 61.835983, y: 0.00000047683716, z: 13.934439}
-    Normal: {x: 0, y: 1, z: 0}
-    Type: 0
-  - Position: {x: 61.94294, y: 0.00000047683716, z: 17.620628}
+  - Position: {x: 58.78895, y: 0.099998094, z: -6.7433834}
     Normal: {x: 0, y: 1, z: 0}
     Type: 0
   Edges:
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 0
     End: 1
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 1
     End: 2
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 2
     End: 3
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 3
     End: 4
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 4
     End: 5
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 5
     End: 6
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 6
     End: 7
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 7
     End: 8
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 8
     End: 9
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 9
     End: 10
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 10
     End: 11
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 11
     End: 12
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 12
     End: 13
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 13
     End: 14
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 14
     End: 15
@@ -176,57 +167,52 @@ MonoBehaviour:
     Start: 15
     End: 16
   - Type: 0
-    Direction: -1
+    Direction: 0
     Group: 0
     Start: 16
     End: 17
   - Type: 0
-    Direction: 1
+    Direction: 0
     Group: 0
     Start: 17
     End: 18
   - Type: 0
-    Direction: 1
+    Direction: 0
     Group: 0
     Start: 18
+    End: 16
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 15
+    End: 0
+  - Type: 0
+    Direction: 0
+    Group: 0
+    Start: 17
     End: 19
   - Type: 0
-    Direction: 1
+    Direction: 0
     Group: 0
     Start: 19
     End: 20
   - Type: 0
-    Direction: 1
+    Direction: 0
+    Group: 0
+    Start: 20
+    End: 21
+  - Type: 0
+    Direction: 0
     Group: 0
     Start: 21
     End: 22
   - Type: 0
-    Direction: 1
+    Direction: 0
     Group: 0
     Start: 22
     End: 23
   - Type: 0
-    Direction: 1
+    Direction: 0
     Group: 0
     Start: 23
-    End: 24
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 24
-    End: 18
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 19
-    End: 17
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 21
-    End: 20
-  - Type: 0
-    Direction: 0
-    Group: 0
-    Start: 25
-    End: 26
+    End: 13

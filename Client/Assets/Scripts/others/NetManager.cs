@@ -2,20 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Net.Sockets;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using BestHTTP;
-using BestHTTP.SignalRCore;
 using UnityEngine;
-using BestHTTP.SignalRCore.Encoders;
-using BestHTTP.SignalRCore.Messages;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using Shared;
 using UnityEngine.SceneManagement;
-using Random = UnityEngine.Random;
 
 public class NetManager : MonoModule<NetManager>
 {
@@ -34,10 +28,14 @@ public class NetManager : MonoModule<NetManager>
         base.Awake();
 
 #if !UNITY_EDITOR
-        SelectedAddress = "https://wordwar3.azurewebsites.net";
+        dev = false;
 #endif
+
+
+        SelectedAddress = dev ? "https://localhost:5001" : "https://wordwar3.azurewebsites.net";
     }
 
+    public bool dev;
     public string SelectedAddress;
 
     public async Task<T> GetAsync<T>(string uri,
@@ -64,11 +62,13 @@ public class NetManager : MonoModule<NetManager>
         var request = new HTTPRequest(uriBuilder.Uri);
 
         // request.AddHeader("Content-Type", "application/json");
-        // request.AddHeader("Accept", "application/json");
-
+        request.AddHeader("Accept", "application/json");
 
         if (json != null)
             request.AddField("data", json);
+
+        Debug.Log($"Sending to: {uriBuilder.Uri} \n" +
+                  $"with data: {json}, and queries: {JsonConvert.SerializeObject(queryParams)}");
 
         var response = await request.GetHTTPResponseAsync();
 
@@ -87,10 +87,6 @@ public class NetManager : MonoModule<NetManager>
 
         if (contentTypes == null)
             throw new Exception("the response doesn't have a content type header");
-
-        // if (!contentTypes.Contains("application/json"))
-        //     throw new Exception(
-        //         $"the content types: {string.Join(", ", contentTypes)} for http requests is not supported");
 
         return JsonConvert.DeserializeObject<T>(response.DataAsText);
     }
@@ -154,9 +150,31 @@ public class NetManager : MonoModule<NetManager>
         return query;
     }
 
+    public void Logout()
+    {
+        var (provider, _) = GetActiveAuth();
+
+        PlayerPrefs.DeleteKey("activeToken");
+        PlayerPrefs.DeleteKey("activeProvider");
+        PlayerPrefs.DeleteKey(provider + "Token");
+
+        PlayerPrefs.Save();
+    }
+
+    private const string devServerWarn =
+        "the server is hosted on a dev/free plan, so the first time you login the server gets initiated for you and takes time to warm up so expect the game to fail on the first 3 attempts and you may need to refresh the page.";
+    public void BlockingLogin(string token, ProviderType provider)
+    {
+        BlockingOperationManager.Forget(Login(token, provider), msg: devServerWarn);
+    }
+    public UniTask BlockingLoginAwaitable(string token, ProviderType provider)
+    {
+        return BlockingOperationManager.Start(Login(token, provider), msg: devServerWarn);
+    }
+
     public async UniTask Login(string token, ProviderType provider)
     {
-        PlayerPrefs.SetString(provider + "token", token);
+        PlayerPrefs.SetString(provider + "Token", token);
 
         PlayerPrefs.SetString("activeToken", token);
         PlayerPrefs.SetString("activeProvider", provider.ToString());
@@ -208,8 +226,10 @@ public class NetManager : MonoModule<NetManager>
             {
                 Debug.Log(e);
             }
-
-            await SceneManager.LoadSceneAsync("Startup");
+            finally
+            {
+                await SceneManager.LoadSceneAsync("Startup");
+            }
         }).Forget(e => throw e);
     }
 }

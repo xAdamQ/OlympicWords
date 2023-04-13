@@ -74,7 +74,6 @@ public static class FbManager
 #endif
     }
 
-   
 
     private static LoginStatus LoginBase(string responseStr)
     {
@@ -92,8 +91,7 @@ public static class FbManager
     {
         var response = LoginBase(responseStr);
 
-        BlockingOperationManager.Forget
-            (NetManager.I.Login(response.AuthResponse.AccessToken, ProviderType.Facebook));
+        NetManager.I.BlockingLogin(response.AuthResponse.AccessToken, ProviderType.Facebook);
     }
 
     public static void UpgradeGuestToFb(string responseStr)
@@ -130,17 +128,5 @@ public static class FbManager
             var op = NetManager.I.Login(response.AuthResponse.AccessToken, ProviderType.Facebook);
             return BlockingOperationManager.Start(op);
         }
-    }
-
-    public static bool Logout()
-    {
-        if (PlayerPrefs.HasKey("fbToken"))
-        {
-            PlayerPrefs.DeleteKey("fbToken");
-            PlayerPrefs.Save();
-            return true;
-        }
-
-        return false;
     }
 }

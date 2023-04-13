@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using OlympicWords.Services;
 using Shared;
 
-namespace OlymbicWords.Controllers;
+namespace OlympicWords.Controllers;
+
 [Route("[controller]/[action]")]
 [ApiController]
 [AllowAnonymous]

@@ -130,16 +130,8 @@ namespace OlympicWords.Services
                 Followers = new(),
                 Followings = new(),
                 AverageWpm = 10f,
-                SelectedItemPlayer = new Dictionary<string, string>
-                {
-                    {
-                        "GraphJumpCity", OfflineRepo.ItemPlayers.First().Value.Id
-                    }
-                },
-                OwnedItemPlayers = new HashSet<string>
-                {
-                    OfflineRepo.ItemPlayers.First().Value.Id,
-                },
+                SelectedItemPlayer = OfflineRepo.DefaultSelectedItemPlayers,
+                OwnedItemPlayers = OfflineRepo.DefaultOwnedItemPlayers,
             });
 
             // offlineRepo.MarkCurrentUserPropertyModified(u => u.SelectedItemPlayer);
@@ -302,7 +294,7 @@ namespace OlympicWords.Services
 
         private async Task<byte[]> TryGetImage(string imageUrl)
         {
-            if (!string.IsNullOrEmpty(imageUrl)) return null;
+            if (string.IsNullOrEmpty(imageUrl)) return null;
 
             try
             {

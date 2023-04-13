@@ -11,14 +11,22 @@ public class EnvShared : MonoModule<EnvShared>
 {
     [SerializeField] private Mesh[] AlphabetModels;
     [SerializeField] private List<Kvp<char, Mesh>> SpecialModels;
+    private Dictionary<char, Mesh> specialModelsDict;
 
-    public Mesh GetDigitMesh(char digit)
+    protected override void Awake()
     {
-        return digit switch
+        base.Awake();
+
+        specialModelsDict = SpecialModels.ToDictionary(x => x.Key, x => x.Value);
+    }
+
+    public Mesh GetLetterMesh(char letter)
+    {
+        return letter switch
         {
-            >= 'a' and <= 'z' => AlphabetModels[digit - 'a'],
+            >= 'a' and <= 'z' => AlphabetModels[letter - 'a'],
             >= 'A' and <= 'Z' => throw new NotImplementedException(),
-            _ => SpecialModels.First(c => c.Key == digit).Value
+            _ => specialModelsDict[letter]
         };
     }
 }

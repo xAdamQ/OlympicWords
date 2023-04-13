@@ -3,23 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public abstract class GraphEnv : RootEnv
 {
     public new static GraphEnv I;
 
-    private const float
-        DIGIT_SIZE = .3f,
-        DIGIT_FILL_PERCENT = .8f,
-        SPACING_Y = .1f,
-        MAX_DIGIT_SIZE = .5f;
+    public float PlayerWordSpacing = 0,
+        DigitSize = .8f,
+        DigitFillPercent = .8f,
+        SpacingYSpacingY = .1f,
+        MaxDigitSize = 1.1f;
+    [FormerlySerializedAs("MinDigitSIze")] public float MinDigitSize = .3f;
+
 
     private GameObject[] charObjects;
     [SerializeField] private GraphData[] graphs;
 
     private GraphData Graph => graphs[chosenGraphIndex];
     private int chosenGraphIndex;
+
+    // public List<(int nodeIndex, Node node, bool isWalkable)> path;
+    public List<float> letterDistances;
+    public Queue<(float start, float end)> jumperDistances;
+    private List<Vector3> pathPositions;
+    private List<Vector3> pathNormals;
+    private (int, int) linkerEdge;
+    public List<(Vector3 position, Vector3 normal, bool isWalkable)> smoothPath;
 
     protected override void Awake()
     {
@@ -33,10 +44,10 @@ public abstract class GraphEnv : RootEnv
         Debug.Log("prepare child called");
     }
 
-    public static (Vector3 poz, Vector3 normal) GetProjectedPoz(Vector3 at, Vector3 normal)
+    public (Vector3 poz, Vector3 normal) GetProjectedPoz(Vector3 at, Vector3 normal)
     {
         var rayHit = Physics.Raycast(at + normal * 2, Vector3.down, out var hitInfo, 3, ~6);
-        return !rayHit ? (at, normal) : (hitInfo.point + Vector3.up * SPACING_Y, hitInfo.normal);
+        return !rayHit ? (at, normal) : (hitInfo.point + Vector3.up * SpacingYSpacingY, hitInfo.normal);
     }
 
     public override Vector3 GetCharPozAt(int charIndex, int playerIndex)
@@ -51,13 +62,15 @@ public abstract class GraphEnv : RootEnv
             Random.Range(minBound.z, maxBound.z));
     }
 
-    public override Vector3 GetCharRotAt(int charIndex, int playerIndex)
+    public override Quaternion GetCharRotAt(int charIndex, int playerIndex)
     {
-        return charObjects[charIndex].transform.eulerAngles;
+        return charObjects[charIndex].transform.rotation;
     }
     public override GameObject GetCharObjectAt(int charIndex, int playerIndex)
     {
-        return charObjects[charIndex].transform.GetChild(0).gameObject;
+        var res = charObjects[charIndex];
+        return !res ? null : charObjects[charIndex].transform.GetChild(0).gameObject;
+        // return charObjects[charIndex].transform.GetChild(0).gameObject;
     }
     public override IEnumerable<GameObject> GetWordObjects(int wordIndex, int playerIndex)
     {
@@ -70,32 +83,96 @@ public abstract class GraphEnv : RootEnv
     /// </summary>
     public void WordState(int wordIndex, bool state)
     {
-        var endScale = Vector3.one * (state ? 1 : 0);
         if (state)
         {
             foreach (var wordObject in GetWordObjects(wordIndex, -1))
             {
                 wordObject.transform.parent.gameObject.SetActive(true);
-                wordObject.transform.DOScale(endScale, .4f);
+                wordObject.transform.DOScale(0f, .4f).From();
             }
         }
         else
         {
             foreach (var wordObject in GetWordObjects(wordIndex, -1))
             {
-                wordObject.transform.DOScale(endScale, .4f)
+                wordObject.transform.DOScale(0f, .4f)
                     .OnComplete(() => wordObject.transform.parent.gameObject.SetActive(false));
             }
         }
     }
 
-    private static float GetEdgeLengths(List<Vector3> nodes)
+    private static float GetEdgesLength(IEnumerable<Vector3> positions)
     {
+        using var enumerator = positions.GetEnumerator();
+        if (!enumerator.MoveNext()) return 0;
+
         var totalDistance = 0f;
-        for (var i = 1; i < nodes.Count; i++)
-            totalDistance += Vector3.Distance(nodes[i - 1], nodes[i]);
+        var prevNode = enumerator.Current;
+
+        while (enumerator.MoveNext())
+        {
+            totalDistance += Vector3.Distance(prevNode, enumerator.Current);
+            prevNode = enumerator.Current;
+        }
 
         return totalDistance;
+    }
+
+    /// <summary>
+    /// given a distance on a path, return the node index where the distance is
+    /// so the edge (n,n-1) is where the distance lays
+    /// edge cut is used to know how much is passed, because you return the station only(node)
+    /// new
+    /// </summary>
+    private static (int node, float newDistance, float lastEdgeDistanceDiff) GetNodeAtDistance(
+        IEnumerable<(Vector3 position, bool isWalkable)> positions, float distance)
+    {
+        using var enumerator = positions.GetEnumerator();
+        if (!enumerator.MoveNext()) throw new ArgumentException("positions must not be empty", nameof(positions));
+
+        var totalDistance = 0f;
+        var prevNode = enumerator.Current;
+        var n = 0;
+        var inJumper = false;
+
+        while (enumerator.MoveNext())
+        {
+            var prevDistance = totalDistance;
+            stepForward();
+
+            if (totalDistance >= distance)
+            {
+                if (!enumerator.Current.isWalkable)
+                {
+                    inJumper = true;
+                    break;
+                }
+
+                return (n, distance, distance - prevDistance);
+            }
+        }
+
+        //if the distance is in a jumper, we need to find the next first walkable node
+        if (inJumper)
+        {
+            while (enumerator.MoveNext())
+            {
+                var lastEdgeLength = Vector3.Distance(prevNode.position, enumerator.Current.position);
+                stepForward();
+
+                if (enumerator.Current.isWalkable)
+                    return (n, totalDistance - lastEdgeLength, 0);
+            }
+        }
+
+        throw new Exception($"the given distance {distance} exceeds the path length {totalDistance}");
+
+        void stepForward()
+        {
+            totalDistance += Vector3.Distance(prevNode.position, enumerator.Current.position);
+            prevNode = enumerator.Current;
+            n++;
+        }
     }
 
     public static (List<Vector3>, List<Vector3>) SmoothenAngles(List<Vector3> path, List<Vector3> normals)
@@ -145,206 +222,238 @@ public abstract class GraphEnv : RootEnv
         foreach (var p in Players)
         {
             p.transform.position = pozPointer;
-            p.transform.eulerAngles = rot;
+            p.transform.rotation = rot;
 
             pozPointer += -charObj.transform.parent.forward * .5f;
         }
     }
+
     /// <summary>
     /// the only difference between generate digit functions in different environment is the transform of the digit until now
     /// </summary>
-    protected override void GenerateDigits(System.Random random)
+    protected override void GenerateWords(System.Random random)
     {
+        letterDistances = new();
+        smoothPath = new();
+        pathPositions = new();
+        pathNormals = new();
+        jumperDistances = new();
+        linkerEdge = (-1, -1);
+        charObjects = new GameObject[Text.Length];
         chosenGraphIndex = random.Next(graphs.Length);
 
-        charObjects = new GameObject[Text.Length];
+        GeneratePath(random);
 
-        var path = GraphManager.GetRandomPath(Graph, random);
-        var nodes = path.Select(n => (node: Graph.Nodes[n.node], n.isWalkable)).ToList();
-        var nodeCounter = 1;
+        var (nodeCounter, globalDistance, lastEdgeDistanceDiff) =
+            GetNodeAtDistance(smoothPath.Select(n => (n.position, n.isWalkable)), PlayerWordSpacing);
+        var edgeCounter = (distance: 0f, index: 1);
+        var c = 0;
+        var w = 0;
 
-        // (Vector2 start, Vector2 end, List<Arc>) getDynamicPath(List<Vector2> path)
-        // {
-        //     var res = new List<Arc>();
-        //     const float cut = 1.5f;
-        //     for (var i = 2; i < path.Count; i++)
-        //     {
-        //         var arc = new Arc(path[i - 1], path[i - 2], path[i], cut);
-        //
-        //         res.Add(arc);
-        //     }
-        //
-        //     return (path[0], path[^1], res);
-        // }
-
-        // Debug.Log(string.Join(", ", nodes.Select(n => n.isWalkable)));
-
-        //there would be at least 2 nodes in the path
-        var charIndex = 0;
-
-        for (var w = 0; w < Words.Count; w++)
+        while (w < Words.Count)
         {
-            var lastWalkable = nodeCounter;
-            while (!nodes[nodeCounter].isWalkable)
-                nextNode(lastWalkable);
+            while (!smoothPath[nodeCounter].isWalkable)
+            {
+                var start = globalDistance;
+                globalDistance += Vector3.Distance(smoothPath[nodeCounter - 1].position, smoothPath[nodeCounter].position);
+                jumperDistances.Enqueue((start, globalDistance));
+                nextNode();
+            }
             //skip all jumper edges
 
-            var connectedBranch = new List<Vector3> { nodes[nodeCounter - 1].node.Position };
-            var subPathNormals = new List<Vector3> { nodes[nodeCounter - 1].node.Normal };
-            //the first edge is added anyway, this is the first nodes of it and the second in do statement
+            var branchStart = nodeCounter - 1;
+            skipToBranchEnd();
+            var branchEnd = nodeCounter;
 
-            do
+            if (branchStart == branchEnd)
+                Debug.LogError($"abnormal behaviour, branch length if zero, start: {branchStart} end: {branchEnd}");
+
+            var edgesLength = GetEdgesLength(pathPositions.GetRange(branchStart, branchEnd - branchStart + 1)) - lastEdgeDistanceDiff;
+            lastEdgeDistanceDiff = 0;
+            var totalDigitsCount = 0f;
+            var usedDistance = 0f;
+            var branchEndWord = w;
+
+            while (branchEndWord < Words.Count && usedDistance + FullWordLength(Words[branchEndWord]) <= edgesLength)
             {
-                connectedBranch.Add(nodes[nodeCounter].node.Position);
-                subPathNormals.Add(nodes[nodeCounter].node.Normal);
-
-                nextNode();
-                //if we regenerated the path, don't treat the new as a continuous path
-                if (nodeCounter == 1) break;
-            } while (nodes[nodeCounter].isWalkable);
-            //add all walkable edges //edge type follows the second node
-
-            (connectedBranch, subPathNormals) = SmoothenAngles(connectedBranch, subPathNormals);
-            // (subPath, subPathNormals) = SmoothenAngles(subPath, subPathNormals);
-
-            var fillableWords = 1;
-            var totalDigits = Words[w].Length;
-            var usedDistance = fullWordLength(Words[w]);
-            //there at least the current word in the edge
-
-            var edgesLength = GetEdgeLengths(connectedBranch);
-            // var edgesLength = GetEdgeLengths(start, end, arcs);
-
-            while (w + 1 < Words.Count && usedDistance + fullWordLength(Words[w + 1]) <= edgesLength)
-            {
-                w++;
-                usedDistance += fullWordLength(Words[w]);
-                totalDigits += Words[w].Length;
-                fillableWords++;
+                usedDistance += FullWordLength(Words[branchEndWord]);
+                totalDigitsCount += Words[branchEndWord].Length;
+                branchEndWord++;
             }
             //try add more words if possible
 
-            var actualDigitSize = (edgesLength - fillableWords * SPACE_DISTANCE) / totalDigits;
-            if (actualDigitSize > MAX_DIGIT_SIZE) actualDigitSize = MAX_DIGIT_SIZE;
-            //set digit size
-
-            var passedDistance = SPACE_DISTANCE / 2f;
-
-            using var subPathE = connectedBranch.AsEnumerable().GetEnumerator();
-
-            for (var lw = 0; lw < fillableWords; lw++)
+            if (totalDigitsCount == 0 && usedDistance + MinWordLength(Words[branchEndWord]) <= edgesLength)
             {
-                var globalWordIndex = w - (fillableWords - 1) + lw;
+                totalDigitsCount += Words[branchEndWord].Length;
+                branchEndWord++;
+            } //if we can't add any word, try add a single word with min size
 
-                var currentWord = Words[globalWordIndex];
+            var fillableWords = branchEndWord - w;
+
+            var actualLetterSize = (edgesLength - fillableWords * SPACE_DISTANCE) / totalDigitsCount;
+            if (actualLetterSize > MaxDigitSize) actualLetterSize = MaxDigitSize;
+            //set digit size
+            var finalDistance = globalDistance + edgesLength;
+
+            globalDistance += SPACE_DISTANCE / 2f;
+
+
+            //here we work on a connected branch without jumper edges
+            for (; w < branchEndWord; w++)
+            {
+                string currentWord;
+                try
+                {
+                    currentWord = Words[w];
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
                 var wordObject = new GameObject[currentWord.Length];
 
-                var (digitStartPoint, digitStartNormal) =
-                    GetPointOnPath(connectedBranch, subPathNormals, passedDistance);
+                var (letterStartPoint, letterStartNormal) =
+                    GraphManager.GetPointOnPath(pathPositions, pathNormals, globalDistance, ref edgeCounter);
 
                 for (var i = 0; i < currentWord.Length; i++)
                 {
-                    passedDistance += actualDigitSize;
+                    globalDistance += actualLetterSize;
 
-                    var (digitEndPoint, digitEndNormal) =
-                        GetPointOnPath(connectedBranch, subPathNormals, passedDistance);
+                    var (letterEndPoint, letterEndNormal) =
+                        GraphManager.GetPointOnPath(pathPositions, pathNormals, globalDistance, ref edgeCounter);
 
-                    var digitStartProjection = GetProjectedPoz(digitStartPoint, digitStartNormal);
-                    var digitEndProjection = GetProjectedPoz(digitEndPoint, digitEndNormal);
+                    var letterStartProjection = GetProjectedPoz(letterStartPoint, letterStartNormal);
+                    var letterStartNormalEndProjection = GetProjectedPoz(letterEndPoint, letterEndNormal);
 
-                    var finalPoz = Vector3.Lerp(digitStartProjection.poz, digitEndProjection.poz, .5f);
-                    var finalRot = Vector3.Lerp(digitStartProjection.normal, digitEndProjection.normal, .5f);
+                    var finalPoz = Vector3.Lerp(letterStartProjection.poz, letterStartNormalEndProjection.poz, .5f);
+                    var finalRot = Vector3.Lerp(letterStartProjection.normal, letterStartNormalEndProjection.normal,
+                        .5f);
 
-                    var digitObject = Instantiate(digitPrefab, finalPoz,
-                        Quaternion.LookRotation(digitEndProjection.poz - digitStartProjection.poz, finalRot),
-                        transform);
+                    letterDistances.Add(globalDistance);
 
-                    var currentDigit = currentWord[i];
-                    digitObject.transform.GetChild(0).GetComponent<MeshFilter>().mesh =
-                        EnvShared.I.GetDigitMesh(currentDigit);
+                    var letterObject = Instantiate(digitPrefab, finalPoz,
+                        Quaternion.LookRotation(letterStartNormalEndProjection.poz - letterStartProjection.poz,
+                            finalRot), transform);
 
-                    digitObject.transform.localScale = Vector3.one * actualDigitSize * DIGIT_FILL_PERCENT;
+                    var currentLetter = currentWord[i];
+                    letterObject.transform.GetChild(0).GetComponent<MeshFilter>().mesh =
+                        EnvShared.I.GetLetterMesh(currentLetter);
 
-                    charObjects[charIndex] = digitObject;
-                    wordObject[i] = digitObject;
+                    letterObject.transform.localScale = Vector3.one * actualLetterSize * DigitFillPercent;
 
-                    digitStartPoint = digitEndPoint;
-                    digitStartNormal = digitEndNormal;
+                    charObjects[c] = letterObject;
+                    wordObject[i] = letterObject;
 
-                    charIndex++;
+                    letterStartPoint = letterEndPoint;
+                    letterStartNormal = letterEndNormal;
+
+                    // letterObject.transform.GetChild(0).transform.localScale = Vector3.zero;
+                    letterObject.SetActive(false);
+
+                    c++;
                 }
 
-                passedDistance += SPACE_DISTANCE;
+                globalDistance += SPACE_DISTANCE;
             }
 
-            if (nodeCounter != 1) nextNode();
-            //if the current node is the start node of the graph,
-            //this means we didn't use the new graph yet
+            globalDistance = finalDistance;
+            //add the final error value, because we fit letters to a part of the chosen branch
 
-            void nextNode(int lastWalkable = -1)
+            nodeCounter++;
+            //all what it do is when the path ends, we regenerate a connected path
+        }
+
+        bool nextNode()
+        {
+            if (nodeCounter == smoothPath.Count - 1)
             {
-                if (nodeCounter == nodes.Count - 1)
-                {
-                    Debug.Log($"out of nodes! regenerating at {path[nodeCounter].node}");
+                Debug.Log($"out of nodes! regenerating");
 
-                    if (lastWalkable != -1) nodeCounter = lastWalkable;
-                    path = GraphManager.GetRandomPath(Graph, (path[nodeCounter - 1].node, path[nodeCounter].node),
-                        random);
-                    nodes = path.Select(n => (Graph.Nodes[n.node], n.isWalkable)).ToList();
-                    nodeCounter = 1;
-                    return;
-                }
+                GeneratePath(random);
 
                 nodeCounter++;
+                return true;
             }
+
+            nodeCounter++;
+            return false;
         }
 
-        float fullWordLength(string word)
-        {
-            return DIGIT_SIZE * word.Length + SPACE_DISTANCE;
-        }
+        // (List<Vector3> position, List<Vector3> normals) getConnectedBranch()
+        // {
+        //     var positions = new List<Vector3> { path[nodeCounter - 1].node.Position };
+        //     var normals = new List<Vector3> { path[nodeCounter - 1].node.Normal };
+        //     //the first edge is added anyway, this is the first nodes of it and the second in do statement
+        //
+        //     do
+        //     {
+        //         positions.Add(path[nodeCounter].node.Position);
+        //         normals.Add(path[nodeCounter].node.Normal);
+        //
+        //         //if we regenerated the path, don't treat the new as a continuous path
+        //         if (nextNode()) break;
+        //     } while (path[nodeCounter].isWalkable);
+        //     //add all walkable edges //edge type follows the second node
+        //     return (positions, normals);
+        // }
 
-        try
+        void skipToBranchEnd()
         {
-            foreach (var go in charObjects)
+            do
             {
-                go.transform.GetChild(0).transform.localScale = Vector3.zero;
-                go.SetActive(false);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+                //if we regenerated the path, don't treat the new as a continuous path
+                if (nextNode()) break;
+            } while (smoothPath[nodeCounter].isWalkable);
+
+            nodeCounter--;
+            // when we find the edge is not walkable or the graph has ended, the branch end is node before
         }
     }
+
+    private void GeneratePath(System.Random random)
+    {
+        var newPath = GraphManager.GetRandomPath(Graph, linkerEdge, random)
+            .Select(n => (nodeIndex: n.node, node: Graph.Nodes[n.node], n.isWalkable))
+            .ToList();
+
+        if (newPath.Count == 0)
+        {
+            Debug.LogError("Failed to create path");
+            GeneratePath(random);
+            return;
+        }
+
+        while (!newPath.Last().isWalkable)
+            newPath.RemoveAt(newPath.Count - 1);
+        //remove the last jumpers
+
+        linkerEdge = (newPath[^2].nodeIndex, newPath[^1].nodeIndex);
+        Debug.Log("the new linker is: " + linkerEdge);
+
+        // path.AddRange(newPath);
+
+        var newSmoothPath = GraphManager.SmoothenPath
+            (newPath.Select(n => (n.node.Position, n.node.Normal, n.isWalkable)));
+        smoothPath.AddRange(newSmoothPath);
+
+        pathPositions.AddRange(newSmoothPath.Select(n => n.position));
+        pathNormals.AddRange(newSmoothPath.Select(n => n.normal));
+    }
+
+    private float FullWordLength(string word)
+    {
+        return DigitSize * word.Length + SPACE_DISTANCE;
+    }
+    private float MinWordLength(string word)
+    {
+        return MinDigitSize * word.Length + SPACE_DISTANCE;
+    }
+
     protected override void ColorFillers(List<(int index, int player)> fillerWords)
     {
         foreach (var (index, player) in fillerWords)
-        foreach (var wordObject in GetWordObjects(index, -1))
-            wordObject.GetComponent<Renderer>().material = PlayerMats[player];
-    }
-
-    private static (Vector3, Vector3) GetPointOnPath(List<Vector3> path, List<Vector3> normals, float passedDistance)
-    {
-        var distanceCounter = 0f;
-        for (var i = 1; i < path.Count; i++)
-        {
-            var edgeDistance = Vector3.Distance(path[i - 1], path[i]);
-
-            if (passedDistance < distanceCounter + edgeDistance)
-            {
-                var edgePassedDistance = passedDistance - distanceCounter;
-                var passedDistanceRatio = edgePassedDistance / edgeDistance;
-                var poz = Vector3.Lerp(path[i - 1], path[i], passedDistanceRatio);
-                var normal = Vector3.Lerp(normals[i - 1], normals[i], passedDistanceRatio);
-                return (poz, normal);
-            }
-
-            distanceCounter += edgeDistance;
-        }
-
-        throw new ArgumentOutOfRangeException(nameof(passedDistance),
-            "the passed distance exceeds the given path length");
+            foreach (var wordObject in GetWordObjects(index, -1))
+                wordObject.GetComponent<Renderer>().material = PlayerMats[player];
     }
 }
