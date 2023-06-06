@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MWSCC
+  m_EditorClassIdentifier: 
+  m_GroupName: MWSCC
+  m_Data:
+    m_SerializedData: []
+  m_GUID: a12c29cfb283ccd44a9adb951083e139
+  m_SerializeEntries:
+  - m_GUID: 7c0c6fe81461f0c42aeb1873da62b60a
+    m_Address: MWSCC
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b2c7024f110de7f4f9f1208d9a0e5d05, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 180037f5ef10eab4cb429ec34b261521, type: 2}
+    - {fileID: 11400000, guid: ec7fd974d4f627e4fa104695268dac17, type: 2}

@@ -1,11 +1,10 @@
 namespace OlympicWords.Services;
+
 /// <summary>
 /// methods are service independent
 /// </summary>
 public class Room
 {
-    public bool Started;
-
     private const int MAX_LEVEL = 999;
     private const float EXPO = .55f, DIVIDER = 10;
 
@@ -49,6 +48,7 @@ public class Room
 
     public int Capacity { get; } = 4;
     public bool IsFull => RoomActors.Count == Capacity;
+    public bool IsStarted, IsAllReady, IsDeleted;
 
     public void SetUsersDomain<T>() where T : UserDomain.Room
     {
@@ -71,7 +71,7 @@ public class Room
 
     public async Task Start(IOfflineRepo offlineRepo)
     {
-        Started = true;
+        IsStarted = true;
 
         var watch = System.Diagnostics.Stopwatch.StartNew();
 

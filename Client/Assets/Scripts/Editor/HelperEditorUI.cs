@@ -103,6 +103,14 @@ namespace Server
                 text = "update system"
             });
 
+
+            var groupField = new TextField("groupName");
+            rootVisualElement.Add(new Button(() => AddressableEditorUtility.GetOrCreateGroup(groupField.value))
+            {
+                text = "add group"
+            });
+
+            rootVisualElement.Add(groupField);
             rootVisualElement.Add(pathField);
             rootVisualElement.Add(exportButton);
             rootVisualElement.Add(deletePrefsButton);
@@ -110,6 +118,7 @@ namespace Server
 
         public void ExportServerData()
         {
+            EditorApplication.QueuePlayerLoopUpdate();
             ExportServerDataAsync().Forget(e => throw e);
         }
 
@@ -164,6 +173,8 @@ namespace Server
 
             await File.WriteAllTextAsync(Path.Combine(pathField.value, "GameConfig.json"),
                 JsonConvert.SerializeObject(config));
+
+            Debug.Log("System Updated");
         }
 
         private void TestLocators()

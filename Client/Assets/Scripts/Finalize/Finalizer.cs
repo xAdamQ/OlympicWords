@@ -31,6 +31,8 @@ public class Finalizer : MonoModule<Finalizer>
         finalized = true;
         view.SetActive(true);
 
+        RoomBaseAdapter.I.MenuGate.SetActive(false);
+
         // RoomUserView.Manager.I.RoomUserViews.ForEach(ruv => Destroy(ruv.gameObject));
         //todo destroy additional UI
 

@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Random = System.Random;
 
 /*
@@ -80,9 +81,11 @@ public abstract class RootEnv : MonoBehaviour
     {
         new(typeof(MJC), "criminal"),
         new(typeof(MWSC), "female"),
-        new(typeof(SJ), "criminal"),
+        new(typeof(MWSCC), "criminal"),
+        new(typeof(SJ), "robot"),
     };
 
+    public ControllerConfig ControllerConfig;
 
     public bool Surrendered;
 
@@ -254,7 +257,7 @@ public abstract class RootEnv : MonoBehaviour
         Destroy(RoomBaseAdapter.I.PowerUpPanel);
         Destroy(RoomBaseAdapter.I.WaitingPanel);
 
-        UserInfos.ForEach(info => info.DownloadPicture().Forget(e => throw e));
+        // UserInfos.ForEach(info => info.GetPic().Forget(e => throw e));
 
         Repository.I.PersonalFullInfo.Money -= Bet;
 
@@ -327,12 +330,14 @@ public abstract class RootEnv : MonoBehaviour
             var go = await Addressables.InstantiateAsync(AddressManager.I.GetPlayerLocation(selectedItemPlayers[i]));
             var player = go.GetComponent<Player>();
 
+            if (MyTurn == i)
+            {
+                var controller = (PlayerController)player.gameObject.AddComponent(player.GetControllerType());
+                controller.SetCameraFollow();
+            }
+
             player.Init(i, chosenPowerUps[i], myFillers, fullUserInfos[i].Name);
             Players.Add(player);
-
-            if (MyTurn != i) continue;
-            var controller = (PlayerController)player.gameObject.AddComponent(player.GetControllerType());
-            controller.SetCameraFollow();
         }
     }
 

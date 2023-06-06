@@ -1,0 +1,2207 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: PolyCity
+  m_EditorClassIdentifier: 
+  m_GroupName: PolyCity
+  m_Data:
+    m_SerializedData: []
+  m_GUID: a3b7d48c36e1ac74ba9da5ead23ae4a5
+  m_SerializeEntries:
+  - m_GUID: 47e542428617fb845a4b882c2b0a699a
+    m_Address: Assets/PolygonCity/Materials/FX_Materials/Steam_Mat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac4517348fefb604bbf10afeb378a491
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_03_C.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 287f5c5596df8d94594c370c2a16aac8
+    m_Address: Assets/PolygonCity/Materials/FX_Materials/Water_Mat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97942cb5527e6f24eb8b8f5c86f8744d
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_03_A.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d4d2ed696e5ade49ae50d4e19151de5
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Glass_Veh_Mat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 62e25ef75a2216f418d06453c9ad15cb
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_01_A.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f145fd98abc7a354f83c3a2e8df80a75
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_02_C.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee26ded8aeae32044836748251f93891
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_02_B.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d85b0c991d7ab78488a309346114f2f4
+    m_Address: Assets/PolygonCity/Materials/FX_Materials/Skyline_Mat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 912f300affe60c543ac3ac40ef980902
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_04_B.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49ef76ea47782eb4b93ac08b234fd6c3
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_02_A.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae4870cba172f524491e4431ce936a9d
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_03_B.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9415d5fbf987e4d47b3c90bea3a0d824
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_Road_01.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8e32d2cd442e564aa46c99f0ae7c0c8
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_01_B.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c01b7c8cb1175b54aab24b670c2d58dd
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_01_C.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee5d59fcc8497a641905c26644c20880
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Mat_04_A.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53cf5c0ff424ff9458c56526516b63ec
+    m_Address: Assets/PolygonCity/Materials/Billboard_Mat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3635b8bf677082d4ba3e66faa1d21d73
+    m_Address: Assets/PolygonCity/Materials/FX_Materials/Cloud_Mat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c29d9dff2056b1543bbb70ec32427a62
+    m_Address: Assets/PolygonCity/Materials/PolygonCity_Glass_Mat.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 04118100bea46ec4bb6ff0dcb40eb907
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Roof_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8d9fd100d18193447bf37bd8380ef034
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Poster_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d16aaa008a6e19a4e9ee3a784361a888
+    m_Address: Assets/PolygonCity/Models/SM_Prop_SecurityCamera_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c16aa1108cc545242b35de129b42d962
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Poster_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0010f21083fab7f4db27cceaebd346fc
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_CarboardBox_04_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 168e74101463c284aa63c2f769939413
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Station_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f92afb10a52ba044aaae610f085c3b0b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_ShopInterior_Desk_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a6c0f10c721f81489bd841bf2664558
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_Arm_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4fa6704011bcf2943995d62b635382b5
+    m_Address: Assets/PolygonCity/Models/SM_Bld_FireEscape_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b10982407c6879b4aa25b2608f91c867
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Pipe_Small_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc6d4e50475f85448a0345adc55750e0
+    m_Address: Assets/PolygonCity/Models/SM_Prop_ParkingMeter_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a6f7360abb0a35458944cb358504c09
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Large_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a17b7560307cc1145bef5f0aed63aeec
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Vents_Transition_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64e18860e16121e45bfcbe99d6d39ff1
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Attachment_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2da9c860dcb22094393cb1a0387bbae6
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Large_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ff02d60dcd4dc84ab0232c49a6bceb7
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_Cover_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e6c3b705c9a0584b8be24361acd65ce
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 595ad080303b27441b6e69cac26d0125
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_Cover_05_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: feaca7a0cbb9b1540940bac6ce5e5501
+    m_Address: Assets/PolygonCity/Models/SM_Env_Skyline_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0eb3aa060c66e2458f1ed3122da0a7d
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_Tree_03_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41692fb0767ef1e4fadf962f8074545f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Large_Base_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f42eb9c026244e94693943290a18ae4a
+    m_Address: Assets/PolygonCity/Models/SM_Env_Street_Divider_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91a38bc01369dd149b1974f881adaf5c
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Newspaper_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c28304d03e853774d9b89119d5a2d014
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Merger_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c2fe4d052626324a96a952b8e93c92e
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_Bare_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7865a0e08f9e1b840856844a08ddee7f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_ParkingMeter_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb3684e034b0818468149778f9f61d12
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeRound_Base_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7ecd21011b742804aa0892c63b1fa2dc
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_WaterEdge_Corner_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e878d01561e49e41be1e9bee4545a66
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_Patch_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf32821132653674984ae053dc1ebc33
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_CrossButton_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca39e32191f9a5c42a316c1f9fa08588
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_Corner_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ceb1d031ed4bfa74294360bded2096b7
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Roof_Aircon_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8457ca513d1c4704499a61cec5d80c37
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_XXX_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 35bc2f51d3d7aae41adf7ae636dbd289
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stairs_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88bd6561af52dbb49ad06c571bd552cd
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_ShopInterior_Table_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47eddd61ef5afcc4dbe6950be753f229
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Pole_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fcdaf2910a36e674c91140e32f4bb4ba
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Small_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7a86b91d951769499d67421e6fdb7d5
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_PlanterWindow_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b4e92f91613439040b43108a49a4f3b3
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Door_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94d688a15cf25ee4c808bceca402f11b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Phones_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ead5aba10b16b5847ab0c9c07fc5d7bb
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Guitar_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d4df34b17804f4246af7d3144c71d2ee
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Vents_Exhaust_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c1345b159956db41b2c95e65f6dd86c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_Box_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef227fb11c3c27d4bbc32bbc1f58d552
+    m_Address: Assets/PolygonCity/Models/SM_Prop_PowerBox_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 34a549e11005e7140990d2fbe8ccd147
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6098de127c8e01479c503fc295feb2c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Sign_04.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bbde8de1b2547d54cb932fa9ac4ce702
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Roof_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea6e40021f37f144fa8e4f7e623b42dc
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stairs_Planter_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 567d5002e10c8d24fa4d3634f74468d2
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_06_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f98f0a02a34044745896a35d8904780c
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_GiveWay_03_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2fdda222670b6844b5d0e049c3604c2
+    m_Address: Assets/PolygonCity/Models/SM_Env_GrassPath_T_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 02fe97327541e744b86ecc4fdc0c6629
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Vents_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f743e9324838ad649b44f26731b30c91
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_Box_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5028e3428c0f0eb48a8a1cda0783e024
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stack_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d494c523f05a8444a38a442c3d79cfa
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Attachment_03_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cb4a2682f46aaa14eb30b6b9023c6199
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Door_Corner_01_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15e1be82fb901994e9705b19c52b3443
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Vents_Exhaust_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a29081923b79b0943a8cb435acdcb4b9
+    m_Address: Assets/PolygonCity/Models/SM_Env_Fence_End_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9cac6c297c268445ae6c594399ab151
+    m_Address: Assets/PolygonCity/Models/SM_Prop_ShopInterior_Shelf_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7099dfc2c2c03224387983f7ba0a1ec2
+    m_Address: Assets/PolygonCity/Models/SM_Env_Tree_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 916b5bf2becb29f46b894a059d247f38
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Ambo_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edd48df2643778c4eba730fdb643c09e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Manhole_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcd3eef23fa3ce3488f390914c297375
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_PicnicTable_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0934f03912fd9f46b55ca51b217ee33
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Parking_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 699bd323e5ba6b740975ea215d673349
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Popcorn_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 823ed423ae6ba0d4589ddb8fe51e7f14
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Muscle_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7571162363128f04bab09626d315bc80
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_YellowLines_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db57e923d75cb6c4e936d5e8caaa9165
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Taxi_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a91192333c40f9240a2b97bc86696bfd
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_Cover_03_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f32fef33fc8d6e847ab1fb838d57328a
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Table_02_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97a41753a685efc43b2def492fb0dea5
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeSquare_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9031c5312642a249b43cd7a0160f338
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Large_Roof_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1584963dfdd0de42802e9768e1d8bc3
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_WaterEdge_Rock_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a34818369d9efa488222453d95ac8e6
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sidewalk_Panel_04.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84246483d39d37a45a763afb9bd56849
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Milkshake_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ae31783a812174488ad65c99a69b4c7
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_DeliPizza_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b5d6d83ce558bd49815e06d7c18d6de
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Pipe_Small_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 702411931968ddf488d1b4a073900bce
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stack_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b9e9f93cf8ada14b8dfb8c9c1b35002
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Police_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2eac8a3bde6a92458c72830f63d161f
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Straight_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 07f940b3a524bbb40a4065162d5e777d
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stack_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14bb07b3dbabf304689290c889cf3956
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_HotdogStand_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99c3dab35e27907458574549ef734d03
+    m_Address: Assets/PolygonCity/Models/SM_Prop_ParkingMeter_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64d51cb3a511a9d4282ca944fdc00faa
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeRound_Roof_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e55e9db328382ae44a063314822ccdf5
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stairs_03_Convex
+      3.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: daf2f0d313f48734bac6e41b099ee68a
+    m_Address: Assets/PolygonCity/Models/SM_Env_WaterEdge_Straight_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c8f356d3d7c302c4d94dffc52fc8e1d5
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Panel_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c57ff0f312699684daa27e572f3bb5e7
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Bustop_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24e4fc04a1a6ed94d9357a621f9f2a93
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_Arrow_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fd288f04e290fec4da09f82785ea46e0
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e903cc14bec7cd246b60487b66ae5167
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Cone_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 485e1e14e89b60e48a94387a2bf5782b
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Couch_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67bf5f140894289489c2666f950d7c3d
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_WaterEdge_Straight_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f16a42493bfee3448c3a15e454ab2d9
+    m_Address: Assets/PolygonCity/Models/SM_Prop_PotPlant_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d87df247aba9aa4ca67fb68b8436704
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_CrossLights_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 315832441b45bc44da86fe704dc8c4fe
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Vents_Corner_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a1c11546ef36ec4daffee523cdf5ba5
+    m_Address: Assets/PolygonCity/Models/SM_Env_Street_Divider_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29d37754f17cfed4c9b307c246461f87
+    m_Address: Assets/PolygonCity/Models/SM_Prop_TrashBag_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fa24c546ed6be64aa99119cab5d0929
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_PotPlant_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84cd96749b0e85646a98fe23fb183531
+    m_Address: Assets/PolygonCity/Models/SM_Prop_SatDish_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 772ab3846946fda4c999770f75c8172e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_WaterEdge_Corner_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 08f252a4011784244a9d6c53e18b1f7c
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 215c55a401db928499ce6ba99a369d07
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Corner_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f48e21b468431224285ea1023b046d10
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Door_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c7272b4664cf1b4daa318cbdfa87683
+    m_Address: Assets/PolygonCity/Models/SM_Env_Ocean_Tile_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1a0516c444e57d74ead8cdd2fad24c3c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_ATM_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d271d6c4400c6da4dada6a065dbfe3f6
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_05_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e542005a33c314419c59e77105281fe
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10c2240559c75d047b03d93ee8f25941
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_TrashBag_03_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 11a53405bf8df1743b8f665e72258cb7
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_Base_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85d7bb05d092af74db07798e0264e75e
+    m_Address: Assets/PolygonCity/Models/SM_Prop_CarboardBox_04.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22464015dfb6ed3478bf35dcbbe47ca5
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Pub_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f48c615b634ed7429117e0361e155e1
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_YellowLines_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8bfbd72541b8c314d98c45881b486f0a
+    m_Address: Assets/PolygonCity/Models/SM_Env_SubwayEntrance_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e7cf38253a217fe4cabf427066511634
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Roof_Corner_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97261735532c28545b8ff375dcacffc5
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Street_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 09730845161a3d84e909c7507fd36b56
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_ShopInterior_Shelf_03_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d459d9754445d414397f9c4c5201238e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Bustop_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 35852e85aae20114fb7c82635087b31f
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_Arm_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cddf7f8598401a84aa65f2118159e20d
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Vents_End_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8d96795f225e2b498836e1750485720
+    m_Address: Assets/PolygonCity/Models/SM_Prop_CarboardBox_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf90d4a549b39c943ba41e1e129f7de6
+    m_Address: Assets/PolygonCity/Models/SM_Prop_SecurityCamera_Arm_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0855d8a5406ac9842a765dd14a9526c2
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Poster_Frame_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e3e05b5e4951d64a9412bf0e557e6d3
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Medium_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4b6726b5b25e0644eb4a405302576710
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_SatDish_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b5d88b5e52d8a04d8f7ecfcfbe4aabd
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Trashbin_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6790cc5d28edd94a965e002d8422428
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_BusStop_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cdb01fc58d23467419998c0c0dbea27f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Vents_Corner_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c972dd5e611cbc439aa8d1e3f78443a
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Station_03_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4da84be5638a1b544bfd5472e91f78a7
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Door_02_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e1fb3f55a329b84d9c6f0af65e88d20
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Small_Roof_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 108df2069e3302c4280a82283cdfa41d
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_BowlingPin_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3759506bc185b448b800db23e6c4e5a
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_02_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0169016a10de9443a766b1871fecda8
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 01c5d01653d0e224c8f0b5cb8514fa1b
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_GiveWay_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 368214160a364a141a3101d85f12c8f9
+    m_Address: Assets/PolygonCity/Models/SM_Prop_TrashCan_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ed874164139d9e44b53c643fb440d7b
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stairs_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87682a1625d49854c9b2d3eaa42691bc
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Vents_Straight_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a2961d164cfcfbd4dae9e171375da48a
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Chinese_Noodles_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 08360026170618b43b8ac93e6533f74b
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Pipe_Present_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 667de0366e8a88d489c264c50a36f4f0
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stairs_Planter_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b506b360e764ff48a511f0278060479
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Dip_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21d55246b98210448bd889b79a31954b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Hotdog_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47aba856fa86fea44926cf27ef013732
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Door_01_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf707266b7730b24e95d89c3a681b7eb
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Corner_03_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0b7e3566e3869724ca4b6d9e449e2e8f
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Small_Floor_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6e97b66daa2b15408d96c34f3f20699
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Manhole_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe8350762c8608d42ba2bdd5fbb28d68
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_Base_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc8a6a76302252b4d88ba76caa1f1cfd
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Mailbox_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4962fa76f53fc254f95cc703a341e90c
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Planter_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15700296a2b923d469c4aa4e752ccdfa
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Barrier_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c0954960dd77674fb652e4958628bbf
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeRound_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a856496cd41bd8408cc88c309515b0f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_WaterEdge_Pipe_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2dfd189627cfe43479265db2e35e552c
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Sedan_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df75d1a69c99b944998e075e30c98272
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_04.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d05e2a6c8aedcc4da05a4531154cef3
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Roof_Aircon_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d0053a626f73df4cb48c41b3706e46f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_Lights_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f4e86a6d76cc514bb254b3542593bce
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Police_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a58280b6ae3734f4886bab1d634e14a8
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Panel_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e93c3b6d6a3f4041bfa4ddf0e070766
+    m_Address: Assets/PolygonCity/Models/SM_Env_WaterEdge_Corner_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99ae44b691c03d7439c97fdaed0c5744
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Hotel_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77fb40c6132e8e145ab24a19d6e0aa63
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Roof_Aircon_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 758011d699ca9c143b6154ffffc02910
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Roof_Aircon_03_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d9641d680aa93b42944fdafeae2cccf
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Washingline_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7ce641d661454b145b61f863393cd02f
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Attachment_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b03970f60f30c6446a3073a546bcd606
+    m_Address: Assets/PolygonCity/Models/SM_Env_Cloud_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9fbb6f6668f7ff4cbc39c04c6b71894
+    m_Address: Assets/PolygonCity/Models/SM_Env_WaterEdge_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f89b1171e621dd4f99699d16c50e9bb
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_CrossLights_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 724dc7172baa5964385076bf82c4bcb2
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sidewalk_Panel_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da9d4a2716b5ebb4eab5229165377692
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_04_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d932c27263caa04d97c8fc9e7da1a78
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Corner_01_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb372437f290ae749b7f58fdc837c2cb
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Planter_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0dbccc3738da3a543a017b523898229c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Sign_06.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f72e1579cd001244802c30b332dae70
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Small_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f72df1571ad339d418e328df7696f923
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Grate_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 437b7657e25fefd41be1a201bdabe4d5
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_ParkingLines_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dbbca7773291a2647aea17a83e39720a
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Manhole_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd6c708785e352645a97b47fe1c5ac2f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Pizza_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89d69087cdc543c4e8e0a03e84ac5621
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 786104971c0b24244bd4083b3272a39f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stack_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc50cc97d6d851d4eacc6fc9bbedc86e
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Gutter_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29e5eda72fa200c4b88f59745735bd5a
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Door_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 334d1ea7958acde4083941927e6e1d78
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Dip_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3fb874b7d241800489933847c9f65a91
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_DeliPizza_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c37665b78a5f59049a1b29a6129213f8
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Planter_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b37a3cb77b4f69b4abb4ba8ba494180e
+    m_Address: Assets/PolygonCity/Models/SM_Env_Fence_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7093c3c7dbb349a4cbcc8e19e98d9bff
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Vents_Transition_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d29064c7c70e71a478765437ee714c29
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Roof_Aircon_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e01b88c76e4ab73478efaef7030b0cf4
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_SubwayEntrance_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9dfbead72f75a4340941e07def18db84
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Table_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c299de727247ec44a9af1ce9f08aa0e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Noodles_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f08406f70b378004bbfaf6f865ad4e18
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Barrier_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad202308899f3494eb77470fedb895e9
+    m_Address: Assets/PolygonCity/Models/SM_Env_Cloud_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0ae9f62842940cd45ba901337d7763a8
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_Corner_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14c76b3839bbe2847b38722447fc49ab
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Small_Roof_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc5f8948a5a155549a03d2fced79a5e6
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Noodles_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc6ca95801c55744096d42eec7b7a49e
+    m_Address: Assets/PolygonCity/Models/SM_Env_WaterEdge_Pipe_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 237e8588bbe35e041a82f615f8718159
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_Base_01_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd1b089805fe58543936dca5e51e2494
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_FireEscape_03_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d25cfa8321eccd438d23d1194e46bd9
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Corner_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 469e38b8efc09a84a9ed5a4b455d7f1e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Roof_Access_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0513d2c8a95570e4da425687e789d6ae
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Small_Floor_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 39fd12d83ae175a40bf1b85cd999bd1a
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_Cover_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e767a6d8edb908a419553aeda66f5282
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Pipe_Small_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5a8dfd8843722a4ea0e48980bed3b4f
+    m_Address: Assets/PolygonCity/Models/SM_Prop_ShopInterior_Desk_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 32a3dde88e5aabe46a12bd13eae06e00
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_ParkBench_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fecf1b0900c3c2e4ab67fdb4c302b31f
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Sign_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b29d219491925b43b9b6aca4d398596
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Corner_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27bf65190db556643904ee371814b40c
+    m_Address: Assets/PolygonCity/Models/SM_Env_WaterEdge_Rock_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee43f819832333b4584b2bb95813f42b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_FireEscape_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0956b19562cba94ea7fe3436c24a94d
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Washingline_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 602b7629d0bc3f4488da25a302966862
+    m_Address: Assets/PolygonCity/Models/SM_Env_GrassPath_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f6f4729102c3bc488ec570cd767fc5d
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Vents_End_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6044e29b69ba7c48bad9d42235cbd3d
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Power_Cables_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d317239867200d4d9d76f9a99b39652
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Mailbox_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4d97a49e1e0fe549bb681ba81d3e652
+    m_Address: Assets/PolygonCity/Models/SM_Env_WaterEdge_Straight_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9dbbd76986b815748b9e5a9cb8ab9440
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Skip_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9b7be6917bc77349be5b6562d0a06a4
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Chinese_Noodles_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c7b4279da146b94480095e09eb08388
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_CityHall_01_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7428479f5c6ecf429382d316112ba44
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Station_02_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 00c03a792d6e37749a55d20bb0559506
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_Lights_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d538fa79d8588ee42ab4601b7d0dfa49
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Roof_Corner_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e0797189bc2a81c4bb3d2a6c07cfc245
+    m_Address: Assets/PolygonCity/Models/SM_Prop_PotPlant_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5ab7789dd0b3c84eb8208ec5ca03577
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Roof_Aircon_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff0e5b89385d1d947b761048107a7114
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_Cover_02_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 05759b897bdc10d41918f713c2bcd5ae
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Sign_07.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eedb3e89c519d8b48a77752541eecfb8
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Poster_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e4124995f6a4124f88614e4e0a837a5
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Skip_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a622cb99b9b9d9d4f90980f197b67e3f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_BowlingBall_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d23320a9fc5da0244b9c2f2a9447926b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Large_Floor_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4b403aa9f04dd7e449c1a9137d8fa467
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_SubwayEntrance_02_Convex
+      6.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 875bf8b9cb4017b42aef1cc8aaf83aae
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Trashbin_02_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c754cc944263d140a68f22b535bd973
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Cone_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d92689e911db2084e82bed65fea7be3c
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Roof_Access_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 478293f9216023149a616987abc93aa7
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Large_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc2d1af9045b6a04ba1e198772d298ae
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Skylight_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2629e10abd0d9194aaef0f0e2894ee59
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sidewalk_Panel_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3bc7921a1cf70574d8375ed93a8c0abf
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Aircon_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cef9c1a9db2c2742a95549ce0028baf
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeSquare_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e4cb62a3cd1c914eb9b837f091bb73d
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sidewalk_Panel_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5827dc2a06ebf7b4d8c309d5330a4b22
+    m_Address: Assets/PolygonCity/Models/SM_Prop_SidewalkPoles_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9722dd2ac8fdbbb4aa8de708ed3effa5
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stack_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b34ed2ae3da2b64d8678221f68a21df
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_XXX_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a3feb3a678b0744580b34e250d24606
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_BowlingPin_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7815a4a6f2ec884bb49e90073f72231
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Station_01_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b4b155a254e6f94b942b36a14bf6824
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LightPole_Lights_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0e25186a70c2b414f9eb3d6d4e01b138
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stairs_Planter_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e4c9c6a708282549adc005136e459f2
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67df907a56f352442ad399bd23d94faf
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Large_Floor_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 73b8147a244d60548aadbde24799118f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_ParkingMeter_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fabea28af68b5d4428358e8e0d2ccd51
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_03_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e072638a7adf61048bf7387ac8ee0a28
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Trashbin_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a710d68ad8bbf854aa0aadc7e8649f50
+    m_Address: Assets/PolygonCity/Models/SM_Prop_HotdogStand_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97982d8a36ff16f4a88f291ef2443e49
+    m_Address: Assets/PolygonCity/Models/SM_Veh_Car_Van_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8645f79a5767933459ee6efa84f02e22
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Poster_Frame_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 629dbe9aacf49f846833785b60e31854
+    m_Address: Assets/PolygonCity/Models/SM_Env_WaterEdge_Straight_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d3db5aaac3bdde4f9ef1231d43b518f
+    m_Address: Assets/PolygonCity/Models/SM_Prop_TrashCan_Lid_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c61d7aa61eefe24d8bba4e86f649b12
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_05.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 786be5caff249b14cbfca0177a74f755
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_PlanterWindow_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f35208ca6691ecf4a8d08eeaaa90beda
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Door_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1af2fca830ea9648b46afc28667026b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Washingline_03_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b4a04dac569f844d94a3e9569e7af37
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Guitar_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a6392eaeb343b5489564f7bef139925
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_Sidewalk_Construction_01_Collision.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61f304fa9aa2c114fa18802ae1a54cd8
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Shop_03_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c729cfae9636a24dadc4b4363ba5958
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stairs_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6080e80bbc45a324b832aec3f4cef3ad
+    m_Address: Assets/PolygonCity/Models/SM_Prop_ParkBench_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 26af0a0b3f41b964f81f83742925c1e9
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Station_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c8d23b0b1c294754eac7541f24b3e274
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Washingline_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5204d1b9cfe6084eb5166fe60ebe7b9
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_Tree_02_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c418132b23be3a74f8fb34ea052b1c19
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_PowerBox_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cabf262b9c587ab4cb3cb6dae282959b
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 846da82b18a9c344e81e6d8ff9f4c204
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeSquare_Roof_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6084313b6139c0f4e84bf48f7ee77b50
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeRound_Roof_01_Convex
+      4.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1680ed3bbc402e245983636443985aff
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Roof_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ec5564ba55652046b25d9dd810e5313
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Power_Cables_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9ee184bd1034a54185a81f9c1adc9ad
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Parking_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a12c5b4bf84689344b503ee0dfd9492a
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Attachment_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7527607bd8ad1944f8b80bdd85fecab6
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_Cover_05.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 531e438b4035a3746816299c00a09f5e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_TrashCan_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d7b1e8b05acda04589c4052eaa97df3
+    m_Address: Assets/PolygonCity/Models/SM_Prop_PlanterWindow_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c618fb9b55da6284a8d11a0498208066
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_06.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f57fbe9b7bb37124c818414bcf80549f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Vents_Straight_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b7b77ab314d27a4b88812f19caa23cc
+    m_Address: Assets/PolygonCity/Models/SM_Env_GrassPath_Straight_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 54f36abb5154f974fb48b19a74ad2d32
+    m_Address: Assets/PolygonCity/Models/SM_Env_SubwayEntrance_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 555faddb0f4f8a64f942ddd15e67af9c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Pipe_Small_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48c120eb615854d48b5632947a5468c6
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Soda_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 013bc7eb7c48f3e459b5a5b5ef95d33d
+    m_Address: Assets/PolygonCity/Models/SM_Prop_ShopInterior_Table_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b1d6beb9b2e7d848ac14f6af1ad146d
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Station_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5eca3fb3e3d65c42974aeec427a5093
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_WaterEdge_Straight_03_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c7c278fb7b6a90243b01eaf42a855c62
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_BowlingBall_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4e1a30c7ce3cd04ba3678daa1921e3b
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Vents_Corner_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06d3ff1c6175c8447aef8efdf3667d75
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Corner_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e40202c10441b94684210497491be06
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Pizza_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7909122c71f894e4798017d6b7deeaa7
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_01_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9de2d73c5becdb5498dcd10d01ee39e9
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Washingline_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12484a3c17bc7e341b87d12282794c63
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Small_Base_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c2b464c511351647893fe73456d16d2
+    m_Address: Assets/PolygonCity/Models/SM_Prop_TrashBag_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c6d984cb1644f147a4cdfcc958e3334
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_SecurityCamera_Arm_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1beca94c7e191af4da3b42a4db6c20ae
+    m_Address: Assets/PolygonCity/Models/SM_Prop_BusStop_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f59a66caa51dd342a8ba246d9d0264f
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_Base_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4cb0686ca55c21f4d9bfa80ddbdc3a71
+    m_Address: Assets/PolygonCity/Models/SM_Bld_FireEscape_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9084f27c4de0b4646940b7277513c1de
+    m_Address: Assets/PolygonCity/Models/SM_Env_Tree_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 034a5e7ca9fc8f345bf28aab6a93ce27
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Pizza_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 910ac08c284045d46b33a3a663549ef0
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Aircon_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37045fac998129c4d9bc99b9a4b8525d
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Corner_02_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4a376bce1d8c3842bda863d13d9711e
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Window_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e38113ccf03e1de43904d13b5513059f
+    m_Address: Assets/PolygonCity/Models/SM_Env_Sidewalk_Construction_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88e975ccc0a823e45881be9718fd83de
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1dbc1bccf1af350419df9c0c3a5a57ed
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Door_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9dc48fcca887642458c8c753be8c035f
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_Crossing_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aef168ecaa3393048ae8f2ab57d08e32
+    m_Address: Assets/PolygonCity/Models/SM_Prop_PlanterWindow_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f02df7fcd1d180b43b87bc377f8e68f5
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Small_01_Convex
+      10.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c6a8bfc66c86364089e7c3b7166e5d1
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_PotPlant_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99bf790d2a4d96645af103eabf360362
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Washingline_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06cc8d0d43cd6f74fae5399ceeff2be8
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Milkshake_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 673a431d239ec5f4981bfcc8ff5bb7e8
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Bottle_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9d9572d16f20704dbcee3f14452563f
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Billboard_Pole_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d91de2d64a580143a212bed10b6acaf
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Skip_02_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d727ed3d685501b45af77bdb4fb61185
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stairs_02_Collision.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b047b84dcdf7546468e28858cf4a93b3
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Taco_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2db775d9aea9744ba5bf12c09480b1c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Popcorn_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f7ebcb5df351b844baced24fa97e2e89
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stack_03_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84dedc8d45f93b849bc1732559b22f45
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_02_Convex 2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e400db9d7869c094495e4ed2c240220a
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_SidewalkPoles_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d700aadc684b324492f69c4c4f08534
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stairs_Corner_01_Collision.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d4ef4bd4ca5c7b41ba293cd161b871e
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeSquare_Base_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56dbd9cd7beb5f24b95d37992abdad3b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Hotel_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d9585ddf62280a47a3f3b307292f21e
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Hydrant_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9aa786dd3f793a84a8a8852a66498c63
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3a65700e226cd8845893bf8b4c321649
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Sign_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 51dec50e04d33084a989576c0d189f12
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_WaterEdge_Straight_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf0b460e21946b344b5e5f3b4c27c0dc
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Planter_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4d73e0e917e90f4db00982d420bb153
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_TrashCan_Lid_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d9cd651e881b90348ba24b8288a19c40
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Police_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 58b31c2e2ef804946a534e08acd7022c
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_Tree_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 009d0f4e5f666794ab7c12a973d516ab
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_Lights_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29880c5e7c1ab104ca8f6bb2b16a79c1
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 099ca36ee26636c4594f1f502ff193b5
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Roof_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a5e18c6ed29761c42a91151011d03b39
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Door_Corner_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc6f9f7e6d462034f8372d5d91ad3b2e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_FireEscape_02_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e9d2b28e4ca342140aee462b529189c7
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Couch_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0163278e6a1e5d74099ded2c752faa2c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LightPole_CrossButton_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0beaec8e55b5039469901d884770d7e2
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stairs_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5c3119ef69085946835cdbdbdee9811
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_Flower_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b86cca9e28f0fc84fa9e0cef843289c1
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Small_Base_01_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d96dc2ae87528cc429f3c08d7728dc2b
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_LargeSign_Soda_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3e8d1baeeda16f14f85d41983af7b3a5
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Sign_Pub_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 583fbcae68b65504c8540e7164157e2c
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeRound_Base_01_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb2d6dae277f4844fae2f714beba12a1
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_ATM_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 683240be378f8cf4e8540baf38a95021
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_TrashBag_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8eb1e0ce59047ca44adcf1d3b18151d0
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Pizza_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 42b532ce52305ed4a8b0e93dbff6f9a7
+    m_Address: Assets/PolygonCity/Models/SM_Env_Cloud_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d875b9ce96fd6cf4bb90e507580835d9
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e3d9d6de8c2fd36419c49c00938bd4a9
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Hydrant_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6eca77eee62ee5b45b636c4e8b25ee55
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_SecurityCamera_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be1390febd9d41b47943619472f54bd8
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Street_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e0d510f17a83f043a2e1e4619bf180c
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Manhole_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 175f710fa4d544a4183b4e410ca6c016
+    m_Address: Assets/PolygonCity/Models/SM_Env_Flower_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3f5b541fabe8ff346b2597b1e81e3f06
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Billboard_Sign_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f286c71f1970ade409f13a3fa171a2a3
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Roof_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ea1f81fede821944884acf69ebaabf0
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Skylight_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49babb1ffc0fd7d41a6254a9a6ea6d03
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Hotdog_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45611d1f4c3c1ac4d9835ef85919eb8e
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Taco_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bdc3503f533aa6f459eaa8ec14ede7f1
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Large_Roof_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e49b63f0f0c0864e997789a8d3d01be
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_Corner_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad40914fae732e34cb27f4589bd497c4
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Door_Corner_02_Convex
+      2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 59006a4f2d7571643a502d2171ef2eff
+    m_Address: Assets/PolygonCity/Models/SM_Bld_FireEscape_03.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85fd6b4fdb4f8e6468e1b450382d2bd8
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Shop_Cover_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 05d0a85f2a434b84db887483f471fc87
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Sign_Warning_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 48a45c6fc26afb044aa8c203da5ca6a1
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Env_Fence_End_01_Convex 1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4cb6ad6f85aedec478458675e4a98fbf
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Pipe_Present_03_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff5cbf6f60105054b93e3851b435ab4b
+    m_Address: Assets/PolygonCity/Models/SM_Bld_Apartment_Stairs_Planter_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55f6c07f374ffc04581eba7291c2d62e
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Phones_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1406f07f731908d43b95721164c05f40
+    m_Address: Assets/PolygonCity/Models/SM_Bld_OfficeOld_Large_Base_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27d2d47fe6c269243a9fa526d47ec957
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_Apartment_Stairs_01_Collision.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c311a8ff9ef5904cbf88d1eea54aae8
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Newspaper_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d7cad8f008896d4184f590aff04d0e8
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Billboard_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 34ae0f9f79f5d734c9d4639692936e7a
+    m_Address: Assets/PolygonCity/Models/SM_Prop_LargeSign_Bottle_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c454f6aff46058043ab43e59d0b536ec
+    m_Address: Assets/PolygonCity/Models/SM_Prop_PicnicTable_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d7d28af9afa8d241ab34047420b9aa9
+    m_Address: Assets/PolygonCity/Models/SM_Prop_Skip_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec63cbafcdc212643abb2224df3edbf5
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Billboard_Roof_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 488874bf1c20e624f8e81079f86b26ba
+    m_Address: Assets/PolygonCity/Models/SM_Env_Tree_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 653b63cf4e5fdfd47962000c6f85b7c2
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeOld_Large_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6fbd47cf8e399734581354496444362e
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Prop_Trashbin_01_Convex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0cf3d4ef72f76ef418e0b36fe06b1265
+    m_Address: Assets/PolygonCity/Models/Collisions/SM_Bld_OfficeRound_02_Convex
+      1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c79687ef0e388d044aeeb41736df7cd5
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_Lines_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 749e90ffcfddbb84eaaca7621ff5847d
+    m_Address: Assets/PolygonCity/Models/SM_Env_Road_Arrow_02.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24e62eff11865724fbbab3ac5fffb303
+    m_Address: Assets/PolygonCity/Models/SM_Env_Grass_01.fbx
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5c48780090280a41b793512dfce44c9
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_03_A.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8d6dbba04bf21784ea83db299e1d8550
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_Skyline.tga
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2da74f2130b2ca74faacbcaaa83c5a44
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_Metallic.tga
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36feb82263c3ae54b9317c97603a3bce
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_03_B.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3597477262f71434faded6c191b5e1dc
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_02_B.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 564f29d2c3b83c04bb90ba2d657b2421
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_02_A.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fbde5f73f39181f4d9c7e24c34f0bdf8
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_01_A.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d4156ce4a0acb374eaceabd8e5c3146c
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_04_A.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4358b945d59bcc54a8d357279a0d3567
+    m_Address: Assets/PolygonCity/Textures/BillboardAds.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 822f2495881c757478b3661b1e47c074
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Road_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5c04069b118ad443ae87371c6c4db24
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_04_B.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b993ae890161b184188e417d77e0e1a3
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_Normal.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4caaeb2b08a326b4ea412187b3d0b1bb
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_02_C.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 344af90ed60f96447801596dc5194c70
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_01_B.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8b3b5dcefb13f9749adfaa0009fa7561
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_01_C.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb28081f4cefc0047858e77e21deb92c
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Texture_03_C.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed8c76cfaa7f4f04da86bd288543e61c
+    m_Address: Assets/PolygonCity/Textures/Emissive_01.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5be367dffa6dac448b585fe12407f916
+    m_Address: Assets/PolygonCity/Textures/PolygonCity_Road_Normal.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 631e5dcf649f7a24d90d2637ed7f6090
+    m_Address: polyCity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b2c7024f110de7f4f9f1208d9a0e5d05, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e2c6e884dfe3c0342b9c82d90f6260cb, type: 2}
+    - {fileID: 11400000, guid: 86e4025c486eea8489109bb45c39fa83, type: 2}

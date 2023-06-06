@@ -4,13 +4,14 @@ namespace OlympicWords;
 
 public class PendingRoomsLoop : BackgroundService
 {
-    private readonly TimeSpan updateTIme = TimeSpan.FromMilliseconds(250);
+    private readonly TimeSpan updateTime = TimeSpan.FromMilliseconds(250);
+    private static DateTime Now => DateTime.Now;
 
     private readonly ILogger<PendingRoomsLoop> logger;
     private readonly PersistantData persistantData;
     private readonly IServiceScopeFactory serviceScopeFactory;
 
-    private readonly Queue<(Room room, DateTime time)> initiatedRooms;
+    private readonly Queue<(Room room, DateTime time)> initiatedRooms, unreadyRooms;
 
     public PendingRoomsLoop(ILogger<PendingRoomsLoop> logger, PersistantData persistantData,
         IServiceScopeFactory serviceScopeFactory)
@@ -20,52 +21,95 @@ public class PendingRoomsLoop : BackgroundService
         this.serviceScopeFactory = serviceScopeFactory;
 
         initiatedRooms = persistantData.InitiatedRooms;
+        unreadyRooms = persistantData.UnreadyRooms;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(updateTIme, stoppingToken);
+            await Task.Delay(updateTime, stoppingToken);
 
             if (initiatedRooms.Count == 0) continue;
 
-            await HandleDone();
+            await BotFillOrStart();
+            await TryForceStart();
         }
     }
 
-    private async Task HandleDone()
+    private static readonly TimeSpan pendingRoomTimeout = TimeSpan.FromSeconds(8);
+    private async Task BotFillOrStart()
     {
-        var now = DateTime.Now;
         while (initiatedRooms.TryPeek(out var r))
         {
-            if (now - r.time > TimeSpan.FromMilliseconds(PENDING_ROOM_TIMEOUT))
-                await OnPendingRoomTimeout(r.room);
+            if (Now - r.time > pendingRoomTimeout)
+                await onPendingRoomTimeout(r.room);
             else if (!r.room.IsFull)
                 return;
 
             initiatedRooms.Dequeue();
         }
+
+        async Task onPendingRoomTimeout(Room room)
+        {
+            if (room.IsDeleted)
+            {
+                logger.LogInformation("Room {RoomId} was deleted, cancel filling it with bots", room.Id);
+                return;
+            }
+
+            using var scope = serviceScopeFactory.CreateScope();
+            var scopeRepo = scope.ServiceProvider.GetService<IScopeRepo>();
+            var roomRequester = scope.ServiceProvider.GetService<IMatchMaker>();
+
+            persistantData!.FeedScope(scopeRepo);
+            scopeRepo!.SetRoom(room);
+
+            try
+            {
+                //the errors here shouldn't break the background service
+                await roomRequester!.FillPendingRoomWithBots();
+            }
+            catch (Exception e)
+            {
+                logger.LogError("{Exc} \n {Stack}", e.Message, e.StackTrace);
+            }
+        }
     }
 
-    private const int PENDING_ROOM_TIMEOUT = 3 * 1000;
-    private async Task OnPendingRoomTimeout(Room room)
+    private static readonly TimeSpan readyTimeout = TimeSpan.FromSeconds(8);
+    private async Task TryForceStart()
     {
-        using var scope = serviceScopeFactory.CreateScope();
-
-        var scopeRepo = scope.ServiceProvider.GetService<IScopeRepo>();
-        persistantData!.FeedScope(scopeRepo);
-
-        var roomRequester = scope.ServiceProvider.GetService<IMatchMaker>();
-
-        try
+        while (unreadyRooms.TryPeek(out var r))
         {
-            //the errors here shouldn't break the background service
-            await roomRequester!.FillPendingRoomWithBots(room);
+            if (Now - r.time > readyTimeout)
+            {
+                if (!r.room.IsAllReady)
+                    await onForceStartTimeout(r.room);
+
+                unreadyRooms.Dequeue();
+            }
         }
-        catch (Exception e)
+
+        async Task onForceStartTimeout(Room room)
         {
-            logger.LogError(e.Message, e.StackTrace);
+            if (room.IsDeleted) return;
+
+            using var scope = serviceScopeFactory.CreateScope();
+            var roomManager = scope.ServiceProvider.GetService<IGameplay>();
+            var scopeRepo = scope.ServiceProvider.GetService<IScopeRepo>();
+
+            persistantData!.FeedScope(scopeRepo);
+            scopeRepo!.SetRoom(room);
+
+            try
+            {
+                await roomManager!.ReadyGo();
+            }
+            catch (Exception e)
+            {
+                logger.LogError("{Exc} \n {Stack}", e.Message, e.StackTrace);
+            }
         }
     }
 }

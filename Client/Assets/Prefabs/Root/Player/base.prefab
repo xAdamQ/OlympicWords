@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7609011456178575365}
   - component: {fileID: 5190531886719562144}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,8 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 6708636494826701593}
-  jetpack: {fileID: 0}
-  Graphic: {fileID: 0}
+  Animator: {fileID: 0}
 --- !u!1 &8786038803929643950
 GameObject:
   m_ObjectHideFlags: 0

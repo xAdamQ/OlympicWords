@@ -32,7 +32,7 @@ public abstract class PlayerController : MonoModule<PlayerController>
     {
         base.Awake();
 
-        Config = Player.ControllerConfig;
+        Config = RootEnv.I.ControllerConfig;
 
         mainCamera = Camera.main!.transform;
 
@@ -65,6 +65,7 @@ public abstract class PlayerController : MonoModule<PlayerController>
     {
         Player.GameFinished += OnGameFinished;
         RootEnv.I.GameStarted += OnGameStarted;
+
 
         lazyYPosition = transform.position;
         StartCoroutine(SetLazyY());

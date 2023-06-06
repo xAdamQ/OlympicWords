@@ -190,7 +190,12 @@ public class GraphEditorWindow : EditorWindow
         refreshButton.clicked += OpenOrRefreshWindow;
         rootVisualElement.Add(refreshButton);
 
-        Debug.Log("refreshed");
+        var viewFolderButton = new Button()
+        {
+            text = "view folder",
+        };
+        viewFolderButton.clicked += () => EditorGUIUtility.PingObject(ChosenGraph);
+        rootVisualElement.Add(viewFolderButton);
     }
 
     // private void OnGUI()

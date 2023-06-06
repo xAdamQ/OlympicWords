@@ -1,17 +1,16 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-// [Preserve]
 public class MinUserInfo
 {
     [Preserve]
     public MinUserInfo()
     {
     }
-
 
     public int CalcLevel()
     {
@@ -34,18 +33,29 @@ public class MinUserInfo
     private int selectedTitleId;
     public string Name { get; set; }
 
-    public Sprite PictureSprite { get; set; }
-
-    // public event Action<Texture2D> PictureLoaded;
-    public bool IsPictureLoaded;
-
     private string PictureAddress { get; } =
         Extensions.UriCombine(NetManager.I.SelectedAddress, "Picture", "GetUserPicture");
 
-    public async UniTask<bool> DownloadPicture()
+    /// <summary>
+    /// try to get from cache, if not, get from server
+    /// </summary>
+    public async UniTask<bool> GetPic()
     {
-        if (string.IsNullOrEmpty(PictureAddress)) return false;
+        if (CacheManager.I.TryGetPic(Id, out _)) return true;
 
+        Debug.Log($"pic for {Id} was not found in the cache");
+
+        var (successful, pic) = await GetPicFromServer();
+        if (successful)
+        {
+            CacheManager.I.AddPlayerPic(Id, pic);
+            return true;
+        }
+
+        return false;
+    }
+    private async Task<(bool successful, Sprite sprite)> GetPicFromServer()
+    {
         var query = NetManager.I.GetAuthQuery();
         query["userId"] = Id;
 
@@ -62,13 +72,10 @@ public class MinUserInfo
         }
         catch (Exception)
         {
-            return false;
+            return (false, null);
         }
 
-        IsPictureLoaded = true;
-        PictureSprite = Sprite.Create(texture2D,
-            new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
-
-        return true;
+        var pic = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(.5f, .5f));
+        return (true, pic);
     }
 }

@@ -7,15 +7,7 @@ using UnityEngine;
 //you can insert additional base classes when needed
 public class GraphJumpController : GraphController<GraphJumpPlayer>
 {
-    public JumpControllerConfig JumpConfig;
-
     protected override Transform CameraTarget => Player.currentLetter.transform;
-    protected override void Awake()
-    {
-        base.Awake();
-
-        JumpConfig = Player.JumpControllerConfig;
-    }
 
     protected override void Start()
     {

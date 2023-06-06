@@ -475,7 +475,7 @@ public class GraphTool : EditorTool
     {
         RecordUndo();
 
-        Nodes.Add(new Node { Position = spawnPoz + spawnNormal * .1f, Type = 0, Normal = spawnNormal });
+        Nodes.Add(new Node { Position = spawnPoz + spawnNormal * .3f, Type = 0, Normal = spawnNormal });
 
         if (!drawMode) return;
 

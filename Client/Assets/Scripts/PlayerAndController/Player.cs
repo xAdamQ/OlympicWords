@@ -14,7 +14,6 @@ public abstract class Player : MonoBehaviour
         //text pointer point at the next character, not the current
         TextPointer;
 
-    public ControllerConfig ControllerConfig;
     public PlayerConfig Config;
 
     [HideInInspector] public PlayerMapper Mapper;
@@ -22,6 +21,8 @@ public abstract class Player : MonoBehaviour
     public char CurrentChar => RootEnv.I.Text[TextPointer];
     public Vector3 TargetPos { get; set; }
     public GameObject currentLetter => RootEnv.I.GetCharObjectAt(TextPointer, Index);
+
+    public bool IsMine { get; private set; }
 
     [HideInInspector] public PowerUp ChosenPowerUp;
     private int usedJets;
@@ -46,6 +47,7 @@ public abstract class Player : MonoBehaviour
         ChosenPowerUp = (PowerUp)powerUp;
         Mapper.nameText.text = name;
         fillerWords = myFillers;
+        IsMine = GetComponent<PlayerController>();
     }
 
     private void OnGameStarted()

@@ -43,8 +43,6 @@ public class GWSPlayer : GraphPlayer
         Debug.Log("j d c: " + GraphEnv.I.jumperDistances.Count);
 
         GameFinished += () => Mapper.Animator.SetFloat(moveSpeedKey, 0f);
-
-
     }
 
     private void FixedUpdate()
@@ -59,8 +57,6 @@ public class GWSPlayer : GraphPlayer
 
         if (jumpDistances.Count > 0 && jumpDistances.Peek().start <= currentDistance)
         {
-            if (GetComponent<PlayerController>())
-                Debug.Log("found jumper");
             jumping = true;
 
             var endDistance = jumpDistances.Dequeue().end;
@@ -81,8 +77,6 @@ public class GWSPlayer : GraphPlayer
             {
                 jumping = false;
                 currentDistance = endDistance;
-                if (GetComponent<PlayerController>())
-                    Debug.Log("j done");
             }
 
             return;
@@ -95,7 +89,7 @@ public class GWSPlayer : GraphPlayer
 
         var pathPoint = GraphManager.GetPointOnPath(pathPositions, pathNormals, currentDistance, ref moveEdgeCounter);
 
-        if (Physics.Raycast(pathPoint.position + pathPoint.normal * .5f, -pathPoint.normal, out var hit, 10f))
+        if (Physics.Raycast(pathPoint.position + pathPoint.normal * .5f, -pathPoint.normal, out var hit, 10f, 10))
             pathPoint.position.y = FloatLerp(transform.position.y, hit.point.y, walkConfig.MoveLerp);
 
         var forward = (pathPositions[moveEdgeCounter.node] - pathPositions[moveEdgeCounter.node - 1]).normalized;

@@ -80,7 +80,7 @@ services.AddScoped<SecurityManager>();
 OfflineRepo.Touch();
 
 services.AddSingleton(new PersistantData());
-services.AddSingleton<IServerLoop, ServerLoop>();
+services.AddSingleton<IServerLoop, BotLoop>();
 #endregion
 
 services.AddAuthentication(MasterAuthHandler.PROVIDER_NAME)

@@ -13,7 +13,7 @@ public abstract class GraphPlayer : Player
     {
         base.Awake();
 
-        RootEnv.I.GamePrepared += () => { name = (GetComponent<PlayerController>() ? "me" : "oppo") + Index; };
+        RootEnv.I.GamePrepared += () => { name = (IsMine ? "me" : "oppo") + Index; };
     }
 }
 
@@ -27,7 +27,6 @@ public class GraphJumpPlayer : GraphPlayer
 
     private static readonly int jump = Animator.StringToHash("jump");
 
-    public JumpControllerConfig JumpControllerConfig;
     private JumpPlayerMapper jumpMapper;
 
     protected override void Awake()
@@ -108,6 +107,7 @@ public class GraphJumpPlayer : GraphPlayer
     private Tween JumpMovement()
     {
         var targetPoz = GraphEnv.I.GetCharPozAt(TextPointer, Index);
+
         var upVector = Vector3.up * (Vector3.Distance(transform.position, targetPoz) * .5f);
         var middlePoint = Vector3.Lerp(transform.position, targetPoz, .5f);
 

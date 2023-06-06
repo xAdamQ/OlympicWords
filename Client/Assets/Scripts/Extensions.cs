@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using Wintellect.PowerCollections;
 using Random = UnityEngine.Random;

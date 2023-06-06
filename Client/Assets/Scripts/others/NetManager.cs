@@ -31,20 +31,19 @@ public class NetManager : MonoModule<NetManager>
         dev = false;
 #endif
 
-
         SelectedAddress = dev ? "https://localhost:5001" : "https://wordwar3.azurewebsites.net";
     }
 
     public bool dev;
     public string SelectedAddress;
 
-    public async Task<T> GetAsync<T>(string uri,
-        List<(string key, string value)> queryParams = null,
+    public async Task<T> GetAsync<T>(string uri, List<(string key, string value)> queryParams = null,
         string json = null, bool auth = true)
     {
         if (auth)
         {
             var activeAuth = GetActiveAuth();
+            queryParams ??= new();
             queryParams.Add(("provider", activeAuth.provider.ToString()));
             queryParams.Add(("access_token", activeAuth.token));
         }
@@ -93,12 +92,12 @@ public class NetManager : MonoModule<NetManager>
 
     public async Task<(HTTPRequest, HTTPResponse)> SendAsyncHTTP(string uri,
         List<(string key, string value)> queryParams = null,
-        string json = null, bool auth = true, HTTPMethods method = HTTPMethods.Get
-    )
+        string json = null, bool auth = true, HTTPMethods method = HTTPMethods.Get)
     {
         if (auth)
         {
             var activeAuth = GetActiveAuth();
+            queryParams ??= new();
             queryParams.Add(("provider", activeAuth.provider.ToString()));
             queryParams.Add(("access_token", activeAuth.token));
         }
@@ -174,17 +173,23 @@ public class NetManager : MonoModule<NetManager>
 
     public async UniTask Login(string token, ProviderType provider)
     {
+        // if (!ClonesManager.IsClone())
+        // {
         PlayerPrefs.SetString(provider + "Token", token);
 
         PlayerPrefs.SetString("activeToken", token);
         PlayerPrefs.SetString("activeProvider", provider.ToString());
 
         PlayerPrefs.Save();
+        // }
 
         Repository.I.PersonalFullInfo = await Controllers.User.Personal();
         //current auth is then used to fetch the personal data
 
+        // if (!ClonesManager.IsClone())
+        // {
         SetToken(provider, token);
+        // }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         JsManager.HideFbButton();
@@ -195,6 +200,13 @@ public class NetManager : MonoModule<NetManager>
 
     public (ProviderType provider, string token) GetActiveAuth()
     {
+        // if (ClonesManager.IsClone())
+        // {
+        //     var customArgument = ClonesManager.GetArgument();
+        //     Debug.Log("The custom argument of this clone project is: " + customArgument);
+        //     return (ProviderType.Guest, customArgument);
+        // }
+
         var t = PlayerPrefs.GetString("activeToken");
         var pStr = PlayerPrefs.GetString("activeProvider");
         var providerParsed = Enum.TryParse<ProviderType>(pStr, out var provider);

@@ -24,6 +24,7 @@ namespace OlympicWords.Services
             optionsBuilder.UseLazyLoadingProxies();
         }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -144,6 +145,7 @@ namespace OlympicWords.Services
             //         );
             // });
             #endregion
+
             #region learning notes
             // modelBuilder.Entity<DisplayUser>(); this meas that I included this type in the database creation
             //despite it's not mentioned in a DbSet or explored by nav prop
@@ -173,6 +175,31 @@ namespace OlympicWords.Services
 
             //I will use the value converter to create the comma separated id I want!
             #endregion
+        }
+
+        /// <summary>
+        /// when you add a new environment, and you want to update the whole database to set the default selected players
+        /// </summary>
+        private void FillInMissingPlayers()
+        {
+            var total = Users.Count();
+            const int size = 100;
+            for (var pageNo = 0; pageNo < total / (float)size; pageNo++)
+            {
+                var chunk = Users.Skip(pageNo * size).Take(size).ToList();
+                foreach (var user in chunk)
+                {
+                    foreach (var (key, value) in OfflineRepo.DefaultSelectedItemPlayers)
+                    {
+                        if (user.SelectedItemPlayer.ContainsKey(key)) continue;
+
+                        user.SelectedItemPlayer.Add(key, value);
+                        user.OwnedItemPlayers.Add(value);
+                    }
+                }
+
+                SaveChanges();
+            }
         }
 
         private void SetMaxLength(ModelBuilder modelBuilder)
@@ -267,7 +294,7 @@ namespace OlympicWords.Services
                 //this is not used, because taking the snapshot doesn't have anything customized 
             );
 
-            
+
             Expression<Func<Dictionary<string, string>, string>> serializeExpression =
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null);
             Expression<Func<string, Dictionary<string, string>>> deserializeExpression =
@@ -275,7 +302,7 @@ namespace OlympicWords.Services
 
             var converter = new ValueConverter<Dictionary<string, string>, string>(serializeExpression,
                 deserializeExpression);
-         
+
             // modelBuilder.Entity<User>().Property(u => u.SelectedPlayers)
             // .HasConversion(converter, comparer);
         }

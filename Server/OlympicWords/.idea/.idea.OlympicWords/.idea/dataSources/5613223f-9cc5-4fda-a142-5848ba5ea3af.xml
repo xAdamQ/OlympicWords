@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="AZURE" family-id="AZURE" format-version="4.45">
     <root id="1">
       <Dbms>AZURE</Dbms>
-      <ServerVersion>12.0.937</ServerVersion>
+      <ServerVersion>12.0.5100</ServerVersion>
     </root>
     <collation id="2" parent="1" name="Albanian_100_BIN">
       <Description>Albanian-100, binary sort</Description>
@@ -16575,491 +16575,506 @@
       <ObjectId>11</ObjectId>
       <Type>server-role</Type>
     </login>
-    <role id="5519" parent="5511" name="INFORMATION_SCHEMA">
+    <login id="5519" parent="1" name="##MS_ServerSecurityStateReader##">
+      <Enabled>1</Enabled>
+      <ObjectId>19</ObjectId>
+      <Type>server-role</Type>
+    </login>
+    <login id="5520" parent="1" name="##MS_PerformanceDefinitionReader##">
+      <Enabled>1</Enabled>
+      <ObjectId>18</ObjectId>
+      <Type>server-role</Type>
+    </login>
+    <login id="5521" parent="1" name="##MS_ServerPerformanceStateReader##">
+      <Enabled>1</Enabled>
+      <ObjectId>20</ObjectId>
+      <Type>server-role</Type>
+    </login>
+    <role id="5522" parent="5511" name="INFORMATION_SCHEMA">
       <AuthType>none</AuthType>
       <ObjectId>3</ObjectId>
     </role>
-    <role id="5520" parent="5511" name="db_accessadmin">
+    <role id="5523" parent="5511" name="db_accessadmin">
       <AuthType>none</AuthType>
       <ObjectId>16385</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5521" parent="5511" name="db_backupoperator">
+    <role id="5524" parent="5511" name="db_backupoperator">
       <AuthType>none</AuthType>
       <ObjectId>16389</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5522" parent="5511" name="db_datareader">
+    <role id="5525" parent="5511" name="db_datareader">
       <AuthType>none</AuthType>
       <ObjectId>16390</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5523" parent="5511" name="db_datawriter">
+    <role id="5526" parent="5511" name="db_datawriter">
       <AuthType>none</AuthType>
       <ObjectId>16391</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5524" parent="5511" name="db_ddladmin">
+    <role id="5527" parent="5511" name="db_ddladmin">
       <AuthType>none</AuthType>
       <ObjectId>16387</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5525" parent="5511" name="db_denydatareader">
+    <role id="5528" parent="5511" name="db_denydatareader">
       <AuthType>none</AuthType>
       <ObjectId>16392</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5526" parent="5511" name="db_denydatawriter">
+    <role id="5529" parent="5511" name="db_denydatawriter">
       <AuthType>none</AuthType>
       <ObjectId>16393</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5527" parent="5511" name="db_owner">
+    <role id="5530" parent="5511" name="db_owner">
       <AuthType>none</AuthType>
       <ObjectId>16384</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5528" parent="5511" name="db_securityadmin">
+    <role id="5531" parent="5511" name="db_securityadmin">
       <AuthType>none</AuthType>
       <ObjectId>16386</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5529" parent="5511" name="dbo">
+    <role id="5532" parent="5511" name="dbo">
       <AuthType>instance</AuthType>
       <DefaultSchema>dbo</DefaultSchema>
       <ObjectId>1</ObjectId>
     </role>
-    <role id="5530" parent="5511" name="guest">
+    <role id="5533" parent="5511" name="guest">
       <AuthType>none</AuthType>
       <DefaultSchema>guest</DefaultSchema>
       <ObjectId>2</ObjectId>
     </role>
-    <role id="5531" parent="5511" name="public">
+    <role id="5534" parent="5511" name="public">
       <AuthType>none</AuthType>
       <ObjectId>0</ObjectId>
       <Type>database-role</Type>
       <OwnerId>1</OwnerId>
     </role>
-    <role id="5532" parent="5511" name="sys">
+    <role id="5535" parent="5511" name="sys">
       <AuthType>none</AuthType>
       <ObjectId>4</ObjectId>
     </role>
-    <schema id="5533" parent="5511" name="INFORMATION_SCHEMA">
+    <schema id="5536" parent="5511" name="INFORMATION_SCHEMA">
       <ObjectId>3</ObjectId>
     </schema>
-    <schema id="5534" parent="5511" name="db_accessadmin">
+    <schema id="5537" parent="5511" name="db_accessadmin">
       <IntrospectionTimestamp>2022-12-31.01:56:46.200</IntrospectionTimestamp>
       <ObjectId>16385</ObjectId>
     </schema>
-    <schema id="5535" parent="5511" name="db_backupoperator">
+    <schema id="5538" parent="5511" name="db_backupoperator">
       <IntrospectionTimestamp>2022-12-31.01:56:46.360</IntrospectionTimestamp>
       <ObjectId>16389</ObjectId>
     </schema>
-    <schema id="5536" parent="5511" name="db_datareader">
+    <schema id="5539" parent="5511" name="db_datareader">
       <IntrospectionTimestamp>2022-12-31.01:56:46.587</IntrospectionTimestamp>
       <ObjectId>16390</ObjectId>
     </schema>
-    <schema id="5537" parent="5511" name="db_datawriter">
+    <schema id="5540" parent="5511" name="db_datawriter">
       <IntrospectionTimestamp>2022-12-31.01:56:46.790</IntrospectionTimestamp>
       <ObjectId>16391</ObjectId>
     </schema>
-    <schema id="5538" parent="5511" name="db_ddladmin">
+    <schema id="5541" parent="5511" name="db_ddladmin">
       <IntrospectionTimestamp>2022-12-31.01:56:46.997</IntrospectionTimestamp>
       <ObjectId>16387</ObjectId>
     </schema>
-    <schema id="5539" parent="5511" name="db_denydatareader">
+    <schema id="5542" parent="5511" name="db_denydatareader">
       <IntrospectionTimestamp>2022-12-31.01:56:47.147</IntrospectionTimestamp>
       <ObjectId>16392</ObjectId>
     </schema>
-    <schema id="5540" parent="5511" name="db_denydatawriter">
+    <schema id="5543" parent="5511" name="db_denydatawriter">
       <IntrospectionTimestamp>2022-12-31.01:56:47.403</IntrospectionTimestamp>
       <ObjectId>16393</ObjectId>
     </schema>
-    <schema id="5541" parent="5511" name="db_owner">
+    <schema id="5544" parent="5511" name="db_owner">
       <IntrospectionTimestamp>2022-12-31.01:56:47.607</IntrospectionTimestamp>
       <ObjectId>16384</ObjectId>
     </schema>
-    <schema id="5542" parent="5511" name="db_securityadmin">
+    <schema id="5545" parent="5511" name="db_securityadmin">
       <IntrospectionTimestamp>2022-12-31.01:56:47.823</IntrospectionTimestamp>
       <ObjectId>16386</ObjectId>
     </schema>
-    <schema id="5543" parent="5511" name="dbo">
+    <schema id="5546" parent="5511" name="dbo">
       <Current>1</Current>
-      <IntrospectionTimestamp>2023-04-02.09:26:32.330</IntrospectionTimestamp>
+      <IntrospectionTimestamp>2023-04-21.16:14:08.973</IntrospectionTimestamp>
       <ObjectId>1</ObjectId>
     </schema>
-    <schema id="5544" parent="5511" name="guest">
+    <schema id="5547" parent="5511" name="guest">
       <IntrospectionTimestamp>2022-12-31.01:56:48.230</IntrospectionTimestamp>
       <ObjectId>2</ObjectId>
     </schema>
-    <schema id="5545" parent="5511" name="sys">
+    <schema id="5548" parent="5511" name="sys">
       <ObjectId>4</ObjectId>
     </schema>
-    <table id="5546" parent="5543" name="ExternalIds">
-      <CreatedTimestamp>2023-04-02.09:26:06.703</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:13.257</ModifiedTimestamp>
-      <ObjectId>462624691</ObjectId>
+    <table id="5549" parent="5546" name="ExternalIds">
+      <CreatedTimestamp>2023-04-21.16:10:30.550</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:33.560</ModifiedTimestamp>
+      <ObjectId>1902629821</ObjectId>
     </table>
-    <table id="5547" parent="5543" name="UserPictures">
-      <CreatedTimestamp>2023-04-02.09:26:08.490</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:17.323</ModifiedTimestamp>
-      <ObjectId>574625090</ObjectId>
+    <table id="5550" parent="5546" name="UserPictures">
+      <CreatedTimestamp>2023-04-21.16:10:32.163</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:37.510</ModifiedTimestamp>
+      <ObjectId>2014630220</ObjectId>
     </table>
-    <table id="5548" parent="5543" name="UserRelation">
-      <CreatedTimestamp>2023-04-02.09:26:14.213</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:14.877</ModifiedTimestamp>
-      <ObjectId>702625546</ObjectId>
+    <table id="5551" parent="5546" name="UserRelation">
+      <CreatedTimestamp>2023-04-21.16:10:34.490</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:35.123</ModifiedTimestamp>
+      <ObjectId>2142630676</ObjectId>
     </table>
-    <table id="5549" parent="5543" name="Users">
-      <CreatedTimestamp>2023-04-02.09:26:07.020</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:23.317</ModifiedTimestamp>
-      <ObjectId>526624919</ObjectId>
+    <table id="5552" parent="5546" name="Users">
+      <CreatedTimestamp>2023-04-21.16:10:30.853</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:43.073</ModifiedTimestamp>
+      <ObjectId>1966630049</ObjectId>
     </table>
-    <table id="5550" parent="5543" name="__EFMigrationsHistory">
-      <CreatedTimestamp>2023-04-02.09:26:05.833</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:05.833</ModifiedTimestamp>
-      <ObjectId>430624577</ObjectId>
+    <table id="5553" parent="5546" name="__EFMigrationsHistory">
+      <CreatedTimestamp>2023-04-21.16:10:29.710</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:29.710</ModifiedTimestamp>
+      <ObjectId>1870629707</ObjectId>
     </table>
-    <column id="5551" parent="5546" name="Id">
+    <column id="5554" parent="5549" name="Id">
       <DasType>nvarchar(256 char)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5552" parent="5546" name="UserId">
+    <column id="5555" parent="5549" name="UserId">
       <DasType>nvarchar(64 char)|0s</DasType>
       <Position>2</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5553" parent="5546" name="Type">
+    <column id="5556" parent="5549" name="Type">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <foreign-key id="5554" parent="5546" name="FK_ExternalIds_Users_UserId">
+    <foreign-key id="5557" parent="5549" name="FK_ExternalIds_Users_UserId">
       <ColNames>UserId</ColNames>
-      <CreatedTimestamp>2023-04-02.09:26:13.260</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:13.260</ModifiedTimestamp>
-      <ObjectId>670625432</ObjectId>
+      <CreatedTimestamp>2023-04-21.16:10:33.560</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:33.560</ModifiedTimestamp>
+      <ObjectId>2110630562</ObjectId>
       <OnDelete>cascade</OnDelete>
       <RefColNames>Id</RefColNames>
-      <RefTableId>526624919</RefTableId>
+      <RefTableId>1966630049</RefTableId>
       <RefTableName>Users</RefTableName>
     </foreign-key>
-    <index id="5555" parent="5546" name="PK_ExternalIds">
+    <index id="5558" parent="5549" name="PK_ExternalIds">
       <Clustering>1</Clustering>
       <ColNames>Id</ColNames>
       <Position>1</Position>
       <Unique>1</Unique>
     </index>
-    <index id="5556" parent="5546" name="IX_ExternalIds_UserId">
+    <index id="5559" parent="5549" name="IX_ExternalIds_UserId">
       <ColNames>UserId</ColNames>
       <Position>2</Position>
     </index>
-    <key id="5557" parent="5546" name="PK_ExternalIds">
-      <CreatedTimestamp>2023-04-02.09:26:06.707</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:06.707</ModifiedTimestamp>
-      <ObjectId>478624748</ObjectId>
+    <key id="5560" parent="5549" name="PK_ExternalIds">
+      <CreatedTimestamp>2023-04-21.16:10:30.553</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:30.553</ModifiedTimestamp>
+      <ObjectId>1918629878</ObjectId>
       <Primary>1</Primary>
       <UnderlyingIndexName>PK_ExternalIds</UnderlyingIndexName>
     </key>
-    <column id="5558" parent="5547" name="Picture">
+    <column id="5561" parent="5550" name="Picture">
       <DasType>varbinary(max)|0s</DasType>
       <Position>2</Position>
     </column>
-    <column id="5559" parent="5547" name="AvatarId">
+    <column id="5562" parent="5550" name="AvatarId">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <DefaultConstraintId>686625489</DefaultConstraintId>
-      <DefaultConstraintName>DF__UserPictu__Avata__28ED12D1</DefaultConstraintName>
+      <DefaultConstraintId>2126630619</DefaultConstraintId>
+      <DefaultConstraintName>DF__UserPictu__Avata__7EC1CEDB</DefaultConstraintName>
     </column>
-    <column id="5560" parent="5547" name="UserId">
+    <column id="5563" parent="5550" name="UserId">
       <DasType>nvarchar(64 char)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
-      <DefaultConstraintId>766625774</DefaultConstraintId>
-      <DefaultConstraintName>DF__UserPictu__UserI__2DB1C7EE</DefaultConstraintName>
+      <DefaultConstraintId>59147256</DefaultConstraintId>
+      <DefaultConstraintName>DF__UserPictu__UserI__038683F8</DefaultConstraintName>
     </column>
-    <default id="5561" parent="5547" name="DF__UserPictu__Avata__28ED12D1">
+    <default id="5564" parent="5550" name="DF__UserPictu__Avata__7EC1CEDB">
       <ColNames>AvatarId</ColNames>
       <DefaultExpression>0</DefaultExpression>
-      <ModifiedTimestamp>2023-04-02.09:26:14.060</ModifiedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:34.337</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>686625489</ObjectId>
+      <ObjectId>2126630619</ObjectId>
     </default>
-    <default id="5562" parent="5547" name="DF__UserPictu__UserI__2DB1C7EE">
+    <default id="5565" parent="5550" name="DF__UserPictu__UserI__038683F8">
       <ColNames>UserId</ColNames>
       <DefaultExpression>N&apos;&apos;</DefaultExpression>
-      <ModifiedTimestamp>2023-04-02.09:26:17.010</ModifiedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:37.207</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>766625774</ObjectId>
+      <ObjectId>59147256</ObjectId>
     </default>
-    <foreign-key id="5563" parent="5547" name="FK_UserPictures_Users_UserId">
+    <foreign-key id="5566" parent="5550" name="FK_UserPictures_Users_UserId">
       <ColNames>UserId</ColNames>
-      <CreatedTimestamp>2023-04-02.09:26:17.323</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:17.323</ModifiedTimestamp>
-      <ObjectId>798625888</ObjectId>
+      <CreatedTimestamp>2023-04-21.16:10:37.510</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:37.510</ModifiedTimestamp>
+      <ObjectId>91147370</ObjectId>
       <OnDelete>cascade</OnDelete>
       <RefColNames>Id</RefColNames>
-      <RefTableId>526624919</RefTableId>
+      <RefTableId>1966630049</RefTableId>
       <RefTableName>Users</RefTableName>
     </foreign-key>
-    <index id="5564" parent="5547" name="PK_UserPictures">
+    <index id="5567" parent="5550" name="PK_UserPictures">
       <Clustering>1</Clustering>
       <ColNames>UserId</ColNames>
       <Position>1</Position>
       <Unique>1</Unique>
     </index>
-    <key id="5565" parent="5547" name="PK_UserPictures">
-      <CreatedTimestamp>2023-04-02.09:26:17.163</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:17.163</ModifiedTimestamp>
-      <ObjectId>782625831</ObjectId>
+    <key id="5568" parent="5550" name="PK_UserPictures">
+      <CreatedTimestamp>2023-04-21.16:10:37.360</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:37.360</ModifiedTimestamp>
+      <ObjectId>75147313</ObjectId>
       <Primary>1</Primary>
       <UnderlyingIndexName>PK_UserPictures</UnderlyingIndexName>
     </key>
-    <column id="5566" parent="5548" name="FollowerId">
+    <column id="5569" parent="5551" name="FollowerId">
       <DasType>nvarchar(64 char)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5567" parent="5548" name="FollowingId">
+    <column id="5570" parent="5551" name="FollowingId">
       <DasType>nvarchar(64 char)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <foreign-key id="5568" parent="5548" name="FK_UserRelation_Users_FollowerId">
+    <foreign-key id="5571" parent="5551" name="FK_UserRelation_Users_FollowerId">
       <ColNames>FollowerId</ColNames>
-      <CreatedTimestamp>2023-04-02.09:26:14.217</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:14.217</ModifiedTimestamp>
-      <ObjectId>734625660</ObjectId>
+      <CreatedTimestamp>2023-04-21.16:10:34.490</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:34.490</ModifiedTimestamp>
+      <ObjectId>27147142</ObjectId>
       <OnDelete>cascade</OnDelete>
       <RefColNames>Id</RefColNames>
-      <RefTableId>526624919</RefTableId>
+      <RefTableId>1966630049</RefTableId>
       <RefTableName>Users</RefTableName>
     </foreign-key>
-    <foreign-key id="5569" parent="5548" name="FK_UserRelation_Users_FollowingId">
+    <foreign-key id="5572" parent="5551" name="FK_UserRelation_Users_FollowingId">
       <ColNames>FollowingId</ColNames>
-      <CreatedTimestamp>2023-04-02.09:26:14.217</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:14.217</ModifiedTimestamp>
-      <ObjectId>750625717</ObjectId>
+      <CreatedTimestamp>2023-04-21.16:10:34.490</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:34.490</ModifiedTimestamp>
+      <ObjectId>43147199</ObjectId>
       <RefColNames>Id</RefColNames>
-      <RefTableId>526624919</RefTableId>
+      <RefTableId>1966630049</RefTableId>
       <RefTableName>Users</RefTableName>
     </foreign-key>
-    <index id="5570" parent="5548" name="PK_UserRelation">
+    <index id="5573" parent="5551" name="PK_UserRelation">
       <Clustering>1</Clustering>
       <ColNames>FollowerId
 FollowingId</ColNames>
       <Position>1</Position>
       <Unique>1</Unique>
     </index>
-    <index id="5571" parent="5548" name="IX_UserRelation_FollowingId">
+    <index id="5574" parent="5551" name="IX_UserRelation_FollowingId">
       <ColNames>FollowingId</ColNames>
       <Position>2</Position>
     </index>
-    <key id="5572" parent="5548" name="PK_UserRelation">
-      <CreatedTimestamp>2023-04-02.09:26:14.213</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:14.213</ModifiedTimestamp>
-      <ObjectId>718625603</ObjectId>
+    <key id="5575" parent="5551" name="PK_UserRelation">
+      <CreatedTimestamp>2023-04-21.16:10:34.490</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:34.490</ModifiedTimestamp>
+      <ObjectId>11147085</ObjectId>
       <Primary>1</Primary>
       <UnderlyingIndexName>PK_UserRelation</UnderlyingIndexName>
     </key>
-    <column id="5573" parent="5549" name="Id">
+    <column id="5576" parent="5552" name="Id">
       <DasType>nvarchar(64 char)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5574" parent="5549" name="PlayedRoomsCount">
+    <column id="5577" parent="5552" name="PlayedRoomsCount">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="5575" parent="5549" name="WonRoomsCount">
+    <column id="5578" parent="5552" name="WonRoomsCount">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="5576" parent="5549" name="Money">
+    <column id="5579" parent="5552" name="Money">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
     </column>
-    <column id="5577" parent="5549" name="Name">
+    <column id="5580" parent="5552" name="Name">
       <DasType>nvarchar(128 char)|0s</DasType>
       <Position>5</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5578" parent="5549" name="PictureUrl">
+    <column id="5581" parent="5552" name="PictureUrl">
       <DasType>nvarchar(512 char)|0s</DasType>
       <Position>6</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5579" parent="5549" name="EatenCardsCount">
+    <column id="5582" parent="5552" name="EatenCardsCount">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>7</Position>
     </column>
-    <column id="5580" parent="5549" name="WinStreak">
+    <column id="5583" parent="5552" name="WinStreak">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>8</Position>
     </column>
-    <column id="5581" parent="5549" name="MaxWinStreak">
+    <column id="5584" parent="5552" name="MaxWinStreak">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>9</Position>
     </column>
-    <column id="5582" parent="5549" name="TotalEarnedMoney">
+    <column id="5585" parent="5552" name="TotalEarnedMoney">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>10</Position>
     </column>
-    <column id="5583" parent="5549" name="Level">
+    <column id="5586" parent="5552" name="Level">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>11</Position>
     </column>
-    <column id="5584" parent="5549" name="Xp">
+    <column id="5587" parent="5552" name="Xp">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>12</Position>
     </column>
-    <column id="5585" parent="5549" name="RequestedMoneyAidToday">
+    <column id="5588" parent="5552" name="RequestedMoneyAidToday">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>13</Position>
     </column>
-    <column id="5586" parent="5549" name="LastMoneyAimRequestTime">
+    <column id="5589" parent="5552" name="LastMoneyAimRequestTime">
       <DasType>datetime2|0s</DasType>
       <Position>14</Position>
     </column>
-    <column id="5587" parent="5549" name="OwnedBackgroundIds">
+    <column id="5590" parent="5552" name="OwnedBackgroundIds">
       <DasType>nvarchar(max)|0s</DasType>
       <Position>15</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5588" parent="5549" name="OwnedCardBackIds">
+    <column id="5591" parent="5552" name="OwnedCardBackIds">
       <DasType>nvarchar(max)|0s</DasType>
       <Position>16</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5589" parent="5549" name="OwnedTitleIds">
+    <column id="5592" parent="5552" name="OwnedTitleIds">
       <DasType>nvarchar(max)|0s</DasType>
       <Position>17</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5590" parent="5549" name="SelectedTitleId">
+    <column id="5593" parent="5552" name="SelectedTitleId">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>18</Position>
     </column>
-    <column id="5591" parent="5549" name="SelectedCardback">
+    <column id="5594" parent="5552" name="SelectedCardback">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>19</Position>
     </column>
-    <column id="5592" parent="5549" name="SelectedBackground">
+    <column id="5595" parent="5552" name="SelectedBackground">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>20</Position>
     </column>
-    <column id="5593" parent="5549" name="EnableOpenMatches">
+    <column id="5596" parent="5552" name="EnableOpenMatches">
       <DasType>bit|0s</DasType>
       <NotNull>1</NotNull>
       <Position>21</Position>
     </column>
-    <column id="5594" parent="5549" name="Email">
+    <column id="5597" parent="5552" name="Email">
       <DasType>nvarchar(128 char)|0s</DasType>
       <Position>22</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5595" parent="5549" name="LastLogin">
+    <column id="5598" parent="5552" name="LastLogin">
       <DasType>datetime2|0s</DasType>
       <NotNull>1</NotNull>
       <Position>23</Position>
-      <DefaultConstraintId>558625033</DefaultConstraintId>
-      <DefaultConstraintName>DF__Users__LastLogin__214BF109</DefaultConstraintName>
+      <DefaultConstraintId>1998630163</DefaultConstraintId>
+      <DefaultConstraintName>DF__Users__LastLogin__7720AD13</DefaultConstraintName>
     </column>
-    <column id="5596" parent="5549" name="AverageWpm">
+    <column id="5599" parent="5552" name="AverageWpm">
       <DasType>real|0s</DasType>
       <NotNull>1</NotNull>
       <Position>24</Position>
-      <DefaultConstraintId>814625945</DefaultConstraintId>
-      <DefaultConstraintName>DF__Users__AverageWp__308E3499</DefaultConstraintName>
+      <DefaultConstraintId>107147427</DefaultConstraintId>
+      <DefaultConstraintName>DF__Users__AverageWp__0662F0A3</DefaultConstraintName>
     </column>
-    <column id="5597" parent="5549" name="OwnedItemPlayers">
+    <column id="5600" parent="5552" name="OwnedItemPlayers">
       <DasType>nvarchar(max)|0s</DasType>
       <Position>26</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5598" parent="5549" name="SelectedItemPlayer">
+    <column id="5601" parent="5552" name="SelectedItemPlayer">
       <DasType>nvarchar(max)|0s</DasType>
       <Position>27</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <default id="5599" parent="5549" name="DF__Users__LastLogin__214BF109">
+    <default id="5602" parent="5552" name="DF__Users__LastLogin__7720AD13">
       <ColNames>LastLogin</ColNames>
       <DefaultExpression>&apos;0001-01-01T00:00:00.0000000&apos;</DefaultExpression>
-      <ModifiedTimestamp>2023-04-02.09:26:08.337</ModifiedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:32.017</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>558625033</ObjectId>
+      <ObjectId>1998630163</ObjectId>
     </default>
-    <default id="5600" parent="5549" name="DF__Users__AverageWp__308E3499">
+    <default id="5603" parent="5552" name="DF__Users__AverageWp__0662F0A3">
       <ColNames>AverageWpm</ColNames>
       <DefaultExpression>CONVERT([real],0)</DefaultExpression>
-      <ModifiedTimestamp>2023-04-02.09:26:19.433</ModifiedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:39.910</ModifiedTimestamp>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>814625945</ObjectId>
+      <ObjectId>107147427</ObjectId>
     </default>
-    <index id="5601" parent="5549" name="PK_Users">
+    <index id="5604" parent="5552" name="PK_Users">
       <Clustering>1</Clustering>
       <ColNames>Id</ColNames>
       <Position>1</Position>
       <Unique>1</Unique>
     </index>
-    <key id="5602" parent="5549" name="PK_Users">
-      <CreatedTimestamp>2023-04-02.09:26:07.020</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:07.020</ModifiedTimestamp>
-      <ObjectId>542624976</ObjectId>
+    <key id="5605" parent="5552" name="PK_Users">
+      <CreatedTimestamp>2023-04-21.16:10:30.857</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:30.857</ModifiedTimestamp>
+      <ObjectId>1982630106</ObjectId>
       <Primary>1</Primary>
       <UnderlyingIndexName>PK_Users</UnderlyingIndexName>
     </key>
-    <column id="5603" parent="5550" name="MigrationId">
+    <column id="5606" parent="5553" name="MigrationId">
       <DasType>nvarchar(150 char)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <column id="5604" parent="5550" name="ProductVersion">
+    <column id="5607" parent="5553" name="ProductVersion">
       <DasType>nvarchar(32 char)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <CollationName>SQL_Latin1_General_CP1_CI_AS</CollationName>
     </column>
-    <index id="5605" parent="5550" name="PK___EFMigrationsHistory">
+    <index id="5608" parent="5553" name="PK___EFMigrationsHistory">
       <Clustering>1</Clustering>
       <ColNames>MigrationId</ColNames>
       <Position>1</Position>
       <Unique>1</Unique>
     </index>
-    <key id="5606" parent="5550" name="PK___EFMigrationsHistory">
-      <CreatedTimestamp>2023-04-02.09:26:05.837</CreatedTimestamp>
-      <ModifiedTimestamp>2023-04-02.09:26:05.837</ModifiedTimestamp>
-      <ObjectId>446624634</ObjectId>
+    <key id="5609" parent="5553" name="PK___EFMigrationsHistory">
+      <CreatedTimestamp>2023-04-21.16:10:29.713</CreatedTimestamp>
+      <ModifiedTimestamp>2023-04-21.16:10:29.713</ModifiedTimestamp>
+      <ObjectId>1886629764</ObjectId>
       <Primary>1</Primary>
       <UnderlyingIndexName>PK___EFMigrationsHistory</UnderlyingIndexName>
     </key>

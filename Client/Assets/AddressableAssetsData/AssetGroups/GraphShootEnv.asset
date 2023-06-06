@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: GraphShootEnv
   m_Data:
     m_SerializedData: []
-  m_GUID: 0ad8c2f2e36563a4cad5270bcb4fe424
+  m_GUID: ed359d90237e6a540bab9e0d474877ba
   m_SerializeEntries:
   - m_GUID: c93ec3c5b9aa1864eb9edf5153d20b02
     m_Address: Assets/Prefabs/Root/Graph/Shoot/Item/Player/alphaMale.prefab
@@ -52,11 +52,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 81e6e1e32e1d35d43ab69b8561879e75
-    m_Address: Assets/Prefabs/Root/Graph/Shoot/Player/female.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0937d9d82bf1b1d4c8043bd78c7eaf7a
     m_Address: Assets/Prefabs/Root/Graph/Shoot/Player/alphaMale.prefab
     m_ReadOnly: 0
@@ -79,6 +74,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f4ad6738ac9cf794d9fd1f70e1cedee6
     m_Address: Assets/Prefabs/Root/Graph/Shoot/Player/clown.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81e6e1e32e1d35d43ab69b8561879e75
+    m_Address: Assets/Prefabs/Root/Graph/Shoot/Player/female.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

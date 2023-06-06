@@ -1,4 +1,5 @@
 using OlympicWords.Services.Extensions;
+
 namespace OlympicWords.Services
 {
     public class RoomBot : RoomActor

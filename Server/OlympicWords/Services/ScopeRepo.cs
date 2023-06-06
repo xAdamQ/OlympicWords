@@ -43,6 +43,10 @@ namespace OlympicWords.Services
         bool IsUserPending();
         void RemovePendingUser();
         void RemovePendingUser(string uid);
+        /// <summary>
+        /// when the context doesn't have a specific user
+        /// </summary>
+        void SetRoom(Room room);
     }
 
     /// <summary>
@@ -56,7 +60,15 @@ namespace OlympicWords.Services
         private readonly HashSet<string> pendingUsers = new();
 
         #region pending room messages and notifications
+        /// <summary>
+        /// rooms here may not have the full amount of players, this list is used to check if
+        /// we will start them or fill them with bots
+        /// </summary>
         public Queue<(Room, DateTime)> InitiatedRooms { get; } = new();
+        /// <summary>
+        /// rooms here have the full amount of players, but not all of them are ready
+        /// </summary>
+        public Queue<(Room, DateTime)> UnreadyRooms { get; } = new();
         public Dictionary<Room, CancellationTokenSource> PendingRoomCancellations { get; } = new();
 
         public void CancelPendingRoomTimeout(Room room)
@@ -95,8 +107,7 @@ namespace OlympicWords.Services
         {
             get
             {
-                if (IsRealOwner)
-                    return RoomUser;
+                if (IsRealOwner) return RoomUser;
 
                 return RoomBot;
             }
@@ -110,8 +121,7 @@ namespace OlympicWords.Services
                 if (!IsRealOwner)
                     throw new Exception("RoomBot is the owner, but you need a room user");
 
-                if (roomUser != null)
-                    return roomUser;
+                if (roomUser != null) return roomUser;
 
                 return roomUser = GetRoomUserWithId(UserId);
             }
@@ -120,18 +130,19 @@ namespace OlympicWords.Services
 
         public RoomBot RoomBot { get; private set; }
 
-        // public ActiveUser ActiveUser => activeUser ??= GetActiveUser(userId);
-        // private ActiveUser activeUser;
-
         /// <summary>
         /// if the room user is null, this is null
         /// </summary>
-        public Room Room => RoomActor?.Room;
+        public Room Room
+        {
+            get => room ??= RoomActor?.Room;
+            set => room = value;
+        }
+        private Room room;
 
         private readonly ILogger<ScopeRepo> logger;
 
         private ConcurrentDictionary<int, Room> rooms;
-        // private ConcurrentDictionary<string, ActiveUser> activeUsers;
         private ConcurrentDictionary<string, RoomUser> activeRoomUsers;
         private ConcurrentDictionary<(int, string), ConcurrentBag<Room>> pendingRooms;
         private HashSet<string> pendingUsers;
@@ -160,8 +171,21 @@ namespace OlympicWords.Services
 
         public void SetRealOwner(string userId)
         {
-            this.UserId = userId;
+            UserId = userId;
             IsRealOwner = true;
+        }
+        public void SetBotOwner(RoomBot roomBot)
+        {
+            RoomBot = roomBot;
+            UserId = roomBot.Id;
+            IsRealOwner = false;
+        }
+        /// <summary>
+        /// when the context doesn't have a specific user
+        /// </summary>
+        public void SetRoom(Room room)
+        {
+            Room = room;
         }
 
         /// <summary>
@@ -169,16 +193,11 @@ namespace OlympicWords.Services
         /// </summary>
         public bool IsRealOwner { get; private set; }
 
-        public void SetBotOwner(RoomBot roomBot)
-        {
-            this.RoomBot = roomBot;
-            UserId = roomBot.Id;
-            IsRealOwner = false;
-        }
-
         public void DeleteRoom()
         {
             rooms.TryRemove(Room.Id, out _);
+            room.CancellationTokenSource.Cancel();
+            Room.IsDeleted = true;
         }
 
         /// <summary>
@@ -198,15 +217,14 @@ namespace OlympicWords.Services
         {
             var bag = pendingRooms[(category, env)];
 
-            while (true)
+            while (!bag.IsEmpty)
             {
-                if (bag.IsEmpty) return null;
+                bag.TryTake(out var r);
 
-                // bag.TryDequeue(out Room room);
-                bag.TryTake(out var room);
-
-                if (room is { IsFull: false }) return room;
+                if (r is { IsFull: false, IsDeleted: false }) return r;
             }
+
+            return null;
         }
         public void KeepPendingRoom(Room room)
         {

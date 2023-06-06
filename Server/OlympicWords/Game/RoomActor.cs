@@ -70,7 +70,7 @@ namespace OlympicWords.Services
 
         //todo index is subject to removal because it is not known at creating time,
         //so it may be linked to startGame function here to set these props or the creation process is changed
-        public RoomActor(string id, Room room)
+        protected RoomActor(string id, Room room)
         {
             Room = room;
             Id = id;

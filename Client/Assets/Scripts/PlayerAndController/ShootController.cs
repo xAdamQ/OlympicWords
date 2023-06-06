@@ -19,8 +19,7 @@ public class ShootController : LetterController<GWSPlayer>
         Player.DoingLetter += l =>
         {
             if (l is ' ') return;
-            Player.currentLetter.GetComponent<Renderer>().material =
-                Player.ControllerConfig.WordHighlightMat;
+            Player.currentLetter.GetComponent<Renderer>().material = Config.WordHighlightMat;
         };
 
         //I moved the bullet shooting to the controller temporarily, this is not a finale decision, the refactoring is not done

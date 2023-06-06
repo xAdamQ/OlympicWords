@@ -42,27 +42,3 @@ public abstract class MonoModule<T> : MonoBehaviour where T : MonoBehaviour
     }
 }
 
-// public abstract class SoloMonoModule<T> : MonoModule<T> where T : MonoBehaviour
-// {
-//     protected override void Awake()
-//     {
-//         if (I) Destroy(this);
-//         base.Awake();
-//     }
-// }
-
-
-public interface IGameObject
-{
-    GameObject GameObject { get; }
-}
-
-public abstract class MonoModule2<T> : MonoBehaviour where T : IGameObject
-{
-    public static T I;
-
-    protected virtual void Awake()
-    {
-        I = gameObject.GetComponent<T>(); //because "this" won't work
-    }
-}

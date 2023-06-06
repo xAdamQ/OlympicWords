@@ -171,7 +171,7 @@ namespace OlympicWords.Services
                     return new ProviderUser
                     {
                         Id = accessToken,
-                        Name = accessToken[..8],
+                        Name = "Guest " + accessToken[..5],
                         Provider = ProviderType.Guest,
                     };
                 case ProviderType.Facebook:

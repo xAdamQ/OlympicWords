@@ -7,11 +7,23 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
-public class AddressableEditorUtility
+public static class AddressableEditorUtility
 {
+    private static AddressableAssetSettings settings => AddressableAssetSettingsDefaultObject.Settings;
+    public static AddressableAssetGroup GetOrCreateGroup(string groupName)
+    {
+        var group = settings.FindGroup(groupName);
+        if (!group)
+            group = settings.CreateGroup(groupName, false, false, true, null, typeof(ContentUpdateGroupSchema),
+                typeof(BundledAssetGroupSchema));
+
+        return group;
+    }
     public static List<AddressableAssetEntry> AddressAssets(string groupName, params Object[] objs)
     {
         if (objs.Any(o => o == null))
@@ -19,14 +31,7 @@ public class AddressableEditorUtility
         if (string.IsNullOrEmpty(groupName))
             throw new ArgumentException("group name can't be empty", nameof(groupName));
 
-        var settings = AddressableAssetSettingsDefaultObject.Settings;
-
-        if (!settings) throw new NullReferenceException("settings for addressables was not found");
-
-        var group = settings.FindGroup(groupName);
-        if (!group)
-            group = settings.CreateGroup(groupName, false, false, true, null, typeof(ContentUpdateGroupSchema),
-                typeof(BundledAssetGroupSchema));
+        var group = GetOrCreateGroup(groupName);
 
         var entries = new List<AddressableAssetEntry>();
 
@@ -47,6 +52,8 @@ public class AddressableEditorUtility
 
     public static void UpdateSystem()
     {
+        if (!settings) throw new NullReferenceException("settings for addressables was not found");
+
         var envs = RootEnv.GetEnvironments();
         var envQueue = new Queue<ClientEnvironment>();
         envQueue.Enqueue(envs.Single(e => e.Type == typeof(RootEnv)));
@@ -66,23 +73,22 @@ public class AddressableEditorUtility
             var envPath = Path.Combine(
                 Path.Combine(currentDirectory, AddressManager.PREFAB_ADDRESS),
                 Path.Combine(env.GetParentsNames()));
-            //root/graph/jump
-
-
-            // var envPath = Path.Combine(
-            // currentDirectory,
-            // AddressManager.PREFAB_ADDRESS
-            // env.Type == RootEnv.Name ? "" : RootEnv.Name,
-            // //root a special rule that it is not included in the sub types names
-            // Path.Combine(env.Type.SplitCamelCase())
-            // );
+            //root/graph/jump for example
 
             if (!Directory.Exists(envPath)) continue;
+
+            GetOrCreateGroup(env.Type.Name);
 
             var topGos = getObjectsAt(envPath, SearchOption.TopDirectoryOnly);
             var shop = topGos.SingleOrDefault(o => o.go.GetComponent<Shop>());
             if (shop != default((string, GameObject)))
                 AddressAssets(env.Type.Name, shop.go);
+
+            // var scene = EditorSceneManager.GetSceneByName(env.Type.Namespace);
+            // if (scene != default)
+            // {
+            // AddressAssets(env.Type.Name, scene);
+            // }
 
             //I leave it to null because it's the rule of the address manager to re-route
             // else

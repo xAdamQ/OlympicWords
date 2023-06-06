@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -20,7 +21,7 @@ public class MinUserView : MonoBehaviour
         muv.Init(info);
     }
 
-    public void Init(MinUserInfo minUserInfo)
+    protected void Init(MinUserInfo minUserInfo)
     {
         MinUserInfo = minUserInfo;
 
@@ -31,13 +32,17 @@ public class MinUserView : MonoBehaviour
         SetPicture(minUserInfo).Forget();
     }
 
-
     private async UniTaskVoid SetPicture(MinUserInfo info)
     {
-        if (!info.IsPictureLoaded && !await info.DownloadPicture()) return;
-        if (picture == null || info.PictureSprite is null) return;
+        //if I didn't assign the pic, it's not used
+        //if I didn't get a pic, the user doesn't have one
+        if (picture == null || !await info.GetPic()) return;
 
-        picture.sprite = info.PictureSprite;
+        //this go can be destroyed before the pic is awaited
+        if (!picture) return;
+
+        CacheManager.I.TryGetPic(Id, out var pic);
+        picture.sprite = pic;
     }
 
 
@@ -49,7 +54,6 @@ public class MinUserView : MonoBehaviour
         UniTask.Create(async () =>
         {
             var fullInfo = await BlockingOperationManager.Start(Controllers.User.Public(Id));
-            fullInfo.PictureSprite = MinUserInfo.PictureSprite;
             FullUserView.Show(fullInfo);
         });
     }

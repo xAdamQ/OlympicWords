@@ -66,9 +66,9 @@ public class Coordinator : MonoModule<Coordinator>
 
         base.Awake();
 
-#if UNITY_EDITOR
-        Application.targetFrameRate = targetFps;
-#endif
+// #if UNITY_EDITOR
+//         Application.targetFrameRate = targetFps;
+// #endif
 
         HTTPManager.Logger = new MyBestHttpLogger();
 

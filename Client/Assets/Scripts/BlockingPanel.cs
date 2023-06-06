@@ -4,6 +4,7 @@ using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using TMPro;
 using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 public class BlockingPanel : MonoBehaviour
@@ -22,7 +23,7 @@ public class BlockingPanel : MonoBehaviour
     {
         ShowBase(message);
         i.fillBar.SetHandle(handle);
-    
+
         i.waitImage.gameObject.SetActive(false);
         i.fillBar.gameObject.SetActive(true);
     }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Gardens
   m_EditorClassIdentifier: 
   Nodes:
-  - Position: {x: 7.2870517, y: 0.10239181, z: 3.568396}
+  - Position: {x: -0.31191778, y: 0.10239181, z: 5.3047767}
     Normal: {x: 0, y: 1, z: 0}
     Type: 1
   - Position: {x: 15.268465, y: 3.1887093, z: 3.2965946}

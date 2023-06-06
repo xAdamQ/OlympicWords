@@ -3,5 +3,35 @@
     ".data": "application/octet-stream",
     ".wasm": "application/wasm",
     ".symbols.json": "application/octet-stream"
-  }
+  },
+  "routes": [
+    {
+      "route": "/portofolio",
+      "redirect": "https://www.aldoh.me",
+      "statusCode": 301
+    },
+    {
+      "route": "/portfolio",
+      "redirect": "https://www.aldoh.me",
+      "statusCode": 301
+    },
+    {
+      "route": "*.data",
+      "headers": {
+        "Cache-Control": "public, max-age=1296000, no-cache"
+      }
+    },
+    {
+      "route": "*.bundle",
+      "headers": {
+        "Cache-Control": "public, max-age=1296000, no-cache"
+      }
+    },
+    {
+      "route": "*.wasm",
+      "headers": {
+        "Cache-Control": "public, max-age=1296000, no-cache"
+      }
+    }
+  ]
 }

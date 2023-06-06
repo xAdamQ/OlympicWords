@@ -15,11 +15,16 @@ MonoBehaviour:
   m_GroupName: MJC
   m_Data:
     m_SerializedData: []
-  m_GUID: e8300f652b2af7a44948dfdc79d2ab37
-  m_SerializeEntries: []
+  m_GUID: bc16d83981c13a4459eb34dfdd923617
+  m_SerializeEntries:
+  - m_GUID: 8f3bb6df2e86d8a21b004bb54131dcd6
+    m_Address: MJC
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: b2c7024f110de7f4f9f1208d9a0e5d05, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: ced22cc6beb91ca4097de69f779a906e, type: 2}
-    - {fileID: 11400000, guid: ec38f9455ef51ea4f8a1da0c14ac3986, type: 2}
+    - {fileID: 11400000, guid: b928e3153894c8444995826aea29c990, type: 2}
+    - {fileID: 11400000, guid: d65da491ec964274780c3ae262abcfea, type: 2}

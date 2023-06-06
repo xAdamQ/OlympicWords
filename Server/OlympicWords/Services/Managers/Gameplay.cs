@@ -27,11 +27,6 @@ namespace OlympicWords.Services
     /// </summary>
     public class Gameplay : IGameplay
     {
-        private ReadOnlySpan<char> v()
-        {
-            return "1234".AsSpan();
-        }
-
         private readonly IHubContext<RoomHub> masterHub;
         private readonly ILogger<Gameplay> logger;
         private readonly IFinalizer finalizer;
@@ -54,19 +49,21 @@ namespace OlympicWords.Services
         {
             var room = scopeRepo.Room;
 
-            if (room.Started)
-                throw new BadUserInputException("the start room is called more than once");
+            //this is not necessarily because the user is malicious, concurrency is a thing
+            if (room.IsStarted)
+            {
+                logger.LogWarning("room already started");
+                return;
+            }
 
             room.SetUsersDomain<UserDomain.Room.ReadyGo>();
-            logger.LogInformation("all users are 321");
+            logger.LogInformation("ready go..");
 
             foreach (var roomUser in room.RoomUsers)
                 await masterHub.SendOrderedAsync(roomUser, "StartRoomRpc");
 
             await Task.Delay(TimeSpan.FromSeconds(1.5f));
             await StartGame();
-
-            logger.LogInformation("awaited successfully");
         }
 
         private async Task StartGame()

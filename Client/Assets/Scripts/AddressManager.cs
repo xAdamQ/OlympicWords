@@ -75,13 +75,14 @@ public class AddressManager
 
     public static readonly string PREFAB_ADDRESS = Path.Combine("Assets", "Prefabs");
 
+    //todo see if you can cache this to disk at on build
     private Dictionary<string, IResourceLocation> GetAllLocations()
     {
         var locators = Addressables.ResourceLocators.ToList();
         var allLocations = new Dictionary<string, IResourceLocation>();
 
         foreach (var locator in locators)
-            foreach (var locatorKey in locator.Keys)
+            foreach (var locatorKey in locator.Keys.Where(k => k is not null))
                 if (locator.Locate(locatorKey, typeof(GameObject), out var locations))
                     foreach (var location in locations)
                         allLocations.TryAdd(location.InternalId, location);

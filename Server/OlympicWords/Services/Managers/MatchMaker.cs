@@ -3,6 +3,18 @@ using OlympicWords.Services.Extensions;
 using Microsoft.AspNetCore.SignalR;
 using OlympicWords.Services.Helpers;
 
+
+/*
+ *** user deletion flow
+ 1. when pending
+    remove from pendingUsers, from it's room, from persistantData, delete room is empty
+    discard deleted when fetching pending
+
+2. when getting ready
+3. in game
+    we tread both the same, we let the game start, and notify the bots that the game room is cancelled so they stop producing letters
+    
+*/
 namespace OlympicWords.Services
 {
     public interface IMatchMaker
@@ -12,7 +24,7 @@ namespace OlympicWords.Services
         /// <summary>
         /// called by timeout
         /// </summary>
-        Task FillPendingRoomWithBots(Room room);
+        Task FillPendingRoomWithBots();
 
         Task MakeRoomUserReadyRpc();
         void RemovePendingDisconnectedUser(RoomUser roomUser);
@@ -33,29 +45,25 @@ namespace OlympicWords.Services
     {
         private readonly IHubContext<RoomHub> masterHub;
         private readonly IGameplay gameplay;
-        private readonly IServerLoop serverLoop;
         private readonly ILogger<MatchMaker> logger;
         private readonly PersistantData persistantData;
         private readonly IOfflineRepo offlineRepo;
         private readonly IScopeRepo scopeRepo;
 
         public MatchMaker(IHubContext<RoomHub> masterHub, IOfflineRepo offlineRepo,
-            IScopeRepo scopeRepo, IGameplay gameplay, IServerLoop serverLoop, ILogger<MatchMaker> logger,
-            PersistantData persistantData)
+            IScopeRepo scopeRepo, IGameplay gameplay, ILogger<MatchMaker> logger, PersistantData persistantData)
         {
             this.masterHub = masterHub;
             this.offlineRepo = offlineRepo;
             this.scopeRepo = scopeRepo;
             this.gameplay = gameplay;
-            this.serverLoop = serverLoop;
             this.logger = logger;
             this.persistantData = persistantData;
         }
 
         public async Task RequestRandomRoom(int category, string env)
         {
-            //I set user domain fast because this will await sometime and enable the user to call
-            //twice this method without domain change
+            //I don't yet have a room user, so I mark the id as pending, without domain
             scopeRepo.MarkUserPending();
 
             if (!category.IsInRange(Room.Bets.Length))
@@ -65,7 +73,7 @@ namespace OlympicWords.Services
                     $"the room category: {category} exceeds the category list: {Room.Bets.Length}");
             }
 
-            if (!OfflineRepo.GameConfig.EnvConfigs.Any(c => c.Name == env))
+            if (OfflineRepo.GameConfig.EnvConfigs.All(c => c.Name != env))
             {
                 scopeRepo.RemovePendingUser();
                 throw new Exceptions.BadUserInputException($"the environment {env} doesn't exist");
@@ -76,7 +84,8 @@ namespace OlympicWords.Services
             if (dUser.Money < Room.Bets[category])
             {
                 scopeRepo.RemovePendingUser();
-                throw new Exceptions.BadUserInputException();
+                throw new Exceptions.BadUserInputException(
+                    $"user doesn't have enough money{dUser.Money} for the bet {Room.Bets[category]}");
             }
 
             var room = scopeRepo.TakePendingRoom(category, env) ?? MakeRoom(category, env);
@@ -97,31 +106,16 @@ namespace OlympicWords.Services
             {
                 scopeRepo.KeepPendingRoom(room); //so other users can see it
                 persistantData.InitiatedRooms.Enqueue((room, DateTime.Now));
-
-                // const int timeout = 1000;
-                // const int checkInterval = 250;
-                // const int maxRetries = timeout / checkInterval;
-                //
-                // var retries = 0;
-                //
-                // while (!room.IsFull && retries < maxRetries)
-                // {
-                //     await Task.Delay(checkInterval * 1000);
-                //     retries++;
-                // }
-                //
-                // if (room.IsFull)
-                //     await PrepareRoom(room);
-                // else
-                //     await FillPendingRoomWithBots(room);
             }
         }
 
         /// <summary>
         /// called by timeout
         /// </summary>
-        public async Task FillPendingRoomWithBots(Room room)
+        public async Task FillPendingRoomWithBots()
         {
+            var room = scopeRepo.Room;
+
             var botsCount = room.Capacity - room.RoomUsers.Count;
 
             var botIds = new List<string> { "999", "9999", "99999" };
@@ -177,7 +171,7 @@ namespace OlympicWords.Services
             room.RoomUsers.ForEach(ru => scopeRepo.RemovePendingUser(ru.Id));
 
             await offlineRepo.SaveChangesAsync();
-            serverLoop.SetForceStartRoomTimeout(room);
+            persistantData.UnreadyRooms.Enqueue((room, DateTime.Now));
             await SendPrepareRoom(room, usersInfos, selectedItemPlayers);
         }
 
@@ -295,7 +289,7 @@ namespace OlympicWords.Services
             var readyUsersCount = room.RoomUsers.Count(u => u.IsReady);
             if (readyUsersCount == room.RoomUsers.Count) //bots don't get ready
             {
-                serverLoop.CancelForceStart(room);
+                room.IsAllReady = true;
                 await gameplay.ReadyGo();
             }
         }
@@ -308,12 +302,14 @@ namespace OlympicWords.Services
             roomUser.Room.RoomUsers.Remove(roomUser);
             scopeRepo.RemovePendingUser();
 
-            if (roomUser.Room.RoomUsers.Count == 0) //maybe the remaining are bots, or non
+            //maybe the remaining are bots, or a not has only a single user, bots not filled yet
+            if (roomUser.Room.RoomUsers.Count == 0)
             {
-                // serverLoop.CancelPendingRoomTimeout(roomUser.Room);
                 scopeRepo.DeleteRoom();
+                logger.LogInformation("delete room because it has no users");
             }
 
+            //remove the actor at the end because scope repo depend on it to find everything
             scopeRepo.RemoveRoomUser();
         }
     }

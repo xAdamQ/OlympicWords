@@ -57,9 +57,12 @@ public abstract class GraphEnv : RootEnv
         var minBound = chr.GetComponent<MeshRenderer>().bounds.min - new Vector3(.1f, 0, .1f);
 
         return new Vector3(
-            Random.Range(minBound.x, maxBound.x),
-            maxBound.y + .1f,
-            Random.Range(minBound.z, maxBound.z));
+            // Random.Range(minBound.x, maxBound.x),
+            chr.transform.position.x,
+            minBound.y + .1f,
+            // Random.Range(minBound.z, maxBound.z)
+            chr.transform.position.z
+        );
     }
 
     public override Quaternion GetCharRotAt(int charIndex, int playerIndex)
@@ -301,16 +304,7 @@ public abstract class GraphEnv : RootEnv
             //here we work on a connected branch without jumper edges
             for (; w < branchEndWord; w++)
             {
-                string currentWord;
-                try
-                {
-                    currentWord = Words[w];
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
+                var currentWord = Words[w];
                 var wordObject = new GameObject[currentWord.Length];
 
                 var (letterStartPoint, letterStartNormal) =
@@ -425,7 +419,15 @@ public abstract class GraphEnv : RootEnv
         }
 
         while (!newPath.Last().isWalkable)
+        {
+            if (newPath.Count == 1)
+            {
+                GeneratePath(random);
+                return;
+            }
+
             newPath.RemoveAt(newPath.Count - 1);
+        }
         //remove the last jumpers
 
         linkerEdge = (newPath[^2].nodeIndex, newPath[^1].nodeIndex);

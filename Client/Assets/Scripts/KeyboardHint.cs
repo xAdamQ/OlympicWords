@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class KeyboardHint : MonoModule<KeyboardHint>
 {
-    private static readonly KeyLetter[][] rows =
+    private static readonly KeyLetter[][] qwerty =
     {
         new[]
         {
@@ -75,6 +75,8 @@ public class KeyboardHint : MonoModule<KeyboardHint>
             new KeyLetter(' ', 0)
         }
     };
+
+    private static KeyLetter[][] rows => qwerty;
 
     private static readonly Dictionary<char, KeyLetter> lettersDic =
         rows.SelectMany(k => k).ToDictionary(k => k.letter, k => k);

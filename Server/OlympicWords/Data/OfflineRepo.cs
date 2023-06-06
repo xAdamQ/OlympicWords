@@ -106,9 +106,27 @@ public class OfflineRepo : IOfflineRepo
         this.logger = logger;
     }
 
-    private readonly string[] testSentences =
+
+    private readonly string[] german =
     {
-        "i do well in school",
+        "i am a berliner and i love to walk around the city ich bin ein berliner und ich liebe es durch die stadt zu spazieren",
+        "i love you more than anything else in the world ich liebe dich mehr als alles andere auf der welt",
+        "good night sleep well and sweet dreams gute nacht schlaf gut und traum schon",
+        "i dont feel like working today and i would rather stay at home ich habe heute keine lust zu arbeiten und ich mochte lieber zu hause bleiben",
+        "i met my friends yesterday and we cooked together ich habe gestern meine freunde getroffen und wir haben zusammen gekocht",
+        "i went to the cinema last night and i saw a great movie ich bin gestern abend ins kino gegangen und ich habe einen tollen film gesehen",
+        "i would like to buy a new car but i dont have enough money ich mochte gerne ein neues auto kaufen aber ich habe nicht genug geld",
+        "ich bin heute morgen fruh aufgestanden und ich habe sport gemacht  i got up early this morning and i did some exercise",
+        "ich mochte gerne eine reise nach italien machen und die kultur kennenlernen  i would like to take a trip to italy and learn about the culture",
+        "ich habe heute keine zeit fur ein langes gesprach aber ich melde mich spater  i dont have time for a long conversation today but i will get back to you later",
+        "ich mochte gerne ein neues buch lesen und ich suche nach einem interessanten thema  i would like to read a new book and i am looking for an interesting topic",
+        "ich bin gestern abend spazieren gegangen und ich habe die frische luft genossen  i went for a walk last night and i enjoyed the fresh air",
+        "ich habe heute morgen einen kaffee getrunken und ich bin jetzt bereit fur den tag  i had a coffee this morning and i am now ready for the day",
+        "ich mochte gerne eine neue sprache lernen und ich denke an spanisch oder franzosisch  i would like to learn a new language and i am considering spanish or french",
+        "ich habe gestern abend pizza bestellt und ich habe sie mit meinen freunden geteilt  i ordered pizza last night and i shared it with my friends",
+    };
+    private readonly string[] general =
+    {
         "i do well in school and people think i am smart because of it but its not true in fact three years ago i struggled in school however two years ago i decided to get serious about school and made a few changes",
         "he swung back the fishing pole and cast the line which ell feet away into the river the lure landed in the perfect spot and he was sure he would soon get a bite he never expected that the bite would come from behind in the form of a bear",
         "there was nothing to indicate nancy was going to change the world she looked like an average girl going to an average high school it was the fact that everything about her seemed average that would end up becoming her superpower",
@@ -130,6 +148,9 @@ public class OfflineRepo : IOfflineRepo
         "the blue whales just played their first baseball game of the new season i believe there is much to be excited about although they lost it was against an excellent team that had won the championship last year",
         "i like the idea but unfortunately it is not practical the idea is to have a new building built on the site of the old one but the problem is that the old building is a historical landmark",
     };
+
+    private string[] testSentences => general;
+
 
     public string[] SmallFillers { get; } =
     {

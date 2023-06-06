@@ -15,6 +15,7 @@ public class FinalMuv : MinUserView
         finalPositionText;
 
     [SerializeField] private Button followButton;
+    [SerializeField] private GameObject myPlayerSign;
 
     private FullUserInfo fullUserInfo;
 
@@ -28,9 +29,11 @@ public class FinalMuv : MinUserView
     private void Init(FullUserInfo fullUserInfo, Player player)
     {
         this.player = player;
-        Init((MinUserInfo)fullUserInfo);
-
         this.fullUserInfo = fullUserInfo;
+
+        myPlayerSign.SetActive(player.IsMine);
+
+        base.Init(fullUserInfo);
         UpdateFriendshipView();
     }
 

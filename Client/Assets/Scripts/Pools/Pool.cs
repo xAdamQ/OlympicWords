@@ -52,7 +52,7 @@ public class Pool<TPool> : MonoModule<TPool> where TPool : Pool<TPool>
         obj.transform.position = position;
         obj.transform.rotation = rotation;
         if (parent is not null)
-            transform.SetParent(parent);
+            obj.transform.SetParent(parent);
         obj.SetActive(true);
         obj.GetComponent<IPooledObject>()?.Taken();
 

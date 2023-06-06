@@ -55,7 +55,7 @@ namespace OlympicWords.Data
         public List<int> OwnedCardBackIds { get; set; } = new();
         public List<int> OwnedTitleIds { get; set; } = new();
 
-        public HashSet<String> OwnedItemPlayers { get; set; }
+        public HashSet<string> OwnedItemPlayers { get; set; }
         public Dictionary<string, string> SelectedItemPlayer { get; set; }
 
         public int SelectedTitleId { get; set; }
@@ -103,6 +103,7 @@ public class StringEntity
 {
     public required string Value { get; set; }
 }
+
 public class StringKvpEntity
 {
     public required string Key { get; set; }
