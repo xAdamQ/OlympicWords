@@ -52,7 +52,6 @@ public interface IOfflineRepo
     User GetEmptyCurrenUserTracked();
     User TrackNewUser(string userId);
 }
-
 /// <summary>
 /// hide queries, reuse queries
 /// </summary>
@@ -193,12 +192,16 @@ public class OfflineRepo : IOfflineRepo
         return await context.SaveChangesAsync() >= 0;
     }
 
-    private static readonly MapperConfiguration MapperConfig = new(cfg =>
+    public static readonly MapperConfiguration MapperConfig = new(cfg =>
     {
         cfg.CreateProjection<User, PersonalFullUserInfo>();
         cfg.CreateProjection<User, FullUserInfo>();
+        cfg.CreateMap<User, FullUserInfo>();
+        // cfg.CreateProjection<Castle.DynamicProxy, FullUserInfo>();
         cfg.CreateProjection<User, MinUserInfo>();
     });
+
+    public static readonly IMapper Mapper = MapperConfig.CreateMapper();
 
     public async Task<User> GetCurrentUserAsync(bool includeFollowings = false)
     {

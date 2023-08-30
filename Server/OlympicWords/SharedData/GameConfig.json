@@ -1,1 +1,24 @@
-{"EnvConfigs":[{"Type":"MJC, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","Name":"MJC","DefaultPlayer":"criminal"},{"Type":"MWSC, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","Name":"MWSC","DefaultPlayer":"female"},{"Type":"MWSCC, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","Name":"MWSCC","DefaultPlayer":"criminal"},{"Type":"SJ, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null","Name":"SJ","DefaultPlayer":"robot"}]}
+{
+  "EnvConfigs": [
+    {
+      "Type": "MJC, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Name": "MJC",
+      "DefaultPlayer": "criminal"
+    },
+    {
+      "Type": "MWSC, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Name": "MWSC",
+      "DefaultPlayer": "female"
+    },
+    {
+      "Type": "MWSCC, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Name": "MWSCC",
+      "DefaultPlayer": "female"
+    },
+    {
+      "Type": "SJ, MyScripts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "Name": "SJ",
+      "DefaultPlayer": "robot"
+    }
+  ]
+}

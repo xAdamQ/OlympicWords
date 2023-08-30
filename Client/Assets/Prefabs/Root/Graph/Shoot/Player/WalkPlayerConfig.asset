@@ -17,4 +17,4 @@ MonoBehaviour:
   AnimRunThreshold: 0.003
   AnimRunLerp: 0.1
   RotationLerp: 0.05
-  LetterLookAtThreshold: 0.5
+  LetterLookAtThreshold: 1

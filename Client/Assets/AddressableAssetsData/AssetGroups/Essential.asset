@@ -128,7 +128,22 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b3a7e59e872bacd4782a3ccdc00031a4
-    m_Address: Assets/Prefabs/Root/Graph/Shoot/Player/LetterController.asset
+    m_Address: LetterController
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 79c330d38ef230e4aaaab1bad0bdd66c
+    m_Address: Lobby
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 280f4604351f64d4c99407c2f1d32b1d
+    m_Address: RoomBase
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30f7dc944bf8fb40997b8f1385b98805
+    m_Address: Startup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -9,6 +9,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using Shared;
+using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
 public class NetManager : MonoModule<NetManager>
@@ -195,7 +196,7 @@ public class NetManager : MonoModule<NetManager>
         JsManager.HideFbButton();
 #endif
 
-        SceneManager.LoadScene("Lobby");
+        await Addressables.LoadSceneAsync("Lobby");
     }
 
     public (ProviderType provider, string token) GetActiveAuth()
@@ -240,7 +241,7 @@ public class NetManager : MonoModule<NetManager>
             }
             finally
             {
-                await SceneManager.LoadSceneAsync("Startup");
+                await Addressables.LoadSceneAsync("Startup");
             }
         }).Forget(e => throw e);
     }

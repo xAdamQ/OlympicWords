@@ -180,7 +180,7 @@ public static class GraphManager
         return nodeEdges;
     }
 
-    public static (Vector3 position, Vector3 normal) GetPointOnPath(List<Vector3> path, List<Vector3> normals,
+    public static (Vector3 position, Vector3 normal, Vector3 dir) GetPointOnPath(List<Vector3> path, List<Vector3> normals,
         float targetDistance, ref (float distance, int index) edgeCounter)
     {
         for (; edgeCounter.index < path.Count; edgeCounter.index++)
@@ -194,7 +194,9 @@ public static class GraphManager
                 var poz = Vector3.Lerp(path[edgeCounter.index - 1], path[edgeCounter.index], passedDistanceRatio);
                 var normal = Vector3.Lerp(normals[edgeCounter.index - 1], normals[edgeCounter.index],
                     passedDistanceRatio);
-                return (poz, normal);
+                var dir = (path[edgeCounter.index] - path[edgeCounter.index - 1]).normalized;
+
+                return (poz, normal, dir);
             }
 
             edgeCounter.distance += edgeLength;

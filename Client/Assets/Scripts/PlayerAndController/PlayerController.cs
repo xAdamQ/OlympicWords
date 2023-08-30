@@ -59,6 +59,8 @@ public abstract class PlayerController : MonoModule<PlayerController>
             if (remainingJets == 0)
                 RemainingJets.I.gameObject.SetActive(false);
         };
+
+        // Player.LetterDone += _ => SoundManager.I.PlayLetterSound();
     }
 
     protected virtual void Start()

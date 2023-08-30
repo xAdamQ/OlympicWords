@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// uses Repository.I.PersonalFullInfo, 
 /// </summary>
-public class PersonalActiveUserView : MinUserView
+public sealed class PersonalActiveUserView : MinUserView
 {
     [SerializeField] private TMP_Text money;
 
@@ -33,7 +33,7 @@ public class PersonalActiveUserView : MinUserView
         FullUserView.Show(Repository.I.PersonalFullInfo);
     }
 
-    protected virtual void OnInfoChanged(object sender, PropertyChangedEventArgs e)
+    private void OnInfoChanged(object sender, PropertyChangedEventArgs e)
     {
         var info = Repository.I.PersonalFullInfo;
         switch (e.PropertyName)

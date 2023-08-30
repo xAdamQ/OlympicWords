@@ -50,6 +50,11 @@ public static class AddressableEditorUtility
         return entries;
     }
 
+    /// <summary>
+    /// create the addressable objects from the folders
+    /// save the addresses in Assets/EnvironmentAddresses.json
+    /// </summary>
+    /// <exception cref="NullReferenceException"></exception>
     public static void UpdateSystem()
     {
         if (!settings) throw new NullReferenceException("settings for addressables was not found");

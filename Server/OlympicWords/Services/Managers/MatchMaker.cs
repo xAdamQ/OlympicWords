@@ -165,7 +165,8 @@ namespace OlympicWords.Services
                 .Join(users, actor => actor.Id, user => user.Id, (_, user) => user)
                 .ToList();
 
-            var usersInfos = turnSortedUsers.Select(Mapper.UserToFullFunc).ToList();
+
+            var usersInfos = turnSortedUsers.Select(u => OfflineRepo.Mapper.Map<FullUserInfo>(u)).ToList();
             var selectedItemPlayers = turnSortedUsers.Select(u => u.SelectedItemPlayer[room.Env]).ToList();
 
             room.RoomUsers.ForEach(ru => scopeRepo.RemovePendingUser(ru.Id));

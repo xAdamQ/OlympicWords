@@ -81,7 +81,7 @@ public abstract class RootEnv : MonoBehaviour
     {
         new(typeof(MJC), "criminal"),
         new(typeof(MWSC), "female"),
-        new(typeof(MWSCC), "criminal"),
+        new(typeof(MWSCC), "female"),
         new(typeof(SJ), "robot"),
     };
 
@@ -105,7 +105,7 @@ public abstract class RootEnv : MonoBehaviour
             }
             finally
             {
-                SceneManager.LoadScene("Lobby");
+                await Addressables.LoadSceneAsync("Lobby");
             }
         }).Forget(e => throw e);
     }

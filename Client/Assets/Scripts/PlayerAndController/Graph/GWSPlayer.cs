@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// graph walk shoot
@@ -35,6 +36,8 @@ public class GWSPlayer : GraphPlayer
     protected override void Start()
     {
         base.Start();
+
+        color = Random.ColorHSV();
 
         pathPositions = GraphEnv.I.smoothPath.Select(n => n.position).ToList();
         pathNormals = GraphEnv.I.smoothPath.Select(n => n.normal).ToList();
@@ -89,8 +92,12 @@ public class GWSPlayer : GraphPlayer
 
         var pathPoint = GraphManager.GetPointOnPath(pathPositions, pathNormals, currentDistance, ref moveEdgeCounter);
 
-        if (Physics.Raycast(pathPoint.position + pathPoint.normal * .5f, -pathPoint.normal, out var hit, 10f, 10))
+        if (Physics.Raycast(pathPoint.position + pathPoint.normal * .5f, -pathPoint.normal, out var hit, 10f))
+        {
             pathPoint.position.y = FloatLerp(transform.position.y, hit.point.y, walkConfig.MoveLerp);
+        }
+
+        Debug.DrawRay(pathPoint.position + pathPoint.normal * .5f, -pathPoint.normal, Color.blue, .25f);
 
         var forward = (pathPositions[moveEdgeCounter.node] - pathPositions[moveEdgeCounter.node - 1]).normalized;
         var right = Vector3.Cross(forward, pathPoint.normal);
@@ -111,19 +118,31 @@ public class GWSPlayer : GraphPlayer
         Mapper.Animator.SetFloat(moveSpeedKey, animMoveAmount);
     }
 
+    private Vector3 collisionPoint;
+    private Color color;
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = color;
+        Gizmos.DrawCube(collisionPoint, Vector3.one * .2f);
+        Debug.Log(collisionPoint);
+    }
+
     private void LookAtTarget()
     {
         if (IsFinished) return;
 
-        var targetPoz = GraphManager
-            .GetPointOnPath(pathPositions, pathNormals, GraphEnv.I.letterDistances[TextPointer], ref lookEdgeCounter)
-            .position;
+        var (_, normal, dir) = GraphManager
+            .GetPointOnPath(pathPositions, pathNormals, GraphEnv.I.letterDistances[TextPointer], ref lookEdgeCounter);
 
-        if ((transform.position - targetPoz).magnitude < walkConfig.LetterLookAtThreshold)
-            return;
+        var rot = Quaternion.LookRotation(dir, normal);
 
-        rotationSlave.transform.LookAt(targetPoz);
-        transform.rotation = Quaternion.Lerp(transform.rotation, rotationSlave.transform.rotation, walkConfig.RotationLerp);
+
+        // if ((transform.position - targetPoz).magnitude < walkConfig.LetterLookAtThreshold)
+        // return;
+
+        // rotationSlave.transform.LookAt(targetPoz);
+        // transform.rotation = Quaternion.Lerp(transform.rotation, rotationSlave.transform.rotation, walkConfig.RotationLerp);
+        transform.rotation = rot;
     }
 
     private static float FloatLerp(float a, float b, float t)

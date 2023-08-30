@@ -307,28 +307,26 @@ public abstract class GraphEnv : RootEnv
                 var currentWord = Words[w];
                 var wordObject = new GameObject[currentWord.Length];
 
-                var (letterStartPoint, letterStartNormal) =
+                var (letterStartPoint, letterStartNormal, _) =
                     GraphManager.GetPointOnPath(pathPositions, pathNormals, globalDistance, ref edgeCounter);
 
                 for (var i = 0; i < currentWord.Length; i++)
                 {
                     globalDistance += actualLetterSize;
 
-                    var (letterEndPoint, letterEndNormal) =
+                    var (letterEndPoint, letterEndNormal, _) =
                         GraphManager.GetPointOnPath(pathPositions, pathNormals, globalDistance, ref edgeCounter);
 
                     var letterStartProjection = GetProjectedPoz(letterStartPoint, letterStartNormal);
                     var letterStartNormalEndProjection = GetProjectedPoz(letterEndPoint, letterEndNormal);
 
                     var finalPoz = Vector3.Lerp(letterStartProjection.poz, letterStartNormalEndProjection.poz, .5f);
-                    var finalRot = Vector3.Lerp(letterStartProjection.normal, letterStartNormalEndProjection.normal,
-                        .5f);
+                    var finalNormal = Vector3.Lerp(letterStartProjection.normal, letterStartNormalEndProjection.normal, .5f);
 
                     letterDistances.Add(globalDistance);
+                    var rot = Quaternion.LookRotation(letterStartNormalEndProjection.poz - letterStartProjection.poz, finalNormal);
 
-                    var letterObject = Instantiate(digitPrefab, finalPoz,
-                        Quaternion.LookRotation(letterStartNormalEndProjection.poz - letterStartProjection.poz,
-                            finalRot), transform);
+                    var letterObject = Instantiate(digitPrefab, finalPoz, rot, transform);
 
                     var currentLetter = currentWord[i];
                     letterObject.transform.GetChild(0).GetComponent<MeshFilter>().mesh =

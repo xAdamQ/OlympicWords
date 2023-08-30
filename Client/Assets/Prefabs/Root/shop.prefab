@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 889765569}
   - component: {fileID: 889765568}
   - component: {fileID: 889765567}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: right extension
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35,7 +35,6 @@ RectTransform:
   - {fileID: 1341238404}
   - {fileID: 1956122027}
   m_Father: {fileID: 1423548348525011950}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -104,7 +103,7 @@ GameObject:
   - component: {fileID: 1341238404}
   - component: {fileID: 1341238406}
   - component: {fileID: 1341238405}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Image (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +123,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 889765566}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -180,7 +178,7 @@ GameObject:
   - component: {fileID: 1956122027}
   - component: {fileID: 1956122029}
   - component: {fileID: 1956122028}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +198,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 889765566}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -256,7 +253,7 @@ GameObject:
   - component: {fileID: 2041618022}
   - component: {fileID: 2041618024}
   - component: {fileID: 2041618023}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -276,7 +273,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 889765566}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -344,7 +340,7 @@ GameObject:
   - component: {fileID: 1423548347542214479}
   - component: {fileID: 6236954439418204098}
   - component: {fileID: 1423548347542214472}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,7 +360,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1423548347783356487}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -423,7 +418,7 @@ GameObject:
   - component: {fileID: 1423548347783356482}
   - component: {fileID: 1423548347783356485}
   - component: {fileID: 1423548347783356484}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Viewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -444,7 +439,6 @@ RectTransform:
   m_Children:
   - {fileID: 1423548347542214479}
   m_Father: {fileID: 1423548348525011950}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -514,7 +508,7 @@ GameObject:
   - component: {fileID: 1423548348525011949}
   - component: {fileID: 1423548348525011948}
   - component: {fileID: 1423548348525011951}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -538,7 +532,6 @@ RectTransform:
   - {fileID: 889765566}
   - {fileID: 6059730229591524335}
   m_Father: {fileID: 6236954440220297321}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -624,7 +617,7 @@ GameObject:
   - component: {fileID: 6236954439958770303}
   - component: {fileID: 6236954439958770297}
   - component: {fileID: 6236954439958770296}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -644,7 +637,6 @@ RectTransform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6236954440093632221}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -713,7 +705,7 @@ GameObject:
   - component: {fileID: 2097733983751963483}
   - component: {fileID: 3617195043785430462}
   - component: {fileID: 2877437426381174245}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: left extension
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -736,7 +728,6 @@ RectTransform:
   - {fileID: 6236954440534668206}
   - {fileID: 6236954440743911136}
   m_Father: {fileID: 1423548348525011950}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -804,7 +795,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6236954440220297321}
   - component: {fileID: -5086639010525739522}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: shop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -825,7 +816,6 @@ RectTransform:
   m_Children:
   - {fileID: 1423548348525011950}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -857,7 +847,7 @@ GameObject:
   - component: {fileID: 6236954440534668206}
   - component: {fileID: 6236954440534668200}
   - component: {fileID: 6236954440534668207}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Image (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -877,7 +867,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6236954440093632221}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -933,7 +922,7 @@ GameObject:
   - component: {fileID: 6236954440743911136}
   - component: {fileID: 6236954440743911138}
   - component: {fileID: 6236954440743911137}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -953,7 +942,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6236954440093632221}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1046,9 +1034,17 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2211331554751990484, guid: 20d568d4db989d05b925a2a1be862e72, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5561709252291915177, guid: 20d568d4db989d05b925a2a1be862e72, type: 3}
       propertyPath: m_Name
       value: ButtonIconText Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 5561709252291915177, guid: 20d568d4db989d05b925a2a1be862e72, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5561709252291915182, guid: 20d568d4db989d05b925a2a1be862e72, type: 3}
       propertyPath: m_Pivot.x
@@ -1149,6 +1145,10 @@ PrefabInstance:
     - target: {fileID: 5561709252291915183, guid: 20d568d4db989d05b925a2a1be862e72, type: 3}
       propertyPath: m_Color.r
       value: 0.9150943
+      objectReference: {fileID: 0}
+    - target: {fileID: 7598009198140731738, guid: 20d568d4db989d05b925a2a1be862e72, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7842588374667162121, guid: 20d568d4db989d05b925a2a1be862e72, type: 3}
       propertyPath: m_text

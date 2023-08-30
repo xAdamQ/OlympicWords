@@ -9,7 +9,8 @@ public class MinUserView : MonoBehaviour
     [SerializeField] protected TMP_Text
         displayName,
         level,
-        title;
+        title,
+        averageWpm;
 
     [SerializeField] protected Image picture;
 
@@ -28,6 +29,7 @@ public class MinUserView : MonoBehaviour
         Id = minUserInfo.Id;
         Level = minUserInfo.CalcLevel();
         DisplayName = minUserInfo.Name;
+        AverageWmp = minUserInfo.AverageWpm.ToString("f0");
 
         SetPicture(minUserInfo).Forget();
     }
@@ -84,6 +86,15 @@ public class MinUserView : MonoBehaviour
         {
             if (title)
                 title.text = value;
+        }
+    }
+
+    public string AverageWmp
+    {
+        set
+        {
+            if (averageWpm)
+                averageWpm.text = value;
         }
     }
 }

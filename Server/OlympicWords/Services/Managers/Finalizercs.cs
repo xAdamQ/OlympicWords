@@ -99,20 +99,16 @@ namespace OlympicWords.Services
                 scopeRepo.DeleteRoom();
         }
 
-        float GetEarnedMoney(int finalPosition)
+        private float GetEarnedMoney(int finalPosition)
         {
             var room = scopeRepo.Room;
-            switch (finalPosition)
+            return finalPosition switch
             {
-                case 0:
-                    return room.TotalBet * .7f;
-                case 1:
-                    return room.TotalBet * .2f;
-                case 2:
-                    return room.TotalBet * .1f;
-                default:
-                    return 0;
-            }
+                0 => room.TotalBet * .7f,
+                1 => room.TotalBet * .2f,
+                2 => room.TotalBet * .1f,
+                _ => 0
+            };
         }
 
         /// <summary>

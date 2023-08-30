@@ -32,6 +32,7 @@ public class MinUserInfo
     public int SelectedTitleId { get; set; }
     private int selectedTitleId;
     public string Name { get; set; }
+    public float AverageWpm { get; set; }
 
     private string PictureAddress { get; } =
         Extensions.UriCombine(NetManager.I.SelectedAddress, "Picture", "GetUserPicture");

@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
-
 [RequireComponent(typeof(RoomRequesterMapper))]
 public abstract class RoomRequester : EnvObject
 {
@@ -64,7 +63,8 @@ public abstract class RoomRequester : EnvObject
 
         BlockingPanel.Show("loading");
 
-        await SceneManager.LoadSceneAsync("RoomBase");
+        await Addressables.LoadSceneAsync("RoomBase");
+        await Addressables.DownloadDependenciesAsync(GenericEnvName);
         await Addressables.LoadSceneAsync(GenericEnvName, LoadSceneMode.Additive);
         // await SceneManager.LoadSceneAsync(GenericEnvName, LoadSceneMode.Additive);
 

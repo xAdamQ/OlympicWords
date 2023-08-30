@@ -5,7 +5,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4257310308128610218, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
@@ -19,7 +19,19 @@ PrefabInstance:
     - target: {fileID: 4257310308128610220, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: c1284ce6032cda423b0e1c86f54650a9, type: 3}
+      objectReference: {fileID: 21300000, guid: be6ed846cb4d6565f9824ae5ceccba0e, type: 3}
+    - target: {fileID: 4257310308128610220, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4257310308128610220, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4257310308128610220, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4257310308128610221, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -105,10 +117,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4257310308128610221, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8289997319192993309}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21bc9fbbfb8565142a454bb328133b24, type: 3}
 --- !u!224 &6293033527109255914 stripped
 RectTransform:
@@ -120,7 +134,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TransformParent: {fileID: 6293033527109255914}
     m_Modifications:
     - target: {fileID: 1909415557060690868, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
@@ -236,7 +250,9 @@ PrefabInstance:
       value: Text
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f0e795d0a6a7ae49b818f82d5cfa2c0, type: 3}
 --- !u!224 &8289997319192993309 stripped
 RectTransform:

@@ -22,7 +22,7 @@ public class FullUserView : MinUserView
         followButtonText,
         openMatchesText;
 
-    [SerializeField] private GameObject challengeButton;
+    [SerializeField] private GameObject challengeButton, followButton;
 
     private static FullUserView activeInstance;
     public FullUserInfo FullUserInfo;
@@ -31,9 +31,11 @@ public class FullUserView : MinUserView
 
     public static void Show(FullUserInfo fullUserInfo)
     {
-        var fuvPrefab = fullUserInfo is PersonalFullUserInfo
-            ? Coordinator.I.References.PersonalFuvPrefab
-            : Coordinator.I.References.FuvPrefab;
+        // var fuvPrefab = fullUserInfo is PersonalFullUserInfo
+        // ? Coordinator.I.References.PersonalFuvPrefab
+        // : Coordinator.I.References.FuvPrefab;
+
+        var fuvPrefab = Coordinator.I.References.FuvPrefab;
 
         if (!activeInstance)
         {
@@ -66,7 +68,11 @@ public class FullUserView : MinUserView
 
         if (fullUserInfo is PersonalFullUserInfo)
         {
-            UpdateOpenMatchesView();
+            challengeButton.SetActive(false);
+            followButton.SetActive(false);
+            followingBackText.gameObject.SetActive(false);
+
+            // UpdateOpenMatchesView();
         }
         else
         {

@@ -7,5 +7,6 @@ namespace OlympicWords.Common
         public int SelectedTitleId { get; set; }
         public string Name { get; set; }
         public string PictureUrl { get; set; }
+        public float AverageWpm { get; set; }
     }
 }

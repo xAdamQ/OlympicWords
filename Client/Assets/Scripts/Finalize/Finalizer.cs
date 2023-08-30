@@ -4,6 +4,7 @@ using Basra.Common;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 
 [Rpc]
@@ -75,7 +76,7 @@ public class Finalizer : MonoModule<Finalizer>
         UniTask.Create(async () =>
         {
             await RoomNet.I.LeaveFinishedRoom();
-            SceneManager.LoadScene("Lobby");
+            await Addressables.LoadSceneAsync("Lobby");
         }).Forget(e => throw e);
     }
 }
